@@ -25,7 +25,6 @@
 
         .heading-font { font-family: 'Syncopate', sans-serif; }
 
-        /* Sophisticated Profile Icon */
         .profile-hex {
             width: 120px;
             height: 120px;
@@ -68,7 +67,6 @@
             border-color: var(--accent);
         }
 
-        /* Movie Cards */
         .movie-card {
             background: #0a0a0a;
             border-radius: 8px;
@@ -127,7 +125,6 @@
             backdrop-filter: blur(15px);
         }
 
-        /* Red Accent Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
@@ -145,7 +142,6 @@
     </nav>
 
     <div class="flex pt-24 min-h-screen">
-        <!-- Sidebar Navigation -->
         <aside class="w-72 px-12 py-10 border-r border-white/5 fixed h-full bg-black">
             <div class="sidebar-link active" onclick="showSection('home')">Vault Dashboard</div>
             <div class="sidebar-link" onclick="showSection('overview')">Profile Overview</div>
@@ -157,22 +153,16 @@
             </div>
         </aside>
 
-        <!-- Main Content Area -->
         <main class="flex-1 ml-72 p-16">
             
-            <!-- SECTION: HOME (VAULT DASHBOARD) -->
             <div id="home-section" class="section-content">
                 <div class="mb-12">
                     <h1 class="text-4xl font-bold tracking-tighter mb-2">VAULT DASHBOARD</h1>
                     <p class="text-neutral-500 text-sm">Welcome back, <span id="home-name" class="text-white font-semibold"></span> Explore the latest encrypted releases.</p>
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="vault-grid">
-                    <!-- Movies Injected Here -->
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="vault-grid"></div>
             </div>
 
-            <!-- SECTION: OVERVIEW -->
             <div id="overview-section" class="section-content hidden">
                 <div class="flex items-center gap-10 mb-20">
                     <div class="profile-hex" id="user-avatar-hex">?</div>
@@ -185,9 +175,7 @@
                 <div class="grid grid-cols-2 gap-10">
                     <div class="glass-card p-8 border-l-2 border-red-600">
                         <h3 class="text-[10px] uppercase tracking-widest text-neutral-500 mb-6">Security Clearance</h3>
-                        <div id="activity-list" class="space-y-4">
-                            <!-- Injected Activity -->
-                        </div>
+                        <div id="activity-list" class="space-y-4"></div>
                     </div>
                     <div class="glass-card p-8">
                         <h3 class="text-[10px] uppercase tracking-widest text-neutral-500 mb-6">User Telemetry</h3>
@@ -205,7 +193,6 @@
                 </div>
             </div>
 
-            <!-- SECTION: EDIT PROFILE -->
             <div id="edit-profile-section" class="section-content hidden">
                 <h1 class="text-3xl font-bold mb-10 tracking-tighter uppercase">Identity Core</h1>
                 <div class="max-w-xl glass-card p-10 border-t-2 border-red-600">
@@ -238,18 +225,14 @@
                 </div>
             </div>
 
-            <!-- SECTION: HISTORY -->
             <div id="history-section" class="section-content hidden">
                 <h1 class="text-3xl font-bold mb-10 tracking-tighter uppercase">Watch History</h1>
-                <div class="grid grid-cols-3 gap-6" id="history-grid">
-                    <!-- History Injected Here -->
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="history-grid"></div>
             </div>
 
         </main>
     </div>
 
-    <!-- Details Modal -->
     <div id="details-modal" onclick="closeDetails(event)">
         <div class="w-full max-w-4xl bg-[#0a0a0a] border border-white/10 rounded-lg overflow-hidden relative" onclick="event.stopPropagation()">
             <div id="modal-hero" class="h-[400px] bg-cover bg-center relative">
@@ -291,6 +274,9 @@
                     history: [] 
                 };
             }
+            
+            // Fix for empty history
+            if (!currentUser.history) currentUser.history = [];
 
             updateUI();
         }
@@ -302,17 +288,14 @@
             document.getElementById('nav-user-display').innerHTML = `SESSION: <span class="text-white">${name}</span>`;
             document.getElementById('user-avatar-hex').innerText = currentUser.username[0].toUpperCase();
             
-            // Stats
             document.getElementById('display-gender').innerText = currentUser.gender || 'Unspecified';
             document.getElementById('display-age').innerText = currentUser.age || 'Unknown';
 
-            // Populate Edit Form
             document.getElementById('edit-username').value = currentUser.username;
             document.getElementById('edit-age').value = currentUser.age || '';
             document.getElementById('edit-gender').value = currentUser.gender || 'Unspecified';
             document.getElementById('edit-bio').value = currentUser.bio || '';
 
-            // Activity Log
             const activity = document.getElementById('activity-list');
             activity.innerHTML = `
                 <div class="flex justify-between text-[10px] py-2 border-b border-white/5">
@@ -320,10 +303,13 @@
                     <span class="text-red-500">SECURE</span>
                 </div>
                 <div class="flex justify-between text-[10px] py-2 border-b border-white/5">
-                    <span class="text-neutral-400">VAULT_ACCESS</span>
-                    <span class="text-neutral-500">AUTHORIZED</span>
+                    <span class="text-neutral-400">WATCHED_ASSETS</span>
+                    <span class="text-neutral-500">${currentUser.history.length} ITEMS</span>
                 </div>
             `;
+            
+            // Re-render history grid in case it changed
+            renderHistory();
         }
 
         function showSection(id) {
@@ -331,7 +317,10 @@
             document.getElementById(id + '-section').classList.remove('hidden');
             
             document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-            event.target.classList.add('active');
+            // Find the element by text content if event is missing
+            const links = Array.from(document.querySelectorAll('.sidebar-link'));
+            const activeLink = links.find(link => link.onclick.toString().includes(id));
+            if(activeLink) activeLink.classList.add('active');
         }
 
         function saveIdentity() {
@@ -351,30 +340,24 @@
             
             if (index !== -1) {
                 users[index] = { ...users[index], ...currentUser };
-            } else {
-                users.push(currentUser);
             }
 
             localStorage.setItem('zenith_users', JSON.stringify(users));
             localStorage.setItem('zenith_session_user', newName);
 
-            alert("IDENTITY CORE UPDATED. AUTHORIZATION RE-SIGNED.");
+            alert("IDENTITY CORE UPDATED.");
             updateUI();
             showSection('overview');
         }
 
         function populateGrids() {
             const vaultGrid = document.getElementById('vault-grid');
-            const historyGrid = document.getElementById('history-grid');
-
             if (typeof movieData === 'undefined' || !movieData.length) {
-                const emptyMsg = `<p class="text-neutral-600 italic">No assets detected in current sector.</p>`;
-                vaultGrid.innerHTML = emptyMsg;
-                historyGrid.innerHTML = emptyMsg;
+                vaultGrid.innerHTML = `<p class="text-neutral-600 italic">No assets detected.</p>`;
                 return;
             }
 
-            const movieHTML = movieData.map(movie => `
+            vaultGrid.innerHTML = movieData.map(movie => `
                 <div class="movie-card group" onclick="showDetails('${movie.id}')">
                     <div class="aspect-video relative overflow-hidden">
                         <img src="${movie.posterLandscape}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
@@ -386,9 +369,34 @@
                     </div>
                 </div>
             `).join('');
+            
+            renderHistory();
+        }
 
-            vaultGrid.innerHTML = movieHTML;
-            historyGrid.innerHTML = movieHTML; // Showing all for history in demo
+        function renderHistory() {
+            const historyGrid = document.getElementById('history-grid');
+            if (!currentUser.history || currentUser.history.length === 0) {
+                historyGrid.innerHTML = `<p class="text-neutral-600 italic col-span-full">Your viewing vault is currently empty.</p>`;
+                return;
+            }
+
+            // Map IDs in history to full movie objects
+            const historyMovies = currentUser.history
+                .map(id => movieData.find(m => m.id === id))
+                .filter(m => m !== undefined);
+
+            historyGrid.innerHTML = historyMovies.map(movie => `
+                <div class="movie-card group" onclick="showDetails('${movie.id}')">
+                    <div class="aspect-video relative overflow-hidden">
+                        <img src="${movie.posterLandscape}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-80"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <div class="text-[9px] text-neutral-500 font-bold tracking-widest uppercase mb-1">RECORDED</div>
+                            <div class="text-xs font-bold uppercase tracking-tighter">${movie.title}</div>
+                        </div>
+                    </div>
+                </div>
+            `).reverse().join(''); // Show newest first
         }
 
         function showDetails(id) {
@@ -399,12 +407,31 @@
             document.getElementById('modal-title').innerText = movie.title;
             document.getElementById('modal-genre').innerText = movie.genre;
             document.getElementById('modal-plot').innerText = movie.plot;
+            
             document.getElementById('modal-play-btn').onclick = () => {
-                // Assuming you have a player.html page or similar
-                window.location.href = `index.html`; 
+                addToHistory(movie.id);
+                // REDIRECT TO VIDEO PLAYER (instead of index.html)
+                window.location.href = `video_player.html?id=${movie.id}`; 
             };
             
             document.getElementById('details-modal').style.display = 'flex';
+        }
+
+        function addToHistory(movieId) {
+            // Only add if not already the last item watched
+            if (currentUser.history[currentUser.history.length - 1] !== movieId) {
+                currentUser.history.push(movieId);
+                // Keep history reasonable (e.g., last 20 movies)
+                if (currentUser.history.length > 20) currentUser.history.shift();
+                
+                // Save to localStorage
+                let users = JSON.parse(localStorage.getItem('zenith_users') || '[]');
+                const index = users.findIndex(u => u.username === currentUser.username);
+                if (index !== -1) {
+                    users[index].history = currentUser.history;
+                    localStorage.setItem('zenith_users', JSON.stringify(users));
+                }
+            }
         }
 
         function closeDetails(e) {
