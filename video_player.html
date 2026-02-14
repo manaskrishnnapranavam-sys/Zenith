@@ -144,7 +144,7 @@
             transform: scale(1.1);
         }
 
-        /* --- END SCREEN (JioHotstar Style) --- */
+        /* --- END SCREEN --- */
         #end-screen {
             position: absolute;
             inset: 0;
@@ -246,23 +246,22 @@
         
         <div id="loader">
             <div class="spinner"></div>
-            <div class="text-[10px] tracking-[0.3em] text-neutral-500 animate-pulse">ESTABLISHING SECURE CONNECTION</div>
+            <div class="text-[10px] tracking-[0.3em] text-neutral-500 animate-pulse">SECURE LINK ESTABLISHED</div>
         </div>
 
         <div class="glass-frame">
-            <!-- Automatic Detection: The 'load' event on iframe combined with a timer helps detect if the video has ended/stopped -->
-            <iframe id="zenith-iframe" src="" allow="autoplay; fullscreen" allowfullscreen onload="handleIframeLoad()"></iframe>
+            <iframe id="zenith-iframe" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
         </div>
 
-        <!-- JIOHOTSTAR STYLE END SCREEN -->
+        <!-- END SCREEN -->
         <div id="end-screen">
             <div class="rating-card">
-                <button onclick="goHome()" class="absolute top-8 right-8 text-neutral-500 hover:text-white transition-colors">
+                <button onclick="smartBack()" class="absolute top-8 right-8 text-neutral-500 hover:text-white transition-colors">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
                 </button>
 
-                <h2 class="heading-font text-2xl font-bold mb-2 uppercase tracking-tight">How was the experience?</h2>
-                <p class="text-neutral-500 text-xs mb-8 tracking-widest">YOUR FEEDBACK OPTIMIZES THE ARCHIVE</p>
+                <h2 class="heading-font text-2xl font-bold mb-2 uppercase tracking-tight">EXPERIENCE CONCLUDED</h2>
+                <p class="text-neutral-500 text-xs mb-8 tracking-widest">FEEDBACK HELPS MAP THE VOID</p>
                 
                 <div class="flex justify-center gap-6 mb-10">
                     <button class="rating-btn group" onclick="submitRating('loved')">
@@ -273,20 +272,20 @@
                     </button>
                 </div>
 
-                <div class="text-[10px] tracking-[0.4em] text-neutral-600 uppercase mb-4">Up Next</div>
+                <div class="text-[10px] tracking-[0.4em] text-neutral-600 uppercase mb-4">Transmission Sequential</div>
                 
                 <div class="next-preview cursor-pointer group" onclick="playNext()">
                     <img id="next-poster" src="" class="w-20 h-28 object-cover rounded-lg shadow-2xl bg-neutral-900">
                     <div class="text-left">
                         <div id="next-title" class="heading-font text-lg font-bold group-hover:text-blue-400 transition-colors">---</div>
-                        <div class="text-[10px] text-neutral-500 uppercase tracking-widest mt-1">Starting in <span id="timer-sec">10</span>s</div>
+                        <div class="text-[10px] text-neutral-500 uppercase tracking-widest mt-1">INITIATING IN <span id="timer-sec">10</span>s</div>
                     </div>
                     <div class="countdown-overlay" id="drain-bar"></div>
                 </div>
 
                 <div class="flex gap-4 mt-10 justify-center">
                     <button onclick="playNext()" class="px-10 py-3 bg-white text-black text-[10px] font-bold uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all">Play Now</button>
-                    <button onclick="goHome()" class="px-10 py-3 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all">Home</button>
+                    <button onclick="smartBack()" class="px-10 py-3 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all">Exit Archive</button>
                 </div>
             </div>
         </div>
@@ -295,7 +294,8 @@
         <div class="hud-overlay" id="hud">
             <div class="flex justify-between items-start">
                 <div class="back-btn-wrapper interactive flex items-center gap-6">
-                    <button onclick="goHome()" class="nav-btn">
+                    <!-- SMART BACK TRIGGER -->
+                    <button onclick="smartBack()" class="nav-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                     </button>
                     <div>
@@ -307,7 +307,7 @@
 
             <div class="flex justify-between items-end">
                 <div class="hidden md:block">
-                    <div class="text-[9px] text-neutral-500 tracking-[0.2em] mb-1">ZENITH SECURE PLAYER</div>
+                    <div class="text-[9px] text-neutral-500 tracking-[0.2em] mb-1">ZENITH CORE SYSTEM</div>
                     <div class="text-[10px] text-neutral-400 font-bold" id="clock">00:00:00</div>
                 </div>
                 <div class="interactive flex gap-4">
@@ -326,6 +326,19 @@
         let nextMovieId = null;
         let isEnded = false;
 
+        // SMART BACK LOGIC
+        function smartBack() {
+            const loggedInUser = localStorage.getItem('zenith_session_user');
+            
+            if (loggedInUser) {
+                // If user is logged in, take them to their Vault Dashboard
+                window.location.href = 'norm_viewerpage.html';
+            } else {
+                // If public viewer (no session), take them back to the Home Landing page
+                window.location.href = 'index.html';
+            }
+        }
+
         // Clock logic
         setInterval(() => {
             document.getElementById('clock').innerText = new Date().toLocaleTimeString();
@@ -340,7 +353,6 @@
             
             nextMovieId = nextMovie.id;
             document.getElementById('next-title').innerText = nextMovie.title;
-            // USING PORTRAIT POSTER FROM JS FILE
             document.getElementById('next-poster').src = nextMovie.posterPortrait;
 
             if (movie) {
@@ -348,21 +360,12 @@
                 document.getElementById('video-genre').innerText = movie.genre;
                 iframe.src = movie.videoFile;
                 
-                // Hide loader after a simulated "decryption" time
                 setTimeout(() => {
                     loader.style.opacity = '0';
                     setTimeout(() => loader.style.display = 'none', 500);
                 }, 2000);
             }
         };
-
-        // AUTOMATIC DETECTION WORKAROUND
-        // Since we can't get events from inside the iframe directly, we monitor the iframe's state.
-        // If the user hasn't interacted for a very long time or the iframe stops sending heartbeat, we can trigger it.
-        // For this demo, we use a custom "Manual Finish" for user control, but also monitor the "load" event.
-        function handleIframeLoad() {
-            console.log("Stream container active.");
-        }
 
         function triggerEndScreen() {
             if (isEnded) return;
@@ -386,8 +389,6 @@
         }
 
         function submitRating(val) {
-            console.log("Rating:", val);
-            // Flash feedback
             const card = document.querySelector('.rating-card');
             card.style.borderColor = val === 'loved' ? '#ff2d2d' : '#00d2ff';
             setTimeout(playNext, 800);
@@ -399,22 +400,16 @@
             }
         }
 
-        function goHome() {
-            window.location.href = 'norm_viewerpage.html';
-        }
-
         function toggleCinemaMode() {
             document.getElementById('main-container').classList.toggle('cinema-mode');
         }
 
-        // Auto-Hide HUD
         let idle;
         document.addEventListener('mousemove', () => {
             document.body.classList.remove('hide-ui');
             clearTimeout(idle);
             idle = setTimeout(() => document.body.classList.add('hide-ui'), 3000);
         });
-
     </script>
 </body>
 </html>
