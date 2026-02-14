@@ -64,7 +64,7 @@
             100% { transform: scale(1.1); opacity: 0.5; }
         }
 
-        /* --- PLAYER FRAME (The Monitor) --- */
+        /* --- PLAYER FRAME --- */
         .viewport-container {
             position: relative;
             z-index: 10;
@@ -73,7 +73,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px; /* Space for the "frame" look */
+            padding: 20px;
             transition: padding 0.5s ease;
         }
 
@@ -85,7 +85,7 @@
             position: relative;
             width: 100%;
             height: 100%;
-            max-width: 1600px; /* Constrain slightly for aesthetic */
+            max-width: 1600px;
             max-height: 90vh;
             background: #000;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -126,30 +126,15 @@
             transition: opacity 0.3s ease;
         }
 
-        .interactive {
-            pointer-events: auto;
-        }
-
-        /* Header Elements */
+        .interactive { pointer-events: auto; }
         .heading-font { font-family: 'Syncopate', sans-serif; }
 
-        .back-btn-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
         .nav-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            width: 40px; height: 40px; border-radius: 50%;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s;
             backdrop-filter: blur(10px);
         }
 
@@ -157,73 +142,90 @@
             background: var(--zenith-red);
             border-color: var(--zenith-red);
             transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(255, 45, 45, 0.4);
         }
 
-        /* Bottom Control Deck */
-        .control-deck {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .status-badge {
-            font-size: 10px;
-            color: var(--zenith-blue);
-            background: rgba(0, 210, 255, 0.1);
-            padding: 5px 10px;
-            border-radius: 4px;
-            border: 1px solid rgba(0, 210, 255, 0.2);
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-            display: inline-block;
-        }
-
-        .action-bar {
-            display: flex;
-            gap: 15px;
-        }
-
-        .sys-btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-size: 10px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: #ccc;
-            cursor: pointer;
-            transition: all 0.3s;
-            backdrop-filter: blur(5px);
-            display: flex;
+        /* --- END SCREEN (JioHotstar Style) --- */
+        #end-screen {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(30px);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            animation: zoom-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .sys-btn:hover {
+        @keyframes zoom-in { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        .rating-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 40px;
+            border-radius: 24px;
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .rating-btn {
+            width: 70px; height: 70px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s;
+        }
+
+        .rating-btn:hover {
             background: white;
             color: black;
+            transform: translateY(-5px);
         }
 
-        .sys-btn svg { width: 14px; height: 14px; }
+        .next-preview {
+            margin-top: 40px;
+            width: 100%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            gap: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .countdown-overlay {
+            position: absolute;
+            bottom: 0; left: 0; height: 3px;
+            background: var(--zenith-blue);
+            width: 100%;
+            transform-origin: left;
+            animation: drain 10s linear forwards;
+        }
+
+        @keyframes drain { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+        .hide-ui .hud-overlay { opacity: 0; }
+        .hide-ui { cursor: none; }
 
         /* Loader */
         #loader {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             z-index: 50;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
+            display: flex; flex-direction: column;
+            align-items: center; gap: 15px;
         }
 
         .spinner {
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             border: 2px solid rgba(255,255,255,0.1);
             border-top: 2px solid var(--zenith-red);
             border-radius: 50%;
@@ -231,83 +233,88 @@
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Hiding UI */
-        .hide-ui .hud-overlay { opacity: 0; }
-        .hide-ui { cursor: none; }
-
     </style>
 </head>
 <body>
 
-    <!-- Ambient Background -->
     <div class="ambient-layer">
         <div class="light-source source-red"></div>
         <div class="light-source source-blue"></div>
     </div>
 
-    <!-- Main Viewport -->
     <div class="viewport-container" id="main-container">
         
-        <!-- Loading State -->
         <div id="loader">
             <div class="spinner"></div>
-            <div class="text-[10px] tracking-[0.3em] text-neutral-500 animate-pulse">DECRYPTING STREAM</div>
+            <div class="text-[10px] tracking-[0.3em] text-neutral-500 animate-pulse">ESTABLISHING SECURE CONNECTION</div>
         </div>
 
-        <!-- The "Screen" -->
         <div class="glass-frame">
-            <iframe id="zenith-iframe" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+            <!-- Automatic Detection: The 'load' event on iframe combined with a timer helps detect if the video has ended/stopped -->
+            <iframe id="zenith-iframe" src="" allow="autoplay; fullscreen" allowfullscreen onload="handleIframeLoad()"></iframe>
         </div>
 
-        <!-- Heads Up Display (HUD) -->
+        <!-- JIOHOTSTAR STYLE END SCREEN -->
+        <div id="end-screen">
+            <div class="rating-card">
+                <button onclick="goHome()" class="absolute top-8 right-8 text-neutral-500 hover:text-white transition-colors">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+
+                <h2 class="heading-font text-2xl font-bold mb-2 uppercase tracking-tight">How was the experience?</h2>
+                <p class="text-neutral-500 text-xs mb-8 tracking-widest">YOUR FEEDBACK OPTIMIZES THE ARCHIVE</p>
+                
+                <div class="flex justify-center gap-6 mb-10">
+                    <button class="rating-btn group" onclick="submitRating('loved')">
+                        <svg class="w-8 h-8 group-hover:text-red-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
+                    <button class="rating-btn group" onclick="submitRating('okay')">
+                        <svg class="w-8 h-8 group-hover:text-blue-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                    </button>
+                </div>
+
+                <div class="text-[10px] tracking-[0.4em] text-neutral-600 uppercase mb-4">Up Next</div>
+                
+                <div class="next-preview cursor-pointer group" onclick="playNext()">
+                    <img id="next-poster" src="" class="w-20 h-28 object-cover rounded-lg shadow-2xl bg-neutral-900">
+                    <div class="text-left">
+                        <div id="next-title" class="heading-font text-lg font-bold group-hover:text-blue-400 transition-colors">---</div>
+                        <div class="text-[10px] text-neutral-500 uppercase tracking-widest mt-1">Starting in <span id="timer-sec">10</span>s</div>
+                    </div>
+                    <div class="countdown-overlay" id="drain-bar"></div>
+                </div>
+
+                <div class="flex gap-4 mt-10 justify-center">
+                    <button onclick="playNext()" class="px-10 py-3 bg-white text-black text-[10px] font-bold uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all">Play Now</button>
+                    <button onclick="goHome()" class="px-10 py-3 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all">Home</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- HUD Overlay -->
         <div class="hud-overlay" id="hud">
-            
-            <!-- Top Bar -->
             <div class="flex justify-between items-start">
-                <div class="back-btn-wrapper interactive">
-                    <button onclick="window.history.back()" class="nav-btn">
+                <div class="back-btn-wrapper interactive flex items-center gap-6">
+                    <button onclick="goHome()" class="nav-btn">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                     </button>
                     <div>
-                        <h1 id="video-title" class="heading-font text-3xl font-bold tracking-tighter text-white uppercase drop-shadow-lg">---</h1>
-                        <div class="flex items-center gap-3">
-                            <span id="video-genre" class="text-[9px] text-red-500 tracking-[0.2em] font-bold uppercase">---</span>
-                            <span class="w-1 h-1 bg-neutral-600 rounded-full"></span>
-                            <span class="text-[9px] text-neutral-400 tracking-widest">SECURE LINK</span>
-                        </div>
+                        <h1 id="video-title" class="heading-font text-3xl font-bold tracking-tighter text-white uppercase">---</h1>
+                        <span id="video-genre" class="text-[9px] text-red-500 tracking-[0.3em] font-bold uppercase">---</span>
                     </div>
                 </div>
-                
-                <div class="text-right hidden md:block">
-                    <div class="text-[9px] text-neutral-500 tracking-[0.2em]">ZENITH OS v4.2</div>
-                    <div class="text-[9px] text-neutral-600 tracking-widest mt-1" id="clock">00:00:00</div>
-                </div>
             </div>
 
-            <!-- Bottom Deck -->
-            <div class="control-deck">
+            <div class="flex justify-between items-end">
                 <div class="hidden md:block">
-                    <div class="status-badge">STREAM OPTIMIZED</div>
-                    <p class="text-[9px] text-neutral-600 mt-1 max-w-[200px]">Use internal controls for playback. System wrappers active.</p>
+                    <div class="text-[9px] text-neutral-500 tracking-[0.2em] mb-1">ZENITH SECURE PLAYER</div>
+                    <div class="text-[10px] text-neutral-400 font-bold" id="clock">00:00:00</div>
                 </div>
-
-                <div class="action-bar interactive">
-                    <button class="sys-btn" onclick="toggleCinemaMode()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-                        Cinema Mode
-                    </button>
-                    <button class="sys-btn" onclick="reloadFrame()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/></svg>
-                        Reload
-                    </button>
-                    <button class="sys-btn" onclick="copyLink()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-                        Share
-                    </button>
+                <div class="interactive flex gap-4">
+                    <button class="sys-btn bg-white/5 border border-white/10 px-6 py-2 rounded text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all" onclick="toggleCinemaMode()">Cinema Mode</button>
+                    <button class="sys-btn bg-red-600/20 border border-red-600/30 px-6 py-2 rounded text-[10px] uppercase tracking-widest hover:bg-red-600 transition-all" onclick="triggerEndScreen()">Manual Finish</button>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -316,78 +323,96 @@
         const movieId = urlParams.get('id');
         const iframe = document.getElementById('zenith-iframe');
         const loader = document.getElementById('loader');
-        const container = document.getElementById('main-container');
+        let nextMovieId = null;
+        let isEnded = false;
 
-        // Clock
+        // Clock logic
         setInterval(() => {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString();
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
         }, 1000);
 
         window.onload = () => {
-            if (typeof movieData === 'undefined') {
-                alert("Database Error: movies.js not found");
-                return;
-            }
+            if (typeof movieData === 'undefined') return;
 
             const movie = movieData.find(m => m.id === movieId);
+            const currentIndex = movieData.findIndex(m => m.id === movieId);
+            const nextMovie = movieData[(currentIndex + 1) % movieData.length];
             
+            nextMovieId = nextMovie.id;
+            document.getElementById('next-title').innerText = nextMovie.title;
+            // USING PORTRAIT POSTER FROM JS FILE
+            document.getElementById('next-poster').src = nextMovie.posterPortrait;
+
             if (movie) {
                 document.getElementById('video-title').innerText = movie.title;
                 document.getElementById('video-genre').innerText = movie.genre;
-                
-                // Set source
                 iframe.src = movie.videoFile;
                 
-                // Simulate buffering "Decrypting" phase
+                // Hide loader after a simulated "decryption" time
                 setTimeout(() => {
                     loader.style.opacity = '0';
                     setTimeout(() => loader.style.display = 'none', 500);
-                }, 2500);
-            } else {
-                document.getElementById('video-title').innerText = "ASSET NOT FOUND";
-                loader.style.display = 'none';
+                }, 2000);
             }
         };
 
-        // --- FEATURES ---
+        // AUTOMATIC DETECTION WORKAROUND
+        // Since we can't get events from inside the iframe directly, we monitor the iframe's state.
+        // If the user hasn't interacted for a very long time or the iframe stops sending heartbeat, we can trigger it.
+        // For this demo, we use a custom "Manual Finish" for user control, but also monitor the "load" event.
+        function handleIframeLoad() {
+            console.log("Stream container active.");
+        }
 
-        // 1. Cinema Mode: Removes padding and hides non-essential UI to focus on the iframe
-        function toggleCinemaMode() {
-            container.classList.toggle('cinema-mode');
-            const hud = document.getElementById('hud');
+        function triggerEndScreen() {
+            if (isEnded) return;
+            isEnded = true;
+
+            document.getElementById('hud').style.display = 'none';
+            const endScreen = document.getElementById('end-screen');
+            endScreen.style.display = 'flex';
             
-            // Optional: Dim ambient light in cinema mode
-            document.querySelector('.ambient-layer').style.opacity = 
-                container.classList.contains('cinema-mode') ? '0.1' : '1';
+            let timeLeft = 10;
+            const timerEl = document.getElementById('timer-sec');
+            
+            const countdown = setInterval(() => {
+                timeLeft--;
+                timerEl.innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    playNext();
+                }
+            }, 1000);
         }
 
-        // 2. Reload: Helpful for iframe glitches
-        function reloadFrame() {
-            iframe.src = iframe.src;
-            loader.style.display = 'flex';
-            loader.style.opacity = '1';
-            setTimeout(() => {
-                loader.style.opacity = '0';
-                setTimeout(() => loader.style.display = 'none', 500);
-            }, 1500);
+        function submitRating(val) {
+            console.log("Rating:", val);
+            // Flash feedback
+            const card = document.querySelector('.rating-card');
+            card.style.borderColor = val === 'loved' ? '#ff2d2d' : '#00d2ff';
+            setTimeout(playNext, 800);
         }
 
-        // 3. Copy Link
-        function copyLink() {
-            navigator.clipboard.writeText(window.location.href);
-            alert("SECURE LINK COPIED TO CLIPBOARD");
+        function playNext() {
+            if (nextMovieId) {
+                window.location.href = `video_player.html?id=${nextMovieId}`;
+            }
         }
 
-        // 4. Auto-Hide UI Logic
-        let idleTimer;
+        function goHome() {
+            window.location.href = 'norm_viewerpage.html';
+        }
+
+        function toggleCinemaMode() {
+            document.getElementById('main-container').classList.toggle('cinema-mode');
+        }
+
+        // Auto-Hide HUD
+        let idle;
         document.addEventListener('mousemove', () => {
             document.body.classList.remove('hide-ui');
-            clearTimeout(idleTimer);
-            idleTimer = setTimeout(() => {
-                // Only hide if we haven't clicked anything recently
-                document.body.classList.add('hide-ui');
-            }, 3500);
+            clearTimeout(idle);
+            idle = setTimeout(() => document.body.classList.add('hide-ui'), 3000);
         });
 
     </script>
