@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZENITH | The Architect's Gate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --matrix-red: #ff2d2d;
+            --matrix-blue: #0084ff;
+            --bg-black: #030303;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: white;
+            font-family: 'Fira Code', monospace;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Digital Rain Background */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            opacity: 0.15;
+        }
+
+        .login-card {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 1);
+            text-align: center;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, var(--matrix-red), var(--matrix-blue));
+            z-index: -1;
+            filter: blur(5px);
+            opacity: 0.3;
+        }
+
+        .glitch-text {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.5em;
+            margin-bottom: 2rem;
+            position: relative;
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 var(--matrix-red), -2px 0 var(--matrix-blue); }
+            50% { text-shadow: -2px 0 var(--matrix-red), 2px 0 var(--matrix-blue); }
+            100% { text-shadow: 2px 0 var(--matrix-red), -2px 0 var(--matrix-blue); }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .input-field {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            color: white;
+            outline: none;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .input-field:focus {
+            border-color: var(--matrix-red);
+            background: rgba(255, 45, 45, 0.05);
+            box-shadow: 0 0 15px rgba(255, 45, 45, 0.2);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            background: transparent;
+            border: 1px solid var(--matrix-blue);
+            color: var(--matrix-blue);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-btn:hover {
+            background: var(--matrix-blue);
+            color: black;
+            box-shadow: 0 0 30px rgba(0, 132, 255, 0.5);
+        }
+
+        #error-msg {
+            color: var(--matrix-red);
+            font-size: 12px;
+            margin-top: 15px;
+            height: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .terminal-cursor {
+            display: inline-block;
+            width: 10px;
+            height: 2px;
+            background: var(--matrix-red);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix-canvas"></canvas>
+
+    <div class="login-card">
+        <div class="glitch-text text-white">ARCHITECT</div>
+        <p class="text-[10px] text-neutral-500 mb-8 tracking-[0.3em]">IDENTIFICATION REQUIRED <span class="terminal-cursor"></span></p>
+
+        <form id="login-form">
+            <div class="input-group">
+                <label>System Identifier</label>
+                <input type="text" id="username" class="input-field" placeholder="USER_ID" required autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label>Encryption Key</label>
+                <input type="password" id="password" class="input-field" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" class="auth-btn">Authorize</button>
+            <div id="error-msg">ACCESS_DENIED: INVALID_CREDENTIALS</div>
+        </form>
+
+        <div class="mt-8 pt-6 border-t border-white/5">
+            <button onclick="location.href='index.html'" class="text-[9px] text-neutral-600 hover:text-white transition-colors tracking-widest uppercase">← Back to Zenith</button>
+        </div>
+    </div>
+
+    <script>
+        // Matrix Rain Animation
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%&<>[]{}";
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function draw() {
+            ctx.fillStyle = 'rgba(3, 3, 3, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = characters.charAt(Math.floor(Math.random() * characters.length));
+                
+                // Mix Red and Blue rain
+                ctx.fillStyle = i % 2 === 0 ? '#ff2d2d' : '#0084ff';
+                
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(draw, 35);
+
+        // Authentication Logic
+        const loginForm = document.getElementById('login-form');
+        const errorMsg = document.getElementById('error-msg');
+
+        // SECURITY NOTE: In a real app, this would be server-side.
+        // For your self-hosted version, set your desired credentials here:
+        const ADMIN_ID = "admin"; 
+        const ADMIN_PASS = "zenith01";
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            if (user === ADMIN_ID && pass === ADMIN_PASS) {
+                // Success: Visual feedback before redirect
+                document.querySelector('.auth-btn').innerText = "VERIFIED";
+                document.querySelector('.auth-btn').style.background = "#00ff00";
+                document.querySelector('.auth-btn').style.borderColor = "#00ff00";
+                document.querySelector('.auth-btn').style.color = "black";
+                
+                setTimeout(() => {
+                    location.href = 'admin_artchitechpage.html';
+                }, 1000);
+            } else {
+                // Failure
+                errorMsg.style.opacity = '1';
+                document.querySelector('.login-card').animate([
+                    { transform: 'translateX(-5px)' },
+                    { transform: 'translateX(5px)' }
+                ], { duration: 100, iterations: 5 });
+                
+                setTimeout(() => { errorMsg.style.opacity = '0'; }, 3000);
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
