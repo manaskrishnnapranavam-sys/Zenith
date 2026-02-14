@@ -157,6 +157,12 @@
             overflow: auto;
             border: 1px dashed #444;
         }
+
+        .helper-text {
+            font-size: 10px;
+            color: #555;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -164,7 +170,6 @@
     <aside>
         <div class="heading-font text-xl mb-8 tracking-tighter text-white">ZENITH</div>
         
-        <!-- Admin Profile Section -->
         <div class="admin-profile">
             <div class="profile-avatar">Z</div>
             <div>
@@ -194,7 +199,7 @@
         <!-- Tab: Release Forge -->
         <div id="releases-tab">
             <h1 class="text-3xl font-bold mb-2">Release Forge</h1>
-            <p class="text-neutral-500 mb-10">Construct and deploy cinematic containers to the Zenith network.</p>
+            <p class="text-neutral-500 mb-10">Configure cinematic containers using Google Drive hosting.</p>
 
             <div class="grid grid-cols-2 gap-10">
                 <div class="form-card">
@@ -219,12 +224,13 @@
 
                 <div class="form-card">
                     <h2 class="text-lg font-bold mb-6 flex items-center gap-2">
-                        <span class="w-2 h-2 bg-blue-600 rounded-full"></span> Linkage & Assets
+                        <span class="w-2 h-2 bg-blue-600 rounded-full"></span> Google Drive & Assets
                     </h2>
                     <div class="space-y-4">
                         <div>
-                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Source MP4 Filename</label>
-                            <input type="text" id="m-video" class="input-box" placeholder="e.g. movie_id_88.mp4">
+                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Google Drive Video ID</label>
+                            <input type="text" id="m-video-id" class="input-box" placeholder="e.g. 1A2B3C4D5E6F...">
+                            <div class="helper-text">Copy the unique code from your Drive share link.</div>
                         </div>
                         
                         <div>
@@ -273,9 +279,7 @@
                             <th>PERMISSION</th>
                         </tr>
                     </thead>
-                    <tbody id="viewer-list">
-                        <!-- Data pulled from zenith_users -->
-                    </tbody>
+                    <tbody id="viewer-list"></tbody>
                 </table>
             </div>
         </div>
@@ -334,13 +338,9 @@
             }
         }
 
-        // Logic to fetch from normal_uslgn.html's storage
         function loadViewers() {
-            // matches the key 'zenith_users' from normal_uslgn.html
             const users = JSON.parse(localStorage.getItem('zenith_users') || '[]');
             const list = document.getElementById('viewer-list');
-            
-            // Add a mock 'default' viewer to match earlier context
             const allUsers = [{username: 'viewer', password: 'zenith_pass'}, ...users];
 
             list.innerHTML = allUsers.map(u => `
@@ -351,33 +351,35 @@
                     <td><span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 text-[9px] font-bold tracking-tighter uppercase border border-blue-500/20">Authorized Viewer</span></td>
                 </tr>
             `).join('');
-            
-            if(allUsers.length === 0) {
-                list.innerHTML = '<tr><td colspan="4" class="text-center py-20 text-neutral-600 tracking-widest text-xs uppercase">Registry Null: No users identified</td></tr>';
-            }
         }
 
         function addMovie() {
+            const videoId = document.getElementById('m-video-id').value.trim();
+            
+            // Create a direct streaming URL from the Drive ID
+            const driveLink = `https://lh3.googleusercontent.com/u/0/d/${videoId}`;
+
             const movie = {
                 id: Date.now().toString(),
                 title: document.getElementById('m-title').value,
                 genre: document.getElementById('m-genre').value,
                 plot: document.getElementById('m-plot').value,
-                videoFile: document.getElementById('m-video').value,
+                videoFile: driveLink, // Store the generated link
+                videoId: videoId,    // Store raw ID for reference
                 posterLandscape: document.getElementById('m-land').value,
                 posterPortrait: document.getElementById('m-port').value,
                 isFeatured: true
             };
 
-            if(!movie.title || !movie.videoFile) {
-                alert("ERR: CRITICAL_DATA_MISSING (Title/Filename required)");
+            if(!movie.title || !videoId) {
+                alert("ERR: CRITICAL_DATA_MISSING (Title/Video ID required)");
                 return;
             }
 
             currentMovies.push(movie);
             alert(`SUCCESS: ${movie.title} buffered to system queue.`);
             
-            ['m-title', 'm-genre', 'm-plot', 'm-video', 'm-land', 'm-port'].forEach(id => {
+            ['m-title', 'm-genre', 'm-plot', 'm-video-id', 'm-land', 'm-port'].forEach(id => {
                 document.getElementById(id).value = '';
             });
             document.getElementById('land-status').innerText = "Upload local asset";
@@ -395,7 +397,7 @@
                 <div class="bg-black/40 p-3 rounded border border-white/5 relative group overflow-hidden">
                     <button onclick="removeMovie('${m.id}')" class="absolute top-0 right-0 opacity-0 group-hover:opacity-100 bg-red-600 text-[8px] px-2 py-1 z-10">REMOVE</button>
                     <div class="text-[10px] font-bold truncate pr-4">${m.title}</div>
-                    <div class="text-[8px] text-neutral-500 truncate mt-1">${m.videoFile}</div>
+                    <div class="text-[8px] text-neutral-500 truncate mt-1">ID: ${m.videoId}</div>
                 </div>
             `).join('');
         }
