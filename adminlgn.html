@@ -24,7 +24,6 @@
             justify-content: center;
         }
 
-        /* Digital Rain Background */
         canvas {
             position: fixed;
             top: 0;
@@ -152,20 +151,21 @@
         <div class="glitch-text text-white">ARCHITECT</div>
         <p class="text-[10px] text-neutral-500 mb-8 tracking-[0.3em]">IDENTIFICATION REQUIRED <span class="terminal-cursor"></span></p>
 
-        <form id="login-form">
+        <!-- Changed from <form> to <div> to bypass browser security blocks -->
+        <div id="login-container">
             <div class="input-group">
                 <label>System Identifier</label>
-                <input type="text" id="username" class="input-field" placeholder="USER_ID" required autocomplete="off">
+                <input type="text" id="username" class="input-field" placeholder="USER_ID" autocomplete="off">
             </div>
 
             <div class="input-group">
                 <label>Encryption Key</label>
-                <input type="password" id="password" class="input-field" placeholder="••••••••" required>
+                <input type="password" id="password" class="input-field" placeholder="••••••••">
             </div>
 
-            <button type="submit" class="auth-btn">Authorize</button>
+            <button type="button" onclick="performAuth()" class="auth-btn">Authorize</button>
             <div id="error-msg">ACCESS_DENIED: INVALID_CREDENTIALS</div>
-        </form>
+        </div>
 
         <div class="mt-8 pt-6 border-t border-white/5">
             <button onclick="location.href='index.html'" class="text-[9px] text-neutral-600 hover:text-white transition-colors tracking-widest uppercase">← Back to Zenith</button>
@@ -173,10 +173,8 @@
     </div>
 
     <script>
-        // Matrix Rain Animation
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
-
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
@@ -188,52 +186,36 @@
         function draw() {
             ctx.fillStyle = 'rgba(3, 3, 3, 0.05)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
             ctx.font = fontSize + 'px monospace';
-
             for (let i = 0; i < drops.length; i++) {
                 const text = characters.charAt(Math.floor(Math.random() * characters.length));
-                
-                // Mix Red and Blue rain
                 ctx.fillStyle = i % 2 === 0 ? '#ff2d2d' : '#0084ff';
-                
                 ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
             }
         }
-
         setInterval(draw, 35);
 
-        // Authentication Logic
-        const loginForm = document.getElementById('login-form');
-        const errorMsg = document.getElementById('error-msg');
-
-        // SECURITY NOTE: In a real app, this would be server-side.
-        // For your self-hosted version, set your desired credentials here:
         const ADMIN_ID = "admin"; 
         const ADMIN_PASS = "zenith01";
 
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
+        function performAuth() {
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+            const btn = document.querySelector('.auth-btn');
 
             if (user === ADMIN_ID && pass === ADMIN_PASS) {
-                // Success: Visual feedback before redirect
-                document.querySelector('.auth-btn').innerText = "VERIFIED";
-                document.querySelector('.auth-btn').style.background = "#00ff00";
-                document.querySelector('.auth-btn').style.borderColor = "#00ff00";
-                document.querySelector('.auth-btn').style.color = "black";
+                btn.innerText = "VERIFIED";
+                btn.style.background = "#00ff00";
+                btn.style.borderColor = "#00ff00";
+                btn.style.color = "black";
                 
                 setTimeout(() => {
                     location.href = 'admin_artchitechpage.html';
                 }, 1000);
             } else {
-                // Failure
                 errorMsg.style.opacity = '1';
                 document.querySelector('.login-card').animate([
                     { transform: 'translateX(-5px)' },
@@ -242,6 +224,11 @@
                 
                 setTimeout(() => { errorMsg.style.opacity = '0'; }, 3000);
             }
+        }
+
+        // Allow Enter key to trigger login
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performAuth();
         });
 
         window.addEventListener('resize', () => {
