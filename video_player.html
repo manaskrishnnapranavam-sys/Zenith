@@ -25,145 +25,289 @@
             overflow: hidden;
         }
 
-        .player-wrapper {
+        /* --- AMBIENT LIGHTING SYSTEM --- */
+        .ambient-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .light-source {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
+            animation: pulse-light 10s infinite alternate;
+        }
+
+        .source-red {
+            top: -20%;
+            left: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, var(--zenith-red), transparent 60%);
+        }
+
+        .source-blue {
+            bottom: -20%;
+            right: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, var(--zenith-blue), transparent 60%);
+            animation-delay: 2s;
+        }
+
+        @keyframes pulse-light {
+            0% { transform: scale(1); opacity: 0.3; }
+            100% { transform: scale(1.1); opacity: 0.5; }
+        }
+
+        /* --- PLAYER FRAME (The Monitor) --- */
+        .viewport-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px; /* Space for the "frame" look */
+            transition: padding 0.5s ease;
+        }
+
+        .viewport-container.cinema-mode {
+            padding: 0;
+        }
+
+        .glass-frame {
             position: relative;
             width: 100%;
             height: 100%;
-            background: black;
+            max-width: 1600px; /* Constrain slightly for aesthetic */
+            max-height: 90vh;
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            transition: all 0.5s ease;
         }
 
-        /* High-End Iframe Container */
-        .iframe-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 5;
+        .viewport-container.cinema-mode .glass-frame {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 0;
+            border: none;
         }
 
         iframe {
             width: 100%;
             height: 100%;
             border: none;
+            opacity: 0;
+            animation: fade-in 1.5s forwards 0.5s;
         }
 
-        /* Ambient Glow Accents */
-        .ambient-glow {
+        @keyframes fade-in { to { opacity: 1; } }
+
+        /* --- UI OVERLAYS --- */
+        .hud-overlay {
             position: absolute;
             inset: 0;
             pointer-events: none;
-            z-index: 2;
-            opacity: 0.6;
-        }
-
-        .glow-red {
-            position: absolute;
-            top: -10%;
-            left: -10%;
-            width: 50%;
-            height: 50%;
-            background: radial-gradient(circle, rgba(255, 45, 45, 0.15) 0%, transparent 70%);
-            filter: blur(100px);
-        }
-
-        .glow-blue {
-            position: absolute;
-            bottom: -10%;
-            right: -10%;
-            width: 50%;
-            height: 50%;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.1) 0%, transparent 70%);
-            filter: blur(100px);
-        }
-
-        /* UI Overlays */
-        .ui-overlay {
-            position: absolute;
-            inset: 0;
-            z-index: 10;
+            z-index: 20;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
+            justify-content: space-between;
             padding: 40px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 30%);
-            pointer-events: none;
-            transition: opacity 0.5s ease;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.9) 100%);
+            transition: opacity 0.3s ease;
         }
 
-        .player-wrapper:hover .ui-overlay {
-            opacity: 1;
+        .interactive {
+            pointer-events: auto;
         }
 
+        /* Header Elements */
         .heading-font { font-family: 'Syncopate', sans-serif; }
 
-        .back-btn {
-            pointer-events: auto;
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 12px;
+        .back-btn-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
             transition: all 0.3s;
+            backdrop-filter: blur(10px);
         }
 
-        .back-btn:hover {
+        .nav-btn:hover {
             background: var(--zenith-red);
+            border-color: var(--zenith-red);
             transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 45, 45, 0.4);
         }
 
+        /* Bottom Control Deck */
+        .control-deck {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .status-badge {
+            font-size: 10px;
+            color: var(--zenith-blue);
+            background: rgba(0, 210, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 15px;
+        }
+
+        .sys-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #ccc;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sys-btn:hover {
+            background: white;
+            color: black;
+        }
+
+        .sys-btn svg { width: 14px; height: 14px; }
+
+        /* Loader */
         #loader {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 100;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .spinner {
             width: 50px;
             height: 50px;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top: 3px solid var(--zenith-red);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-top: 2px solid var(--zenith-red);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
 
-        @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Hiding UI */
+        .hide-ui .hud-overlay { opacity: 0; }
+        .hide-ui { cursor: none; }
+
     </style>
 </head>
 <body>
 
-    <div class="player-wrapper" id="player-container">
-        <div id="loader"></div>
+    <!-- Ambient Background -->
+    <div class="ambient-layer">
+        <div class="light-source source-red"></div>
+        <div class="light-source source-blue"></div>
+    </div>
+
+    <!-- Main Viewport -->
+    <div class="viewport-container" id="main-container">
         
-        <div class="ambient-glow">
-            <div class="glow-red"></div>
-            <div class="glow-blue"></div>
+        <!-- Loading State -->
+        <div id="loader">
+            <div class="spinner"></div>
+            <div class="text-[10px] tracking-[0.3em] text-neutral-500 animate-pulse">DECRYPTING STREAM</div>
         </div>
 
-        <!-- The Iframe Player -->
-        <div class="iframe-container">
-            <iframe id="zenith-iframe" 
-                    src="" 
-                    allow="autoplay; fullscreen" 
-                    allowfullscreen>
-            </iframe>
+        <!-- The "Screen" -->
+        <div class="glass-frame">
+            <iframe id="zenith-iframe" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
         </div>
 
-        <!-- UI Overlay (Minimalist for Iframe) -->
-        <div class="ui-overlay" id="ui-overlay">
+        <!-- Heads Up Display (HUD) -->
+        <div class="hud-overlay" id="hud">
+            
+            <!-- Top Bar -->
             <div class="flex justify-between items-start">
-                <div class="flex items-center gap-6">
-                    <button onclick="window.history.back()" class="back-btn">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                <div class="back-btn-wrapper interactive">
+                    <button onclick="window.history.back()" class="nav-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                     </button>
                     <div>
-                        <h1 id="video-title" class="heading-font text-2xl font-bold tracking-tighter uppercase text-white">Initializing...</h1>
-                        <p id="video-genre" class="text-[10px] text-red-500 tracking-[0.4em] font-bold mt-1 uppercase"></p>
+                        <h1 id="video-title" class="heading-font text-3xl font-bold tracking-tighter text-white uppercase drop-shadow-lg">---</h1>
+                        <div class="flex items-center gap-3">
+                            <span id="video-genre" class="text-[9px] text-red-500 tracking-[0.2em] font-bold uppercase">---</span>
+                            <span class="w-1 h-1 bg-neutral-600 rounded-full"></span>
+                            <span class="text-[9px] text-neutral-400 tracking-widest">SECURE LINK</span>
+                        </div>
                     </div>
                 </div>
-                <div class="text-right">
-                    <div class="heading-font text-[9px] text-neutral-500 tracking-widest">ZENITH SECURE STREAM</div>
+                
+                <div class="text-right hidden md:block">
+                    <div class="text-[9px] text-neutral-500 tracking-[0.2em]">ZENITH OS v4.2</div>
+                    <div class="text-[9px] text-neutral-600 tracking-widest mt-1" id="clock">00:00:00</div>
                 </div>
             </div>
+
+            <!-- Bottom Deck -->
+            <div class="control-deck">
+                <div class="hidden md:block">
+                    <div class="status-badge">STREAM OPTIMIZED</div>
+                    <p class="text-[9px] text-neutral-600 mt-1 max-w-[200px]">Use internal controls for playback. System wrappers active.</p>
+                </div>
+
+                <div class="action-bar interactive">
+                    <button class="sys-btn" onclick="toggleCinemaMode()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                        Cinema Mode
+                    </button>
+                    <button class="sys-btn" onclick="reloadFrame()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/></svg>
+                        Reload
+                    </button>
+                    <button class="sys-btn" onclick="copyLink()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                        Share
+                    </button>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -172,38 +316,80 @@
         const movieId = urlParams.get('id');
         const iframe = document.getElementById('zenith-iframe');
         const loader = document.getElementById('loader');
+        const container = document.getElementById('main-container');
+
+        // Clock
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString();
+        }, 1000);
 
         window.onload = () => {
+            if (typeof movieData === 'undefined') {
+                alert("Database Error: movies.js not found");
+                return;
+            }
+
             const movie = movieData.find(m => m.id === movieId);
             
             if (movie) {
                 document.getElementById('video-title').innerText = movie.title;
                 document.getElementById('video-genre').innerText = movie.genre;
                 
-                // Set the iframe source
+                // Set source
                 iframe.src = movie.videoFile;
                 
-                // Hide loader after a bit (iframes don't have a reliable 'load' for drive previews)
+                // Simulate buffering "Decrypting" phase
                 setTimeout(() => {
                     loader.style.opacity = '0';
                     setTimeout(() => loader.style.display = 'none', 500);
-                }, 2000);
+                }, 2500);
             } else {
                 document.getElementById('video-title').innerText = "ASSET NOT FOUND";
                 loader.style.display = 'none';
             }
         };
 
-        // UI Auto-hide
+        // --- FEATURES ---
+
+        // 1. Cinema Mode: Removes padding and hides non-essential UI to focus on the iframe
+        function toggleCinemaMode() {
+            container.classList.toggle('cinema-mode');
+            const hud = document.getElementById('hud');
+            
+            // Optional: Dim ambient light in cinema mode
+            document.querySelector('.ambient-layer').style.opacity = 
+                container.classList.contains('cinema-mode') ? '0.1' : '1';
+        }
+
+        // 2. Reload: Helpful for iframe glitches
+        function reloadFrame() {
+            iframe.src = iframe.src;
+            loader.style.display = 'flex';
+            loader.style.opacity = '1';
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }, 1500);
+        }
+
+        // 3. Copy Link
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href);
+            alert("SECURE LINK COPIED TO CLIPBOARD");
+        }
+
+        // 4. Auto-Hide UI Logic
         let idleTimer;
-        const overlay = document.getElementById('ui-overlay');
         document.addEventListener('mousemove', () => {
-            overlay.style.opacity = '1';
+            document.body.classList.remove('hide-ui');
             clearTimeout(idleTimer);
             idleTimer = setTimeout(() => {
-                overlay.style.opacity = '0';
-            }, 3000);
+                // Only hide if we haven't clicked anything recently
+                document.body.classList.add('hide-ui');
+            }, 3500);
         });
+
     </script>
 </body>
 </html>
