@@ -278,7 +278,7 @@
         </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- Main App Content -->
     <div id="main-app" class="opacity-0 transition-opacity duration-[1500ms]">
         
         <nav id="navbar" class="fixed top-0 w-full z-50 px-12 py-5 flex justify-between items-center transition-all duration-500">
@@ -327,6 +327,7 @@
                 <div class="grid grid-cols-3 gap-10">
                     <div class="col-span-2">
                         <p id="modal-plot" class="text-neutral-300 text-lg leading-relaxed mb-8"></p>
+                        <!-- Play button redirects to the dedicated player page -->
                         <button id="modal-play-btn" class="bg-white text-black px-12 py-4 rounded-sm font-bold text-xl hover:bg-red-600 hover:text-white transition-all transform hover:scale-105">PLAY NOW</button>
                     </div>
                 </div>
@@ -369,7 +370,9 @@
                         <h1 class="text-7xl font-bold mb-4 tracking-tighter leading-tight uppercase">${movie.title}</h1>
                         <p class="text-lg text-neutral-200 mb-8 leading-relaxed max-w-xl">${movie.plot}</p>
                         <div class="flex gap-4">
-                            <button class="bg-white text-black px-12 py-3.5 rounded-sm font-bold hover:bg-neutral-200 transition-all" onclick="showDetails('${movie.id}')">View Details</button>
+                            <!-- Direct Play from Hero -->
+                            <button class="bg-white text-black px-12 py-3.5 rounded-sm font-bold hover:bg-red-600 hover:text-white transition-all" onclick="redirectToPlayer('${movie.id}')">Experience Now</button>
+                            <button class="bg-black/50 backdrop-blur-md text-white border border-white/20 px-12 py-3.5 rounded-sm font-bold hover:bg-white hover:text-black transition-all" onclick="showDetails('${movie.id}')">View Details</button>
                         </div>
                     </div>
                 </div>
@@ -398,7 +401,9 @@
             document.getElementById('modal-title').innerText = movie.title;
             document.getElementById('modal-genre').innerText = movie.genre;
             document.getElementById('modal-plot').innerText = movie.plot;
-            document.getElementById('modal-play-btn').onclick = () => playMovie(movie.id);
+            
+            // Set the play button to trigger the redirection
+            document.getElementById('modal-play-btn').onclick = () => redirectToPlayer(movie.id);
             
             const modal = document.getElementById('details-modal');
             modal.style.display = 'flex';
@@ -408,6 +413,14 @@
         function closeDetails(e) {
             document.getElementById('details-modal').style.display = 'none';
             document.body.style.overflow = 'auto';
+        }
+
+        /**
+         * REDIRECTION LOGIC
+         * Navigates to the video_player.html with the movie ID as a URL parameter
+         */
+        function redirectToPlayer(movieId) {
+            window.location.href = `video_player.html?id=${movieId}`;
         }
 
         // Hero Sliding Logic
@@ -436,12 +449,6 @@
             const nav = document.getElementById('navbar');
             window.scrollY > 50 ? nav.classList.add('nav-scrolled') : nav.classList.remove('nav-scrolled');
         });
-
-        function playMovie(id) {
-            // Future logic for playback page
-            console.log("Playing movie ID:", id);
-            location.href = `playback.html?id=${id}`;
-        }
     </script>
 </body>
 </html>
