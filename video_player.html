@@ -73,7 +73,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px; /* Space for the "frame" look */
+            padding: 20px;
             transition: padding 0.5s ease;
         }
 
@@ -85,7 +85,7 @@
             position: relative;
             width: 100%;
             height: 100%;
-            max-width: 1600px; /* Constrain slightly for aesthetic */
+            max-width: 1600px;
             max-height: 90vh;
             background: #000;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -126,30 +126,19 @@
             transition: opacity 0.3s ease;
         }
 
-        .interactive {
-            pointer-events: auto;
-        }
+        .interactive { pointer-events: auto; }
 
         /* Header Elements */
         .heading-font { font-family: 'Syncopate', sans-serif; }
 
-        .back-btn-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
+        .back-btn-wrapper { display: flex; align-items: center; gap: 20px; }
 
         .nav-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            width: 40px; height: 40px; border-radius: 50%;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s;
             backdrop-filter: blur(10px);
         }
 
@@ -179,10 +168,7 @@
             display: inline-block;
         }
 
-        .action-bar {
-            display: flex;
-            gap: 15px;
-        }
+        .action-bar { display: flex; gap: 15px; }
 
         .sys-btn {
             background: rgba(255,255,255,0.05);
@@ -196,34 +182,26 @@
             cursor: pointer;
             transition: all 0.3s;
             backdrop-filter: blur(5px);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            display: flex; align-items: center; gap: 8px;
         }
 
-        .sys-btn:hover {
-            background: white;
-            color: black;
-        }
+        .sys-btn:hover { background: white; color: black; }
+        .sys-btn.finish-btn:hover { background: var(--zenith-red); color: white; border-color: var(--zenith-red); }
 
         .sys-btn svg { width: 14px; height: 14px; }
 
         /* Loader */
         #loader {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             z-index: 50;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
+            display: flex; flex-direction: column;
+            align-items: center; gap: 15px;
         }
 
         .spinner {
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             border: 2px solid rgba(255,255,255,0.1);
             border-top: 2px solid var(--zenith-red);
             border-radius: 50%;
@@ -232,7 +210,60 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Hiding UI */
+        /* END SCREEN OVERLAY */
+        #end-screen {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(20px);
+            z-index: 60;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fade-up 0.4s ease;
+        }
+
+        @keyframes fade-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .rating-box {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .rate-btn {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s;
+        }
+
+        .rate-btn:hover { transform: scale(1.1); background: white; color: black; }
+        .rate-btn svg { width: 24px; height: 24px; }
+
+        .next-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%; max-width: 400px;
+            display: flex; gap: 20px; align-items: center;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .next-card:hover { border-color: var(--zenith-blue); background: rgba(255,255,255,0.08); }
+
+        .progress-line {
+            position: absolute; bottom: 0; left: 0; height: 3px; background: var(--zenith-blue);
+            width: 0%; transition: width 10s linear;
+        }
+
         .hide-ui .hud-overlay { opacity: 0; }
         .hide-ui { cursor: none; }
 
@@ -260,6 +291,43 @@
             <iframe id="zenith-iframe" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
         </div>
 
+        <!-- END SCREEN (Up Next / Rating) -->
+        <div id="end-screen">
+            <!-- Close / Return to Home Button -->
+            <button onclick="goHome()" class="absolute top-10 right-10 flex items-center gap-2 text-neutral-500 hover:text-white transition-colors group">
+                <span class="text-[10px] font-bold uppercase tracking-widest group-hover:text-red-500 transition-colors">Return to Base</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+
+            <h2 class="heading-font text-2xl font-bold mb-8">DID YOU LIKE THIS?</h2>
+            
+            <div class="rating-box">
+                <button class="rate-btn" onclick="submitRating('like')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+                </button>
+                <button class="rate-btn" onclick="submitRating('dislike')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+                </button>
+            </div>
+
+            <div class="text-[10px] tracking-[0.3em] text-neutral-500 mb-4 uppercase">Up Next In Queue</div>
+            
+            <div class="next-card" onclick="playNext()">
+                <!-- Fetches the Portrait Poster from JS -->
+                <img id="next-poster" src="" class="w-16 h-24 object-cover rounded bg-neutral-800">
+                <div>
+                    <div class="text-[9px] text-blue-400 font-bold tracking-widest uppercase mb-1">Coming Up</div>
+                    <div id="next-title" class="heading-font text-lg font-bold leading-tight">---</div>
+                </div>
+                <div class="progress-line" id="auto-play-timer"></div>
+            </div>
+            
+            <div class="flex gap-4 mt-8">
+                <button onclick="playNext()" class="px-8 py-3 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all">Play Now</button>
+                <button onclick="goHome()" class="px-8 py-3 border border-white/20 text-white text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all">Home Screen</button>
+            </div>
+        </div>
+
         <!-- Heads Up Display (HUD) -->
         <div class="hud-overlay" id="hud">
             
@@ -273,8 +341,6 @@
                         <h1 id="video-title" class="heading-font text-3xl font-bold tracking-tighter text-white uppercase drop-shadow-lg">---</h1>
                         <div class="flex items-center gap-3">
                             <span id="video-genre" class="text-[9px] text-red-500 tracking-[0.2em] font-bold uppercase">---</span>
-                            <span class="w-1 h-1 bg-neutral-600 rounded-full"></span>
-                            <span class="text-[9px] text-neutral-400 tracking-widest">SECURE LINK</span>
                         </div>
                     </div>
                 </div>
@@ -288,22 +354,22 @@
             <!-- Bottom Deck -->
             <div class="control-deck">
                 <div class="hidden md:block">
-                    <div class="status-badge">STREAM OPTIMIZED</div>
-                    <p class="text-[9px] text-neutral-600 mt-1 max-w-[200px]">Use internal controls for playback. System wrappers active.</p>
+                    <div class="status-badge">GOOGLE DRIVE PROXY</div>
+                    <p class="text-[9px] text-neutral-600 mt-1 max-w-[200px]">External controls restricted. Use "Finish" to log watch data.</p>
                 </div>
 
                 <div class="action-bar interactive">
                     <button class="sys-btn" onclick="toggleCinemaMode()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-                        Cinema Mode
+                        Focus
                     </button>
                     <button class="sys-btn" onclick="reloadFrame()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/></svg>
-                        Reload
+                        Refresh
                     </button>
-                    <button class="sys-btn" onclick="copyLink()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-                        Share
+                    <button class="sys-btn finish-btn" onclick="triggerEndScreen()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        FINISH STREAM
                     </button>
                 </div>
             </div>
@@ -317,6 +383,7 @@
         const iframe = document.getElementById('zenith-iframe');
         const loader = document.getElementById('loader');
         const container = document.getElementById('main-container');
+        let nextMovieId = null;
 
         // Clock
         setInterval(() => {
@@ -325,44 +392,41 @@
         }, 1000);
 
         window.onload = () => {
-            if (typeof movieData === 'undefined') {
-                alert("Database Error: movies.js not found");
-                return;
-            }
+            if (typeof movieData === 'undefined') return alert("Database Error");
 
             const movie = movieData.find(m => m.id === movieId);
+            const currentIndex = movieData.findIndex(m => m.id === movieId);
             
+            // Calculate Next Movie
+            const nextIndex = (currentIndex + 1) % movieData.length;
+            const nextMovie = movieData[nextIndex];
+            nextMovieId = nextMovie.id;
+
+            // Setup Next Movie UI
+            document.getElementById('next-title').innerText = nextMovie.title;
+            // Ensures we use the Portrait Poster from the database
+            document.getElementById('next-poster').src = nextMovie.posterPortrait;
+
             if (movie) {
                 document.getElementById('video-title').innerText = movie.title;
                 document.getElementById('video-genre').innerText = movie.genre;
-                
-                // Set source
                 iframe.src = movie.videoFile;
                 
-                // Simulate buffering "Decrypting" phase
                 setTimeout(() => {
                     loader.style.opacity = '0';
                     setTimeout(() => loader.style.display = 'none', 500);
                 }, 2500);
-            } else {
-                document.getElementById('video-title').innerText = "ASSET NOT FOUND";
-                loader.style.display = 'none';
             }
         };
 
         // --- FEATURES ---
 
-        // 1. Cinema Mode: Removes padding and hides non-essential UI to focus on the iframe
         function toggleCinemaMode() {
             container.classList.toggle('cinema-mode');
-            const hud = document.getElementById('hud');
-            
-            // Optional: Dim ambient light in cinema mode
             document.querySelector('.ambient-layer').style.opacity = 
                 container.classList.contains('cinema-mode') ? '0.1' : '1';
         }
 
-        // 2. Reload: Helpful for iframe glitches
         function reloadFrame() {
             iframe.src = iframe.src;
             loader.style.display = 'flex';
@@ -373,19 +437,56 @@
             }, 1500);
         }
 
-        // 3. Copy Link
-        function copyLink() {
-            navigator.clipboard.writeText(window.location.href);
-            alert("SECURE LINK COPIED TO CLIPBOARD");
+        function triggerEndScreen() {
+            // Hide the HUD and show End Screen
+            document.getElementById('hud').style.display = 'none';
+            document.getElementById('end-screen').style.display = 'flex';
+            
+            // Start Progress Bar for Auto Play
+            setTimeout(() => {
+                document.getElementById('auto-play-timer').style.width = '100%';
+            }, 100);
+
+            // Auto Redirect after 10s
+            setTimeout(() => {
+                playNext();
+            }, 10000);
         }
 
-        // 4. Auto-Hide UI Logic
+        function submitRating(type) {
+            // Simulate saving rating
+            console.log(`User rated ${movieId}: ${type}`);
+            
+            // Flash button color
+            const btn = event.currentTarget;
+            btn.style.background = type === 'like' ? '#00ff00' : '#ff0000';
+            btn.style.color = 'black';
+            
+            // Go to next immediately
+            setTimeout(playNext, 500);
+        }
+
+        function playNext() {
+            if (nextMovieId) {
+                window.location.href = `video_player.html?id=${nextMovieId}`;
+            }
+        }
+
+        function goHome() {
+            // Smart Redirect: If logged in, go to portal. If not, go to home.
+            if (localStorage.getItem('zenith_session_user')) {
+                window.location.href = 'norm_viewerpage.html';
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Auto-Hide UI Logic
         let idleTimer;
         document.addEventListener('mousemove', () => {
             document.body.classList.remove('hide-ui');
             clearTimeout(idleTimer);
             idleTimer = setTimeout(() => {
-                // Only hide if we haven't clicked anything recently
                 document.body.classList.add('hide-ui');
             }, 3500);
         });
