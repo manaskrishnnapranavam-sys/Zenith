@@ -206,7 +206,7 @@
     <main>
         <!-- Tab: Release Forge -->
         <div id="releases-tab">
-            <h1 class="text-3xl font-bold mb-2">Release Forge</h1>
+            <h1 class="text-3xl font-bold mb-2 text-white">Release Forge</h1>
             <p class="text-neutral-500 mb-10">Inject new cinematic containers into the global stream.</p>
 
             <div class="grid grid-cols-2 gap-10">
@@ -233,8 +233,8 @@
                     <div class="space-y-4">
                         <div>
                             <label class="text-[10px] uppercase tracking-widest text-neutral-500">Video Link / Drive URL</label>
-                            <input type="text" id="m-video-url" class="input-box" placeholder="Paste full video or Drive link here">
-                            <p class="text-[9px] text-neutral-600 mt-1 uppercase tracking-tighter">Tip: Paste any link. We will format it automatically.</p>
+                            <input type="text" id="m-video-url" class="input-box" placeholder="Paste full Drive sharing link">
+                            <p class="text-[9px] text-neutral-600 mt-1 uppercase tracking-tighter">Will be automatically converted to Iframe-Ready preview format.</p>
                         </div>
                         
                         <div>
@@ -262,7 +262,7 @@
         <!-- Tab: Registry Edit -->
         <div id="edit-tab" class="hidden">
             <h1 class="text-3xl font-bold mb-2">Registry Edit</h1>
-            <p class="text-neutral-500 mb-10">Modify or audit existing publications in the current session.</p>
+            <p class="text-neutral-500 mb-10">Lifetime archive of all cinematic publications on this device.</p>
 
             <div class="form-card">
                 <table id="movie-registry-table">
@@ -303,8 +303,8 @@
         <div id="database-tab" class="hidden">
             <div class="flex justify-between items-center mb-10">
                 <div>
-                    <h1 class="text-3xl font-bold mb-2">System Database</h1>
-                    <p class="text-neutral-500">Review and export the final production manifest.</p>
+                    <h1 class="text-3xl font-bold mb-2 text-white">System Database</h1>
+                    <p class="text-neutral-500">Review and export the lifetime production manifest.</p>
                 </div>
                 <button onclick="downloadJS()" class="btn-primary bg-blue-600 hover:bg-blue-500 flex items-center gap-2">
                     EXPORT MOVIES.JS
@@ -337,7 +337,11 @@
     </div>
 
     <script>
-        let movies = [];
+        let movies = JSON.parse(localStorage.getItem('zenith_lifetime_movies') || '[]');
+
+        function saveToLifetime() {
+            localStorage.setItem('zenith_lifetime_movies', JSON.stringify(movies));
+        }
 
         function switchTab(tabId) {
             document.querySelectorAll('main > div').forEach(div => div.classList.add('hidden'));
@@ -350,14 +354,16 @@
             if(tabId === 'database') renderDatabase();
         }
 
-        function formatDriveUrl(inputUrl) {
-            // Helper to extract ID and format it for direct streaming if it's a Drive link
+        /**
+         * Converts any Drive link into the robust /preview iframe format.
+         */
+        function convertToPreviewUrl(inputUrl) {
             const driveIdRegex = /(?:id=|\/d\/|folders\/)([a-zA-Z0-9_-]{25,})/;
             const match = inputUrl.match(driveIdRegex);
             if (match && match[1]) {
-                return `https://docs.google.com/uc?export=download&id=${match[1]}`;
+                return `https://drive.google.com/file/d/${match[1]}/preview`;
             }
-            return inputUrl; // Return original if not a Drive link
+            return inputUrl;
         }
 
         function handleFileUpload(input, targetId, statusId) {
@@ -378,21 +384,23 @@
             const rawUrl = document.getElementById('m-video-url').value.trim();
             if(!rawUrl || !document.getElementById('m-title').value) return alert("Missing Critical Data");
 
-            const finalUrl = formatDriveUrl(rawUrl);
+            const previewUrl = convertToPreviewUrl(rawUrl);
 
             const movie = {
-                id: Date.now().toString(),
+                id: "ZEN-" + Date.now(),
                 title: document.getElementById('m-title').value,
                 genre: document.getElementById('m-genre').value,
                 plot: document.getElementById('m-plot').value,
-                videoFile: finalUrl,
+                videoFile: previewUrl,
                 posterLandscape: document.getElementById('m-land').value,
                 posterPortrait: document.getElementById('m-port').value,
-                isFeatured: true
+                isFeatured: true,
+                timestamp: new Date().toISOString()
             };
 
             movies.push(movie);
-            alert("RECORD AUTHORIZED");
+            saveToLifetime();
+            alert("RECORD AUTHORIZED PERMANENTLY");
             
             ['m-title', 'm-genre', 'm-plot', 'm-video-url', 'm-land', 'm-port'].forEach(id => document.getElementById(id).value = '');
             ['land-status', 'port-status'].forEach(id => document.getElementById(id).innerText = "Click to encode image");
@@ -438,16 +446,20 @@
                 title: document.getElementById('edit-title').value,
                 genre: document.getElementById('edit-genre').value,
                 plot: document.getElementById('edit-plot').value,
-                videoFile: formatDriveUrl(rawUrl)
+                videoFile: convertToPreviewUrl(rawUrl)
             };
 
+            saveToLifetime();
             closeModal();
             renderRegistry();
         }
 
         function deleteMovie(id) {
-            movies = movies.filter(m => m.id !== id);
-            renderRegistry();
+            if(confirm("Confirm deletion from lifetime registry?")) {
+                movies = movies.filter(m => m.id !== id);
+                saveToLifetime();
+                renderRegistry();
+            }
         }
 
         function renderViewers() {
@@ -477,6 +489,10 @@
             a.download = 'movies.js';
             a.click();
         }
+
+        window.onload = () => {
+            renderRegistry();
+        };
     </script>
 </body>
 </html>
