@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZENITH | The Architect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --sidebar: #0a0a0a;
+            --accent: #ff2d2d;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .heading-font { font-family: 'Syncopate', sans-serif; }
+        .mono-font { font-family: 'Fira Code', monospace; }
+
+        /* Sidebar */
+        aside {
+            width: 280px;
+            background: var(--sidebar);
+            border-right: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+        }
+
+        /* Profile Section */
+        .admin-profile {
+            padding: 20px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(45deg, var(--accent), #4a00e0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-family: 'Syncopate';
+            font-size: 18px;
+            box-shadow: 0 0 15px rgba(255, 45, 45, 0.3);
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 45, 45, 0.1);
+            color: var(--accent);
+        }
+
+        /* Content Area */
+        main {
+            flex: 1;
+            padding: 50px;
+            overflow-y: auto;
+            background: radial-gradient(circle at top right, #1a0505 0%, transparent 40%);
+        }
+
+        .form-card {
+            background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 30px;
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+        }
+
+        .input-box {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 12px;
+            width: 100%;
+            color: white;
+            outline: none;
+            margin-top: 6px;
+            font-size: 13px;
+        }
+
+        .input-box:focus { border-color: var(--accent); }
+
+        .file-upload-wrapper {
+            position: relative;
+            margin-top: 6px;
+        }
+
+        .file-input-custom {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-label {
+            display: block;
+            background: rgba(255,255,255,0.05);
+            border: 1px dashed rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            font-size: 11px;
+            color: #aaa;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        table { width: 100%; text-align: left; }
+        th { padding: 15px; color: #666; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+
+        #js-output {
+            background: #000;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 12px;
+            max-height: 300px;
+            overflow: auto;
+            border: 1px dashed #444;
+        }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="heading-font text-xl mb-8 tracking-tighter text-white">ZENITH</div>
+        
+        <!-- Admin Profile Section -->
+        <div class="admin-profile">
+            <div class="profile-avatar">Z</div>
+            <div>
+                <div class="text-[12px] font-bold tracking-wide">ARCHITECT</div>
+                <div class="text-[9px] text-neutral-500 uppercase tracking-widest">Root Admin</div>
+            </div>
+        </div>
+
+        <nav>
+            <div class="nav-item active" onclick="switchTab('releases')">
+                <span class="w-1.5 h-1.5 rounded-full bg-current"></span> RELEASE FORGE
+            </div>
+            <div class="nav-item" onclick="switchTab('viewers')">
+                <span class="w-1.5 h-1.5 rounded-full bg-current"></span> VIEWER REGISTRY
+            </div>
+            <div class="nav-item" onclick="switchTab('database')">
+                <span class="w-1.5 h-1.5 rounded-full bg-current"></span> SYSTEM DATABASE
+            </div>
+        </nav>
+        
+        <div class="mt-auto">
+            <button onclick="location.href='index.html'" class="text-[10px] text-neutral-600 hover:text-white tracking-widest uppercase transition-colors">← TERMINATE SESSION</button>
+        </div>
+    </aside>
+
+    <main>
+        <!-- Tab: Release Forge -->
+        <div id="releases-tab">
+            <h1 class="text-3xl font-bold mb-2">Release Forge</h1>
+            <p class="text-neutral-500 mb-10">Construct and deploy cinematic containers to the Zenith network.</p>
+
+            <div class="grid grid-cols-2 gap-10">
+                <div class="form-card">
+                    <h2 class="text-lg font-bold mb-6 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-red-600 rounded-full"></span> Production Info
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Project Title</label>
+                            <input type="text" id="m-title" class="input-box" placeholder="e.g. NEON SOUL">
+                        </div>
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Genre Tags</label>
+                            <input type="text" id="m-genre" class="input-box" placeholder="e.g. Cyberpunk / Noir">
+                        </div>
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Narrative Summary</label>
+                            <textarea id="m-plot" class="input-box h-32" placeholder="Input storyline data..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <h2 class="text-lg font-bold mb-6 flex items-center gap-2">
+                        <span class="w-2 h-2 bg-blue-600 rounded-full"></span> Linkage & Assets
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Source MP4 Filename</label>
+                            <input type="text" id="m-video" class="input-box" placeholder="e.g. movie_id_88.mp4">
+                        </div>
+                        
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Landscape Capture (16:9)</label>
+                            <div class="file-upload-wrapper">
+                                <div id="land-status" class="file-label">Upload local asset</div>
+                                <input type="file" class="file-input-custom" accept="image/*" onchange="handleFileUpload(this, 'm-land', 'land-status')">
+                            </div>
+                            <input type="text" id="m-land" class="input-box" placeholder="Generated Encoded String">
+                        </div>
+
+                        <div>
+                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Portrait Capture (9:16)</label>
+                            <div class="file-upload-wrapper">
+                                <div id="port-status" class="file-label">Upload local asset</div>
+                                <input type="file" class="file-input-custom" accept="image/*" onchange="handleFileUpload(this, 'm-port', 'port-status')">
+                            </div>
+                            <input type="text" id="m-port" class="input-box" placeholder="Generated Encoded String">
+                        </div>
+
+                        <div class="pt-4">
+                            <button onclick="addMovie()" class="btn-primary w-full uppercase tracking-widest text-xs">Authorize Publication</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Viewers -->
+        <div id="viewers-tab" class="hidden">
+            <div class="flex justify-between items-end mb-10">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">Viewer Registry</h1>
+                    <p class="text-neutral-500">Real-time data synchronization with User Portal database.</p>
+                </div>
+                <div id="sync-status" class="text-[10px] text-green-500 animate-pulse">● LIVE SYNC ACTIVE</div>
+            </div>
+            
+            <div class="form-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>IDENTIFIER</th>
+                            <th>ACCESS KEY</th>
+                            <th>LOG DATE</th>
+                            <th>PERMISSION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="viewer-list">
+                        <!-- Data pulled from zenith_users -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab: System Database -->
+        <div id="database-tab" class="hidden">
+            <div class="flex justify-between items-center mb-10">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">System Database</h1>
+                    <p class="text-neutral-500">Compile local queue into static movies.js injection file.</p>
+                </div>
+                <button onclick="downloadJS()" class="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-lg font-bold flex items-center gap-2 transition-all">
+                    GENERATE & EXPORT
+                </button>
+            </div>
+
+            <div class="form-card">
+                <h3 class="text-sm font-bold mb-4 mono-font text-blue-400">Preview: movies.js</h3>
+                <pre id="js-output" class="mono-font text-neutral-400"></pre>
+            </div>
+
+            <div id="queue-container" class="mt-10">
+                <h3 class="text-lg font-bold mb-4">Pending Publication Queue</h3>
+                <div id="queue-list" class="grid grid-cols-4 gap-4"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentMovies = [];
+
+        function switchTab(tabId) {
+            document.querySelectorAll('main > div').forEach(div => div.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById(tabId + '-tab').classList.remove('hidden');
+            event.currentTarget.classList.add('active');
+
+            if(tabId === 'viewers') loadViewers();
+            if(tabId === 'database') updateJSPreview();
+        }
+
+        function handleFileUpload(input, targetId, statusId) {
+            const file = input.files[0];
+            const statusLabel = document.getElementById(statusId);
+            const targetInput = document.getElementById(targetId);
+
+            if (file) {
+                statusLabel.innerText = "Encoding " + file.name + "...";
+                statusLabel.style.color = "#00ffaa";
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    targetInput.value = e.target.result;
+                    statusLabel.innerText = "Encoding Successful";
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Logic to fetch from normal_uslgn.html's storage
+        function loadViewers() {
+            // matches the key 'zenith_users' from normal_uslgn.html
+            const users = JSON.parse(localStorage.getItem('zenith_users') || '[]');
+            const list = document.getElementById('viewer-list');
+            
+            // Add a mock 'default' viewer to match earlier context
+            const allUsers = [{username: 'viewer', password: 'zenith_pass'}, ...users];
+
+            list.innerHTML = allUsers.map(u => `
+                <tr>
+                    <td class="mono-font font-bold">${u.username}</td>
+                    <td class="text-neutral-600 mono-font">••••••••</td>
+                    <td class="text-neutral-500 text-xs">${new Date().toLocaleDateString()}</td>
+                    <td><span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 text-[9px] font-bold tracking-tighter uppercase border border-blue-500/20">Authorized Viewer</span></td>
+                </tr>
+            `).join('');
+            
+            if(allUsers.length === 0) {
+                list.innerHTML = '<tr><td colspan="4" class="text-center py-20 text-neutral-600 tracking-widest text-xs uppercase">Registry Null: No users identified</td></tr>';
+            }
+        }
+
+        function addMovie() {
+            const movie = {
+                id: Date.now().toString(),
+                title: document.getElementById('m-title').value,
+                genre: document.getElementById('m-genre').value,
+                plot: document.getElementById('m-plot').value,
+                videoFile: document.getElementById('m-video').value,
+                posterLandscape: document.getElementById('m-land').value,
+                posterPortrait: document.getElementById('m-port').value,
+                isFeatured: true
+            };
+
+            if(!movie.title || !movie.videoFile) {
+                alert("ERR: CRITICAL_DATA_MISSING (Title/Filename required)");
+                return;
+            }
+
+            currentMovies.push(movie);
+            alert(`SUCCESS: ${movie.title} buffered to system queue.`);
+            
+            ['m-title', 'm-genre', 'm-plot', 'm-video', 'm-land', 'm-port'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('land-status').innerText = "Upload local asset";
+            document.getElementById('land-status').style.color = "#aaa";
+            document.getElementById('port-status').innerText = "Upload local asset";
+            document.getElementById('port-status').style.color = "#aaa";
+        }
+
+        function updateJSPreview() {
+            const code = `const movieData = ${JSON.stringify(currentMovies, null, 4)};\n\nif (typeof module !== 'undefined') { module.exports = movieData; }`;
+            document.getElementById('js-output').textContent = code;
+
+            const queue = document.getElementById('queue-list');
+            queue.innerHTML = currentMovies.map(m => `
+                <div class="bg-black/40 p-3 rounded border border-white/5 relative group overflow-hidden">
+                    <button onclick="removeMovie('${m.id}')" class="absolute top-0 right-0 opacity-0 group-hover:opacity-100 bg-red-600 text-[8px] px-2 py-1 z-10">REMOVE</button>
+                    <div class="text-[10px] font-bold truncate pr-4">${m.title}</div>
+                    <div class="text-[8px] text-neutral-500 truncate mt-1">${m.videoFile}</div>
+                </div>
+            `).join('');
+        }
+
+        function removeMovie(id) {
+            currentMovies = currentMovies.filter(m => m.id !== id);
+            updateJSPreview();
+        }
+
+        function downloadJS() {
+            if(currentMovies.length === 0) {
+                alert("ERR: QUEUE_EMPTY");
+                return;
+            }
+            const code = `const movieData = ${JSON.stringify(currentMovies, null, 4)};\n\nif (typeof module !== 'undefined') { module.exports = movieData; }`;
+            const blob = new Blob([code], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'movies.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
