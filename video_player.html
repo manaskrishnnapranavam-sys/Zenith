@@ -25,7 +25,6 @@
             overflow: hidden;
         }
 
-        /* Video Container */
         .player-container {
             position: relative;
             width: 100%;
@@ -34,7 +33,7 @@
             align-items: center;
             justify-content: center;
             background: black;
-            cursor: none; /* Hidden by default, shown on move */
+            cursor: none;
         }
 
         .player-container.show-cursor {
@@ -47,7 +46,6 @@
             object-fit: contain;
         }
 
-        /* Ambient Glow Accents */
         .ambient-glow {
             position: absolute;
             inset: 0;
@@ -76,7 +74,6 @@
             filter: blur(80px);
         }
 
-        /* UI Overlays */
         .ui-overlay {
             position: absolute;
             inset: 0;
@@ -94,7 +91,6 @@
             opacity: 1;
         }
 
-        /* Motion Blur Style Controls */
         .glass-panel {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(25px) saturate(180%);
@@ -105,7 +101,6 @@
 
         .heading-font { font-family: 'Syncopate', sans-serif; }
 
-        /* Progress Bar */
         .progress-container {
             width: 100%;
             height: 6px;
@@ -128,22 +123,6 @@
             box-shadow: 0 0 15px rgba(255, 45, 45, 0.5);
         }
 
-        .progress-handle {
-            position: absolute;
-            right: -6px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 14px;
-            height: 14px;
-            background: white;
-            border-radius: 50%;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .progress-container:hover .progress-handle { opacity: 1; }
-
-        /* Controls Row */
         .controls-row {
             display: flex;
             align-items: center;
@@ -168,45 +147,12 @@
             color: var(--zenith-red);
         }
 
-        .control-btn svg { width: 24px; height: 24px; }
-
         .volume-slider {
             width: 80px;
             accent-color: var(--zenith-red);
             cursor: pointer;
         }
 
-        /* Speed/Quality Settings Menu */
-        .settings-menu {
-            position: absolute;
-            bottom: 120px;
-            right: 40px;
-            width: 200px;
-            background: rgba(10,10,10,0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            padding: 10px;
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            z-index: 100;
-        }
-
-        .settings-item {
-            padding: 10px;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .settings-item:hover { background: rgba(255,255,255,0.05); color: var(--zenith-red); }
-
-        /* Loader */
         #loader {
             position: absolute;
             z-index: 50;
@@ -219,7 +165,6 @@
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
     </style>
 </head>
 <body>
@@ -232,44 +177,36 @@
             <div class="glow-blue"></div>
         </div>
 
-        <video id="main-video" poster="">
-            <!-- Video source added via JS -->
-        </video>
+        <video id="main-video" playsinline></video>
 
-        <!-- UI Overlay -->
         <div class="ui-overlay" id="ui-overlay">
-            <!-- Top Bar -->
             <div class="flex justify-between items-start">
                 <div>
                     <button onclick="window.history.back()" class="control-btn mb-4">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                     </button>
                     <h1 id="video-title" class="heading-font text-2xl font-bold tracking-tighter uppercase">Initializing...</h1>
                     <p id="video-genre" class="text-xs text-red-500 tracking-[0.3em] font-bold mt-1 uppercase"></p>
                 </div>
                 <div class="text-right">
-                    <div class="heading-font text-[10px] text-neutral-500 tracking-widest">ZENITH HIGH-FIDELITY</div>
+                    <div class="heading-font text-[10px] text-neutral-500 tracking-widest">ZENITH STREAM v2.0</div>
                 </div>
             </div>
 
-            <!-- Bottom Controls -->
             <div class="w-full">
-                <!-- Progress -->
                 <div class="progress-container" id="progress-container">
-                    <div class="progress-bar" id="progress-bar">
-                        <div class="progress-handle"></div>
-                    </div>
+                    <div class="progress-bar" id="progress-bar"></div>
                 </div>
 
                 <div class="glass-panel controls-row">
                     <div class="flex items-center gap-6">
                         <button class="control-btn" onclick="togglePlay()" id="play-btn">
-                            <svg id="play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            <svg id="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                         </button>
                         
                         <div class="flex items-center gap-3">
-                            <button class="control-btn" onclick="toggleMute()" id="mute-btn">
-                                <svg id="mute-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                            <button class="control-btn" onclick="toggleMute()">
+                                <svg id="mute-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
                             </button>
                             <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.1" value="1">
                         </div>
@@ -279,36 +216,16 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-4">
-                        <!-- Quality/Speed Settings Trigger -->
-                        <button class="control-btn" onclick="toggleSettings()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-                        </button>
-                        
-                        <button class="control-btn" onclick="toggleFullscreen()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
-                        </button>
-                    </div>
+                    <button class="control-btn" onclick="toggleFullscreen()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"/></svg>
+                    </button>
                 </div>
             </div>
-        </div>
-
-        <!-- Settings Popover -->
-        <div class="settings-menu" id="settings-menu">
-            <div class="text-[9px] text-neutral-500 mb-2 px-2 tracking-[0.2em] font-bold">STREAM CONFIG</div>
-            <div class="settings-item" onclick="setSpeed(0.5)"><span>0.5x Speed</span></div>
-            <div class="settings-item" onclick="setSpeed(1)"><span>Normal Speed</span> <span class="text-red-500">✓</span></div>
-            <div class="settings-item" onclick="setSpeed(1.5)"><span>1.5x Speed</span></div>
-            <div class="settings-item" onclick="setSpeed(2)"><span>2.0x Speed</span></div>
-            <hr class="border-white/10 my-1">
-            <div class="settings-item" onclick="alert('8K Master selection requires VIP Clearance')"><span>8K Master</span></div>
-            <div class="settings-item" onclick="alert('4K Stream Active')"><span>4K Ultra</span> <span class="text-red-500">✓</span></div>
         </div>
     </div>
 
     <script>
         const video = document.getElementById('main-video');
-        const playBtn = document.getElementById('play-btn');
         const playIcon = document.getElementById('play-icon');
         const progress = document.getElementById('progress-bar');
         const progressContainer = document.getElementById('progress-container');
@@ -316,24 +233,19 @@
         const loader = document.getElementById('loader');
         const container = document.getElementById('player-container');
         
-        // Load Movie based on ID from movies.js
         const urlParams = new URLSearchParams(window.location.search);
         const movieId = urlParams.get('id');
 
         window.onload = () => {
-            // movieData is loaded from movies.js script tag in head
             const movie = movieData.find(m => m.id === movieId);
             
             if (movie) {
-                // Set metadata from JS database
                 document.getElementById('video-title').innerText = movie.title;
                 document.getElementById('video-genre').innerText = movie.genre;
-                video.poster = movie.posterLandscape;
+                video.poster = movie.posterLandscape || '';
                 
-                // Use the videoFile path from movies.js (e.g. Google Drive stream or local path)
+                // Set the video source directly from the database entry
                 video.src = movie.videoFile;
-                
-                // Track load status
                 video.load();
             } else {
                 document.getElementById('video-title').innerText = "ASSET NOT FOUND";
@@ -341,7 +253,6 @@
             }
         };
 
-        // Play/Pause
         function togglePlay() {
             if (video.paused) {
                 video.play();
@@ -352,7 +263,6 @@
             }
         }
 
-        // Progress Logic
         video.addEventListener('timeupdate', () => {
             if (video.duration) {
                 const percent = (video.currentTime / video.duration) * 100;
@@ -366,7 +276,6 @@
             loader.style.display = 'none';
         });
 
-        // Show loader if buffering
         video.addEventListener('waiting', () => loader.style.display = 'block');
         video.addEventListener('playing', () => loader.style.display = 'none');
 
@@ -381,39 +290,19 @@
             video.currentTime = pos * video.duration;
         });
 
-        // Volume
         volSlider.addEventListener('input', (e) => {
             video.volume = e.target.value;
         });
 
-        function toggleMute() {
-            video.muted = !video.muted;
-            document.getElementById('mute-icon').style.opacity = video.muted ? '0.5' : '1';
-        }
-
-        // Fullscreen
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
-                container.requestFullscreen().catch(err => {
-                    console.error(`Error attempting to enable full-screen mode: ${err.message}`);
-                });
+                container.requestFullscreen();
             } else {
                 document.exitFullscreen();
             }
         }
 
-        // Speed settings
-        function toggleSettings() {
-            const menu = document.getElementById('settings-menu');
-            menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
-        }
-
-        function setSpeed(rate) {
-            video.playbackRate = rate;
-            toggleSettings();
-        }
-
-        // Hide UI and Cursor on inactivity
+        // Mouse behavior
         let idleTimer;
         container.addEventListener('mousemove', () => {
             container.classList.add('show-cursor');
@@ -423,19 +312,8 @@
                 if (!video.paused) {
                     container.classList.remove('show-cursor');
                     document.getElementById('ui-overlay').style.opacity = '0';
-                    document.getElementById('settings-menu').style.display = 'none';
                 }
             }, 3000);
-        });
-
-        // Keyboard support
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                togglePlay();
-            }
-            if (e.code === 'ArrowRight') video.currentTime += 10;
-            if (e.code === 'ArrowLeft') video.currentTime -= 10;
         });
     </script>
 </body>
