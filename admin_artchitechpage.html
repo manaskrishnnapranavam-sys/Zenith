@@ -170,6 +170,13 @@
             color: #aaa;
             cursor: pointer;
         }
+
+        .status-box {
+            font-size: 10px;
+            color: #666;
+            margin-top: 5px;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
@@ -209,7 +216,7 @@
         <!-- Tab: Release Forge -->
         <div id="releases-tab">
             <h1 class="text-3xl font-bold mb-2">Release Forge</h1>
-            <p class="text-neutral-500 mb-10">Lifetime permanent data injection module.</p>
+            <p class="text-neutral-500 mb-10">Inject new cinematic containers. System will auto-format Drive links.</p>
 
             <div class="grid grid-cols-2 gap-10">
                 <div class="form-card">
@@ -235,8 +242,8 @@
                     <div class="space-y-4">
                         <div>
                             <label class="text-[10px] uppercase tracking-widest text-neutral-500">Google Drive Link</label>
-                            <input type="text" id="m-video-url" class="input-box" placeholder="Paste sharing or file link here">
-                            <p class="text-[9px] text-neutral-600 mt-1 uppercase">Link will be automatically validated to prevent 404 errors.</p>
+                            <input type="text" id="m-video-url" class="input-box" placeholder="Paste link here..." oninput="previewLinkFormat()">
+                            <div id="url-status" class="status-box">Waiting for input...</div>
                         </div>
                         
                         <div>
@@ -264,7 +271,7 @@
         <!-- Tab: Registry Edit -->
         <div id="edit-tab" class="hidden">
             <h1 class="text-3xl font-bold mb-2">Registry Edit</h1>
-            <p class="text-neutral-500 mb-10">Historical archive of all authorized publications.</p>
+            <p class="text-neutral-500 mb-10">Archives persist in local storage. Edit broken links here.</p>
             <div class="form-card">
                 <table id="movie-registry-table">
                     <thead>
@@ -303,7 +310,7 @@
                 <input type="text" id="edit-title" class="input-box">
                 <input type="text" id="edit-genre" class="input-box">
                 <textarea id="edit-plot" class="input-box h-24"></textarea>
-                <input type="text" id="edit-video-url" class="input-box">
+                <input type="text" id="edit-video-url" class="input-box" placeholder="Paste correct Drive link">
                 <div class="flex gap-4 pt-4">
                     <button onclick="saveEdit()" class="btn-primary flex-1">UPDATE RECORD</button>
                     <button onclick="closeModal()" class="btn-secondary">CANCEL</button>
@@ -329,17 +336,52 @@
             if(tabId === 'database') renderDatabase();
         }
 
-        // IMPROVED ROBUST PARSER
+        // --- SURGICAL URL PARSER ---
+        // This function extracts ONLY the ID and ignores everything else that causes 404s
         function convertToPreviewUrl(inputUrl) {
-            // Regex to find 25+ character Google Drive IDs
-            const driveIdRegex = /[a-zA-Z0-9_-]{25,}/;
-            const match = inputUrl.match(driveIdRegex);
+            let id = "";
             
-            if (match) {
-                const id = match[0];
+            // Pattern 1: /file/d/ID/view...
+            const matchFile = inputUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+            if (matchFile && matchFile[1]) id = matchFile[1];
+
+            // Pattern 2: id=ID
+            if (!id) {
+                const matchIdParam = inputUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                if (matchIdParam && matchIdParam[1]) id = matchIdParam[1];
+            }
+
+            // Pattern 3: /d/ID
+            if (!id) {
+                const matchShort = inputUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (matchShort && matchShort[1]) id = matchShort[1];
+            }
+
+            // If we found an ID, return the clean preview link
+            if (id) {
                 return `https://drive.google.com/file/d/${id}/preview`;
             }
-            return inputUrl; // Fallback to original if no ID found
+
+            // If it's just a raw ID string (33 chars approx)
+            if (inputUrl.length > 25 && !inputUrl.includes('/')) {
+                return `https://drive.google.com/file/d/${inputUrl}/preview`;
+            }
+
+            return inputUrl; // Return original if we couldn't figure it out
+        }
+
+        function previewLinkFormat() {
+            const raw = document.getElementById('m-video-url').value;
+            const converted = convertToPreviewUrl(raw);
+            const status = document.getElementById('url-status');
+            
+            if (converted.includes('/preview')) {
+                status.innerText = "✓ Valid Format Detected: " + converted;
+                status.style.color = "#00ff00";
+            } else {
+                status.innerText = "Waiting for valid Drive link...";
+                status.style.color = "#666";
+            }
         }
 
         function handleFileUpload(input, targetId, statusId) {
@@ -357,25 +399,30 @@
         function addMovie() {
             const rawUrl = document.getElementById('m-video-url').value.trim();
             const title = document.getElementById('m-title').value.trim();
+            
             if(!rawUrl || !title) return alert("Critical fields missing.");
+
+            const finalUrl = convertToPreviewUrl(rawUrl);
 
             const movie = {
                 id: "ZEN-" + Date.now(),
                 title: title,
                 genre: document.getElementById('m-genre').value,
                 plot: document.getElementById('m-plot').value,
-                videoFile: convertToPreviewUrl(rawUrl),
+                videoFile: finalUrl,
                 posterLandscape: document.getElementById('m-land').value,
                 posterPortrait: document.getElementById('m-port').value,
-                isFeatured: true
+                isFeatured: true,
+                timestamp: new Date().toISOString()
             };
 
             movies.push(movie);
             saveToLifetime();
-            alert("RECORD AUTHORIZED PERMANENTLY");
+            alert("RECORD AUTHORIZED");
             
             ['m-title', 'm-genre', 'm-plot', 'm-video-url', 'm-land', 'm-port'].forEach(id => document.getElementById(id).value = '');
             ['land-status', 'port-status'].forEach(id => document.getElementById(id).innerText = "Click to encode image");
+            document.getElementById('url-status').innerText = "Waiting for input...";
         }
 
         function renderRegistry() {
@@ -408,6 +455,7 @@
         function saveEdit() {
             const id = document.getElementById('edit-id').value;
             const index = movies.findIndex(m => m.id === id);
+            
             movies[index] = {
                 ...movies[index],
                 title: document.getElementById('edit-title').value,
