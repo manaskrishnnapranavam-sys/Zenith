@@ -232,7 +232,7 @@
             <div class="glow-blue"></div>
         </div>
 
-        <video id="main-video" poster="" crossorigin="anonymous" playsinline>
+        <video id="main-video" poster="">
             <!-- Video source added via JS -->
         </video>
 
@@ -316,40 +316,24 @@
         const loader = document.getElementById('loader');
         const container = document.getElementById('player-container');
         
-        // Helper to convert Drive links to direct streamable assets
-        function getDirectStreamUrl(url) {
-            if (url.includes('drive.google.com') || url.includes('googleusercontent.com')) {
-                // Extracts the ID from common drive link formats
-                const idMatch = url.match(/[-\w]{25,}/);
-                if (idMatch) {
-                    return `https://docs.google.com/uc?export=download&id=${idMatch[0]}`;
-                }
-            }
-            return url;
-        }
-
         // Load Movie based on ID from movies.js
         const urlParams = new URLSearchParams(window.location.search);
         const movieId = urlParams.get('id');
 
         window.onload = () => {
-            if (typeof movieData === 'undefined') {
-                console.error("movies.js not loaded");
-                document.getElementById('video-title').innerText = "DATABASE ERROR";
-                loader.style.display = 'none';
-                return;
-            }
-
+            // movieData is loaded from movies.js script tag in head
             const movie = movieData.find(m => m.id === movieId);
             
             if (movie) {
+                // Set metadata from JS database
                 document.getElementById('video-title').innerText = movie.title;
                 document.getElementById('video-genre').innerText = movie.genre;
                 video.poster = movie.posterLandscape;
                 
-                // Update source with direct stream URL
-                video.src = getDirectStreamUrl(movie.videoFile);
+                // Use the videoFile path from movies.js (e.g. Google Drive stream or local path)
+                video.src = movie.videoFile;
                 
+                // Track load status
                 video.load();
             } else {
                 document.getElementById('video-title').innerText = "ASSET NOT FOUND";
@@ -360,14 +344,8 @@
         // Play/Pause
         function togglePlay() {
             if (video.paused) {
-                const playPromise = video.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(_ => {
-                        playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
-                    }).catch(error => {
-                        console.log("Autoplay blocked or load error:", error);
-                    });
-                }
+                video.play();
+                playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
             } else {
                 video.pause();
                 playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
@@ -388,14 +366,9 @@
             loader.style.display = 'none';
         });
 
-        // Show loader if buffering or error
+        // Show loader if buffering
         video.addEventListener('waiting', () => loader.style.display = 'block');
         video.addEventListener('playing', () => loader.style.display = 'none');
-        video.addEventListener('error', (e) => {
-            console.error("Video loading error:", video.error);
-            document.getElementById('video-title').innerText = "STREAM ERROR";
-            loader.style.display = 'none';
-        });
 
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
