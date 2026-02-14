@@ -232,8 +232,9 @@
                     <h2 class="text-lg font-bold mb-6 flex items-center gap-2">Asset Configuration</h2>
                     <div class="space-y-4">
                         <div>
-                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Google Drive Video ID</label>
-                            <input type="text" id="m-video-id" class="input-box" placeholder="Paste ID from share link">
+                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Video Link / Drive URL</label>
+                            <input type="text" id="m-video-url" class="input-box" placeholder="Paste full video or Drive link here">
+                            <p class="text-[9px] text-neutral-600 mt-1 uppercase tracking-tighter">Tip: Paste any link. We will format it automatically.</p>
                         </div>
                         
                         <div>
@@ -269,7 +270,7 @@
                         <tr>
                             <th>TITLE</th>
                             <th>GENRE</th>
-                            <th>DRIVE ID</th>
+                            <th>SOURCE LINK</th>
                             <th>ACTIONS</th>
                         </tr>
                     </thead>
@@ -325,7 +326,7 @@
                 <input type="text" id="edit-title" class="input-box" placeholder="Title">
                 <input type="text" id="edit-genre" class="input-box" placeholder="Genre">
                 <textarea id="edit-plot" class="input-box h-24" placeholder="Plot"></textarea>
-                <input type="text" id="edit-video-id" class="input-box" placeholder="Drive ID">
+                <input type="text" id="edit-video-url" class="input-box" placeholder="Source URL">
                 
                 <div class="flex gap-4 pt-4">
                     <button onclick="saveEdit()" class="btn-primary flex-1">UPDATE RECORD</button>
@@ -349,6 +350,16 @@
             if(tabId === 'database') renderDatabase();
         }
 
+        function formatDriveUrl(inputUrl) {
+            // Helper to extract ID and format it for direct streaming if it's a Drive link
+            const driveIdRegex = /(?:id=|\/d\/|folders\/)([a-zA-Z0-9_-]{25,})/;
+            const match = inputUrl.match(driveIdRegex);
+            if (match && match[1]) {
+                return `https://docs.google.com/uc?export=download&id=${match[1]}`;
+            }
+            return inputUrl; // Return original if not a Drive link
+        }
+
         function handleFileUpload(input, targetId, statusId) {
             const file = input.files[0];
             if (file) {
@@ -364,16 +375,17 @@
         }
 
         function addMovie() {
-            const videoId = document.getElementById('m-video-id').value.trim();
-            if(!videoId || !document.getElementById('m-title').value) return alert("Missing Critical Data");
+            const rawUrl = document.getElementById('m-video-url').value.trim();
+            if(!rawUrl || !document.getElementById('m-title').value) return alert("Missing Critical Data");
+
+            const finalUrl = formatDriveUrl(rawUrl);
 
             const movie = {
                 id: Date.now().toString(),
                 title: document.getElementById('m-title').value,
                 genre: document.getElementById('m-genre').value,
                 plot: document.getElementById('m-plot').value,
-                videoId: videoId,
-                videoFile: `https://docs.google.com/uc?export=download&id=${videoId}`,
+                videoFile: finalUrl,
                 posterLandscape: document.getElementById('m-land').value,
                 posterPortrait: document.getElementById('m-port').value,
                 isFeatured: true
@@ -382,8 +394,7 @@
             movies.push(movie);
             alert("RECORD AUTHORIZED");
             
-            // Clear inputs
-            ['m-title', 'm-genre', 'm-plot', 'm-video-id', 'm-land', 'm-port'].forEach(id => document.getElementById(id).value = '');
+            ['m-title', 'm-genre', 'm-plot', 'm-video-url', 'm-land', 'm-port'].forEach(id => document.getElementById(id).value = '');
             ['land-status', 'port-status'].forEach(id => document.getElementById(id).innerText = "Click to encode image");
         }
 
@@ -393,7 +404,7 @@
                 <tr>
                     <td class="font-bold">${m.title}</td>
                     <td class="text-neutral-500">${m.genre}</td>
-                    <td class="mono-font text-[10px] text-blue-400">${m.videoId}</td>
+                    <td class="mono-font text-[10px] text-blue-400 truncate max-w-xs">${m.videoFile}</td>
                     <td class="flex gap-2">
                         <button onclick="openEditModal('${m.id}')" class="btn-secondary hover:bg-white hover:text-black">EDIT</button>
                         <button onclick="deleteMovie('${m.id}')" class="btn-secondary text-red-500 border-red-500/20 hover:bg-red-500 hover:text-white">DELETE</button>
@@ -409,7 +420,7 @@
             document.getElementById('edit-title').value = movie.title;
             document.getElementById('edit-genre').value = movie.genre;
             document.getElementById('edit-plot').value = movie.plot;
-            document.getElementById('edit-video-id').value = movie.videoId;
+            document.getElementById('edit-video-url').value = movie.videoFile;
             document.getElementById('edit-modal').style.display = 'flex';
         }
 
@@ -420,15 +431,14 @@
         function saveEdit() {
             const id = document.getElementById('edit-id').value;
             const index = movies.findIndex(m => m.id === id);
-            const vId = document.getElementById('edit-video-id').value;
+            const rawUrl = document.getElementById('edit-video-url').value;
 
             movies[index] = {
                 ...movies[index],
                 title: document.getElementById('edit-title').value,
                 genre: document.getElementById('edit-genre').value,
                 plot: document.getElementById('edit-plot').value,
-                videoId: vId,
-                videoFile: `https://docs.google.com/uc?export=download&id=${vId}`
+                videoFile: formatDriveUrl(rawUrl)
             };
 
             closeModal();
