@@ -131,25 +131,32 @@
         .hero-nav.prev { left: 20px; }
         .hero-nav.next { right: 20px; }
 
-        /* --- MASTER MOVIE GRID & HOVER EFFECTS --- */
+        /* --- PORTRAIT MOVIE GRID & HOVER EFFECTS --- */
         #master-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
+            /* Updated for Portrait layout: denser columns */
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
             padding: 0 5% 100px 5%;
             transition: all 0.5s ease;
         }
 
+        @media (min-width: 1024px) {
+            #master-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+        }
+
         #master-grid:has(.movie-card:hover) .movie-card:not(:hover) {
-            filter: blur(8px) grayscale(0.5);
-            opacity: 0.3;
+            filter: blur(4px);
+            opacity: 0.5;
             transform: scale(0.95);
         }
 
         .movie-card {
-            aspect-ratio: 16/9;
+            aspect-ratio: 2/3; /* Standard Portrait Movie Poster Ratio */
             background: #111;
-            border-radius: 4px;
+            border-radius: 8px;
             overflow: hidden;
             position: relative;
             transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -158,26 +165,31 @@
         }
 
         .movie-card:hover {
-            transform: scale(1.1) translateY(-10px);
+            transform: scale(1.08) translateY(-5px);
             z-index: 50;
             border-color: var(--accent);
-            box-shadow: 0 0 40px rgba(255, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
         }
 
         .movie-card img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .movie-card:hover img {
+            transform: scale(1.1);
         }
 
         .movie-info-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, rgba(255,0,0,0.8) 0%, transparent 60%);
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%);
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            padding: 20px;
+            padding: 15px;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -292,7 +304,7 @@
             </div>
         </nav>
 
-        <!-- Dynamic Hero Slider -->
+        <!-- Dynamic Hero Slider (Still Landscape for Cinematic Feel) -->
         <div id="hero-slider" class="hero-slider">
             <div class="hero-nav prev" onclick="manualSlide(-1)">
                 <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
@@ -327,7 +339,6 @@
                 <div class="grid grid-cols-3 gap-10">
                     <div class="col-span-2">
                         <p id="modal-plot" class="text-neutral-300 text-lg leading-relaxed mb-8"></p>
-                        <!-- Play button redirects to the dedicated player page -->
                         <button id="modal-play-btn" class="bg-white text-black px-12 py-4 rounded-sm font-bold text-xl hover:bg-red-600 hover:text-white transition-all transform hover:scale-105">PLAY NOW</button>
                     </div>
                 </div>
@@ -336,7 +347,6 @@
     </div>
 
     <script>
-        // Intro sequence
         window.addEventListener('load', () => {
             renderContent(); 
             
@@ -361,7 +371,7 @@
 
             countLabel.innerText = `Streaming ${movieData.length} Productions`;
 
-            // Render Hero
+            // Render Hero (Still Landscape)
             const featuredMovies = movieData.filter(m => m.isFeatured);
             heroContainer.innerHTML = (featuredMovies.length ? featuredMovies : movieData).map((movie, index) => `
                 <div class="slide ${index === 0 ? 'active' : ''}" style="background-image: url('${movie.posterLandscape}');">
@@ -370,7 +380,6 @@
                         <h1 class="text-7xl font-bold mb-4 tracking-tighter leading-tight uppercase">${movie.title}</h1>
                         <p class="text-lg text-neutral-200 mb-8 leading-relaxed max-w-xl">${movie.plot}</p>
                         <div class="flex gap-4">
-                            <!-- Direct Play from Hero -->
                             <button class="bg-white text-black px-12 py-3.5 rounded-sm font-bold hover:bg-red-600 hover:text-white transition-all" onclick="redirectToPlayer('${movie.id}')">Experience Now</button>
                             <button class="bg-black/50 backdrop-blur-md text-white border border-white/20 px-12 py-3.5 rounded-sm font-bold hover:bg-white hover:text-black transition-all" onclick="showDetails('${movie.id}')">View Details</button>
                         </div>
@@ -378,13 +387,13 @@
                 </div>
             `).join('');
 
-            // Render Grid
+            // Render Portrait Grid
             grid.innerHTML = movieData.map(movie => `
                 <div class="movie-card" onclick="showDetails('${movie.id}')">
-                    <img src="${movie.posterLandscape}" alt="${movie.title}">
+                    <img src="${movie.posterPortrait}" alt="${movie.title}">
                     <div class="movie-info-overlay">
-                        <h3 class="font-bold text-xl uppercase tracking-tighter">${movie.title}</h3>
-                        <p class="text-[10px] text-white/80 font-semibold tracking-widest">${movie.genre}</p>
+                        <h3 class="font-bold text-lg uppercase tracking-tighter leading-tight">${movie.title}</h3>
+                        <p class="text-[9px] text-white/80 font-bold tracking-widest uppercase">${movie.genre}</p>
                     </div>
                 </div>
             `).join('');
@@ -392,7 +401,6 @@
             startAutoSlide();
         }
 
-        // Modal Logic
         function showDetails(id) {
             const movie = movieData.find(m => m.id === id);
             if (!movie) return;
@@ -401,8 +409,6 @@
             document.getElementById('modal-title').innerText = movie.title;
             document.getElementById('modal-genre').innerText = movie.genre;
             document.getElementById('modal-plot').innerText = movie.plot;
-            
-            // Set the play button to trigger the redirection
             document.getElementById('modal-play-btn').onclick = () => redirectToPlayer(movie.id);
             
             const modal = document.getElementById('details-modal');
@@ -415,15 +421,10 @@
             document.body.style.overflow = 'auto';
         }
 
-        /**
-         * REDIRECTION LOGIC
-         * Navigates to the video_player.html with the movie ID as a URL parameter
-         */
         function redirectToPlayer(movieId) {
             window.location.href = `video_player.html?id=${movieId}`;
         }
 
-        // Hero Sliding Logic
         let currentSlide = 0;
         let slideInterval;
 
