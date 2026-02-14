@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZENITH | Viewer Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --accent: #ff2d2d;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Ambient Motion Blur Background */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .blob {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: var(--accent);
+            filter: blur(120px);
+            border-radius: 50%;
+            opacity: 0.15;
+            animation: move 20s infinite alternate ease-in-out;
+        }
+
+        .blob-2 {
+            background: #4a00e0;
+            width: 500px;
+            height: 500px;
+            right: -100px;
+            top: -100px;
+            animation-delay: -5s;
+        }
+
+        @keyframes move {
+            from { transform: translate(-10%, -10%) scale(1); }
+            to { transform: translate(20%, 20%) scale(1.2); }
+        }
+
+        /* Login Card */
+        .login-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+
+        .logo-text {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 0.5em;
+            margin-bottom: 2rem;
+            color: white;
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #888;
+            margin-bottom: 6px;
+            margin-left: 4px;
+        }
+
+        .input-field {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid transparent;
+            border-radius: 14px;
+            padding: 14px 20px;
+            color: white;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 15px;
+        }
+
+        .input-field:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 45, 45, 0.5);
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 16px;
+            margin-top: 10px;
+            background: white;
+            color: black;
+            font-weight: 700;
+            border-radius: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.15);
+        }
+
+        .toggle-text {
+            margin-top: 24px;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .toggle-link {
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            transition: color 0.3s;
+        }
+
+        .toggle-link:hover {
+            color: var(--accent);
+        }
+
+        .error-message {
+            color: var(--accent);
+            font-size: 12px;
+            margin-top: 15px;
+            min-height: 18px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .success-message {
+            color: #00ffaa;
+            font-size: 12px;
+            margin-top: 15px;
+            min-height: 18px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* Animations for switching */
+        .fade-in {
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg">
+        <div class="blob"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="login-container">
+        <div class="logo-text">ZENITH</div>
+        
+        <h2 id="form-title" class="text-sm font-bold tracking-[0.3em] mb-8 uppercase text-neutral-400">Member Login</h2>
+
+        <form id="auth-form">
+            <div class="input-group">
+                <label>Viewer ID</label>
+                <input type="text" id="v-user" class="input-field" placeholder="Create or enter ID" required autocomplete="off">
+            </div>
+
+            <div class="input-group">
+                <label>Access Code</label>
+                <input type="password" id="v-pass" class="input-field" placeholder="••••••••" required>
+            </div>
+
+            <button type="submit" id="submit-btn" class="action-btn">Enter Portal</button>
+            
+            <div id="msg-container">
+                <div id="error-msg" class="error-message">Invalid credentials.</div>
+                <div id="success-msg" class="success-message">Account created successfully!</div>
+            </div>
+        </form>
+
+        <p class="toggle-text">
+            <span id="toggle-label">Don't have an account?</span> 
+            <span class="toggle-link" id="toggle-auth">Sign Up</span>
+        </p>
+
+        <a href="index.html" class="block mt-8 text-[11px] text-neutral-600 hover:text-white transition-colors uppercase tracking-widest">Return to Home</a>
+    </div>
+
+    <script>
+        let isLogin = true;
+        const authForm = document.getElementById('auth-form');
+        const formTitle = document.getElementById('form-title');
+        const submitBtn = document.getElementById('submit-btn');
+        const toggleAuth = document.getElementById('toggle-auth');
+        const toggleLabel = document.getElementById('toggle-label');
+        const errorMsg = document.getElementById('error-msg');
+        const successMsg = document.getElementById('success-msg');
+
+        // Toggle between Login and Sign Up
+        toggleAuth.addEventListener('click', () => {
+            isLogin = !isLogin;
+            formTitle.innerText = isLogin ? "Member Login" : "Create Account";
+            submitBtn.innerText = isLogin ? "Enter Portal" : "Join Zenith";
+            toggleLabel.innerText = isLogin ? "Don't have an account?" : "Already a member?";
+            toggleAuth.innerText = isLogin ? "Sign Up" : "Login";
+            
+            // Clear messages
+            errorMsg.style.opacity = '0';
+            successMsg.style.opacity = '0';
+            authForm.reset();
+        });
+
+        authForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = document.getElementById('v-user').value.trim();
+            const pass = document.getElementById('v-pass').value.trim();
+
+            // Get existing users from localStorage
+            let users = JSON.parse(localStorage.getItem('zenith_users') || '[]');
+
+            if (isLogin) {
+                // LOGIN LOGIC
+                const foundUser = users.find(u => u.username === user && u.password === pass);
+                
+                // Fallback for default user mentioned before
+                if (foundUser || (user === "viewer" && pass === "zenith_pass")) {
+                    submitBtn.innerText = "CONNECTING...";
+                    submitBtn.disabled = true;
+                    setTimeout(() => {
+                        location.href = 'norm_viewerpage.html';
+                    }, 2000); // Reduced wait time for better UX, but kept the cinematic feel
+                } else {
+                    showError("Access denied. Check your ID/Code.");
+                }
+            } else {
+                // SIGN UP LOGIC
+                if (users.some(u => u.username === user)) {
+                    showError("ID already taken. Choose another.");
+                } else if (pass.length < 4) {
+                    showError("Code must be at least 4 characters.");
+                } else {
+                    users.push({ username: user, password: pass });
+                    localStorage.setItem('zenith_users', JSON.stringify(users));
+                    showSuccess();
+                    setTimeout(() => toggleAuth.click(), 1500); // Switch to login after success
+                }
+            }
+        });
+
+        function showError(text) {
+            errorMsg.innerText = text;
+            errorMsg.style.opacity = '1';
+            successMsg.style.opacity = '0';
+            setTimeout(() => { errorMsg.style.opacity = '0'; }, 3000);
+        }
+
+        function showSuccess() {
+            successMsg.style.opacity = '1';
+            errorMsg.style.opacity = '0';
+        }
+    </script>
+</body>
+</html>
