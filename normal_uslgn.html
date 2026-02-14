@@ -3,297 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZENITH | Viewer Portal</title>
+    <title>ZENITH | Viewer Access</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Syncopate:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #050505;
-            --accent: #ff2d2d;
+            --zenith-red: #ff2d2d;
+            --zenith-blue: #00d2ff;
+            --bg-black: #050505;
             --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         body {
-            background-color: var(--bg);
+            background-color: var(--bg-black);
             color: white;
             font-family: 'Inter', sans-serif;
-            margin: 0;
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin: 0;
             overflow: hidden;
         }
 
-        /* Ambient Motion Blur Background */
-        .ambient-bg {
+        /* The Multi-Color Splash Accents */
+        .splash-container {
             position: fixed;
             inset: 0;
             z-index: 1;
             overflow: hidden;
         }
 
-        .blob {
+        .splash-red {
             position: absolute;
+            top: 20%;
+            left: 20%;
             width: 600px;
             height: 600px;
-            background: var(--accent);
-            filter: blur(120px);
-            border-radius: 50%;
-            opacity: 0.15;
-            animation: move 20s infinite alternate ease-in-out;
+            background: radial-gradient(circle, rgba(255, 45, 45, 0.12) 0%, transparent 70%);
+            filter: blur(60px);
+            animation: float 20s infinite alternate;
         }
 
-        .blob-2 {
-            background: #4a00e0;
+        .splash-blue {
+            position: absolute;
+            bottom: 10%;
+            right: 15%;
             width: 500px;
             height: 500px;
-            right: -100px;
-            top: -100px;
-            animation-delay: -5s;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.1) 0%, transparent 70%);
+            filter: blur(60px);
+            animation: float 15s infinite alternate-reverse;
         }
 
-        @keyframes move {
-            from { transform: translate(-10%, -10%) scale(1); }
-            to { transform: translate(20%, 20%) scale(1.2); }
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(100px, 50px) scale(1.1); }
         }
 
-        /* Login Card */
-        .login-container {
+        .login-box {
             position: relative;
             z-index: 10;
             width: 100%;
             max-width: 420px;
-            padding: 40px;
+            padding: 50px;
             background: var(--glass);
-            backdrop-filter: blur(30px);
-            border: 1px solid var(--glass-border);
-            border-radius: 28px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(40px);
             text-align: center;
-            transition: all 0.5s ease;
+            border-top: 2px solid var(--zenith-red);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border-radius: 8px;
         }
 
-        .logo-text {
+        .heading-font { 
             font-family: 'Syncopate', sans-serif;
-            font-size: 1.5rem;
-            letter-spacing: 0.5em;
-            margin-bottom: 2rem;
-            color: white;
-            text-shadow: 0 0 20px rgba(255,255,255,0.2);
+            letter-spacing: 0.4em;
         }
 
-        .input-group {
-            margin-bottom: 18px;
-            text-align: left;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #888;
-            margin-bottom: 6px;
-            margin-left: 4px;
-        }
-
-        .input-field {
+        .input-zenith {
             width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid transparent;
-            border-radius: 14px;
-            padding: 14px 20px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            padding: 14px 15px;
             color: white;
             outline: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 15px;
+            transition: all 0.3s;
+            font-size: 13px;
+            margin-bottom: 15px;
+            border-radius: 4px;
         }
 
-        .input-field:focus {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 45, 45, 0.5);
+        .input-zenith:focus {
+            border-color: var(--zenith-blue); /* Splash color on focus */
+            background: rgba(0, 210, 255, 0.03);
         }
 
         .action-btn {
             width: 100%;
             padding: 16px;
-            margin-top: 10px;
-            background: white;
-            color: black;
-            font-weight: 700;
-            border-radius: 14px;
+            background: var(--zenith-red);
+            color: white;
+            font-size: 11px;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             cursor: pointer;
             transition: all 0.3s;
+            margin-top: 10px;
+            border: none;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(255, 45, 45, 0.3);
         }
 
         .action-btn:hover {
+            background: white;
+            color: black;
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
         }
 
-        .toggle-text {
-            margin-top: 24px;
-            font-size: 13px;
-            color: #888;
+        #message-box {
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 20px;
+            height: 15px;
+            transition: all 0.3s;
         }
+
+        .error { color: var(--zenith-red); }
+        .success { color: var(--zenith-blue); }
 
         .toggle-link {
-            color: white;
-            font-weight: 600;
+            font-size: 10px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             cursor: pointer;
-            text-decoration: underline;
-            text-underline-offset: 4px;
             transition: color 0.3s;
         }
 
         .toggle-link:hover {
-            color: var(--accent);
+            color: var(--zenith-blue);
         }
 
-        .error-message {
-            color: var(--accent);
-            font-size: 12px;
-            margin-top: 15px;
-            min-height: 18px;
-            opacity: 0;
-            transition: opacity 0.3s;
+        .sub-link {
+            font-size: 10px;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            transition: color 0.3s;
         }
 
-        .success-message {
-            color: #00ffaa;
-            font-size: 12px;
-            margin-top: 15px;
-            min-height: 18px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        /* Animations for switching */
-        .fade-in {
-            animation: fadeIn 0.4s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .sub-link:hover {
+            color: white;
         }
     </style>
 </head>
 <body>
 
-    <div class="ambient-bg">
-        <div class="blob"></div>
-        <div class="blob blob-2"></div>
+    <div class="splash-container">
+        <div class="splash-red"></div>
+        <div class="splash-blue"></div>
     </div>
 
-    <div class="login-container">
-        <div class="logo-text">ZENITH</div>
-        
-        <h2 id="form-title" class="text-sm font-bold tracking-[0.3em] mb-8 uppercase text-neutral-400">Member Login</h2>
+    <div class="login-box">
+        <div class="heading-font text-2xl mb-2 text-white">ZENITH</div>
+        <p id="portal-title" class="text-[9px] text-neutral-500 mb-10 tracking-[0.3em] uppercase">Security Portal: Login</p>
 
-        <form id="auth-form">
-            <div class="input-group">
-                <label>Viewer ID</label>
-                <input type="text" id="v-user" class="input-field" placeholder="Create or enter ID" required autocomplete="off">
-            </div>
-
-            <div class="input-group">
-                <label>Access Code</label>
-                <input type="password" id="v-pass" class="input-field" placeholder="••••••••" required>
-            </div>
-
-            <button type="submit" id="submit-btn" class="action-btn">Enter Portal</button>
+        <div id="auth-container">
+            <input type="text" id="username" class="input-zenith" placeholder="IDENTIFIER" autocomplete="off">
+            <input type="password" id="password" class="input-zenith" placeholder="ACCESS KEY">
             
-            <div id="msg-container">
-                <div id="error-msg" class="error-message">Invalid credentials.</div>
-                <div id="success-msg" class="success-message">Account created successfully!</div>
-            </div>
-        </form>
+            <button type="button" id="main-btn" onclick="handleAuth()" class="action-btn">Initialize Session</button>
+            <div id="message-box"></div>
+        </div>
 
-        <p class="toggle-text">
-            <span id="toggle-label">Don't have an account?</span> 
-            <span class="toggle-link" id="toggle-auth">Sign Up</span>
-        </p>
+        <div class="mt-8">
+            <span id="toggle-text" class="toggle-link" onclick="toggleMode()">New User? Create Identity</span>
+        </div>
 
-        <a href="index.html" class="block mt-8 text-[11px] text-neutral-600 hover:text-white transition-colors uppercase tracking-widest">Return to Home</a>
+        <div class="mt-12 pt-8 border-t border-white/5 flex flex-col gap-4">
+            <a href="index.html" class="sub-link">Exit to Public Stream</a>
+        </div>
     </div>
 
     <script>
-        let isLogin = true;
-        const authForm = document.getElementById('auth-form');
-        const formTitle = document.getElementById('form-title');
-        const submitBtn = document.getElementById('submit-btn');
-        const toggleAuth = document.getElementById('toggle-auth');
-        const toggleLabel = document.getElementById('toggle-label');
-        const errorMsg = document.getElementById('error-msg');
-        const successMsg = document.getElementById('success-msg');
+        let isLoginMode = true;
 
-        // Toggle between Login and Sign Up
-        toggleAuth.addEventListener('click', () => {
-            isLogin = !isLogin;
-            formTitle.innerText = isLogin ? "Member Login" : "Create Account";
-            submitBtn.innerText = isLogin ? "Enter Portal" : "Join Zenith";
-            toggleLabel.innerText = isLogin ? "Don't have an account?" : "Already a member?";
-            toggleAuth.innerText = isLogin ? "Sign Up" : "Login";
+        function toggleMode() {
+            isLoginMode = !isLoginMode;
+            const title = document.getElementById('portal-title');
+            const btn = document.getElementById('main-btn');
+            const toggle = document.getElementById('toggle-text');
+            const msg = document.getElementById('message-box');
             
-            // Clear messages
-            errorMsg.style.opacity = '0';
-            successMsg.style.opacity = '0';
-            authForm.reset();
-        });
+            msg.innerHTML = "";
+            
+            if (isLoginMode) {
+                title.innerText = "Security Portal: Login";
+                btn.innerText = "Initialize Session";
+                toggle.innerText = "New User? Create Identity";
+            } else {
+                title.innerText = "Security Portal: Registration";
+                btn.innerText = "Create Account";
+                toggle.innerText = "Already registered? Login";
+            }
+        }
 
-        authForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const user = document.getElementById('v-user').value.trim();
-            const pass = document.getElementById('v-pass').value.trim();
+        function showMessage(text, isError = true) {
+            const msg = document.getElementById('message-box');
+            msg.innerText = text;
+            msg.className = isError ? "error" : "success";
+            setTimeout(() => { msg.innerText = ""; }, 4000);
+        }
 
-            // Get existing users from localStorage
+        function handleAuth() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value;
+
+            if (user.length < 3 || pass.length < 4) {
+                showMessage("Credentials too short");
+                return;
+            }
+
             let users = JSON.parse(localStorage.getItem('zenith_users') || '[]');
 
-            if (isLogin) {
-                // LOGIN LOGIC
-                const foundUser = users.find(u => u.username === user && u.password === pass);
+            if (isLoginMode) {
+                const foundUser = users.find(u => u.username.toLowerCase() === user.toLowerCase() && u.password === pass);
                 
-                // Fallback for default user mentioned before
-                if (foundUser || (user === "viewer" && pass === "zenith_pass")) {
-                    submitBtn.innerText = "CONNECTING...";
-                    submitBtn.disabled = true;
-                    setTimeout(() => {
-                        location.href = 'norm_viewerpage.html';
-                    }, 2000); // Reduced wait time for better UX, but kept the cinematic feel
+                if (foundUser) {
+                    localStorage.setItem('zenith_session_user', foundUser.username);
+                    window.location.href = 'norm_viewerpage.html';
                 } else {
-                    showError("Access denied. Check your ID/Code.");
+                    showMessage("Invalid Credentials");
                 }
             } else {
-                // SIGN UP LOGIC
-                if (users.some(u => u.username === user)) {
-                    showError("ID already taken. Choose another.");
-                } else if (pass.length < 4) {
-                    showError("Code must be at least 4 characters.");
+                const exists = users.some(u => u.username.toLowerCase() === user.toLowerCase());
+                
+                if (exists) {
+                    showMessage("Identifier already taken");
                 } else {
-                    users.push({ username: user, password: pass });
+                    users.push({
+                        username: user,
+                        password: pass,
+                        age: '',
+                        gender: 'Unspecified',
+                        bio: 'Identity established.',
+                        history: []
+                    });
                     localStorage.setItem('zenith_users', JSON.stringify(users));
-                    showSuccess();
-                    setTimeout(() => toggleAuth.click(), 1500); // Switch to login after success
+                    showMessage("Account Created! You can login.", false);
+                    toggleMode();
                 }
             }
+        }
+
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleAuth();
         });
-
-        function showError(text) {
-            errorMsg.innerText = text;
-            errorMsg.style.opacity = '1';
-            successMsg.style.opacity = '0';
-            setTimeout(() => { errorMsg.style.opacity = '0'; }, 3000);
-        }
-
-        function showSuccess() {
-            successMsg.style.opacity = '1';
-            errorMsg.style.opacity = '0';
-        }
     </script>
 </body>
 </html>
