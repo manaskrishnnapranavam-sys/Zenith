@@ -3,493 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZENITH | The Architect</title>
+    <title>ZENITH | Cinema Player</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    <script src="movies.js"></script>
     <style>
         :root {
-            --bg: #050505;
-            --sidebar: #0a0a0a;
-            --accent: #ff2d2d;
-            --glass: rgba(255, 255, 255, 0.03);
+            --zenith-red: #ff2d2d;
+            --zenith-blue: #00d2ff;
+            --bg-black: #050505;
         }
 
-        body {
-            background-color: var(--bg);
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-black);
             color: white;
             font-family: 'Inter', sans-serif;
-            display: flex;
-            height: 100vh;
             overflow: hidden;
         }
 
-        .heading-font { font-family: 'Syncopate', sans-serif; }
-        .mono-font { font-family: 'Fira Code', monospace; }
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: black;
+        }
 
-        aside {
-            width: 280px;
-            background: var(--sidebar);
-            border-right: 1px solid rgba(255,255,255,0.05);
+        /* High-End Iframe Container */
+        .iframe-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Ambient Glow Accents */
+        .ambient-glow {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.6;
+        }
+
+        .glow-red {
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(circle, rgba(255, 45, 45, 0.15) 0%, transparent 70%);
+            filter: blur(100px);
+        }
+
+        .glow-blue {
+            position: absolute;
+            bottom: -10%;
+            right: -10%;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.1) 0%, transparent 70%);
+            filter: blur(100px);
+        }
+
+        /* UI Overlays */
+        .ui-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
             display: flex;
             flex-direction: column;
-            padding: 30px;
-            flex-shrink: 0;
+            justify-content: flex-start;
+            padding: 40px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 30%);
+            pointer-events: none;
+            transition: opacity 0.5s ease;
         }
 
-        .admin-profile {
-            padding: 20px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.05);
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .player-wrapper:hover .ui-overlay {
+            opacity: 1;
         }
 
-        .profile-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: linear-gradient(45deg, var(--accent), #4a00e0);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-family: 'Syncopate';
-            font-size: 18px;
-            box-shadow: 0 0 15px rgba(255, 45, 45, 0.3);
-        }
+        .heading-font { font-family: 'Syncopate', sans-serif; }
 
-        .nav-item {
-            padding: 12px 16px;
-            border-radius: 8px;
-            color: #888;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .nav-item:hover, .nav-item.active {
-            background: rgba(255, 45, 45, 0.1);
-            color: var(--accent);
-        }
-
-        main {
-            flex: 1;
-            padding: 50px;
-            overflow-y: auto;
-            background: radial-gradient(circle at top right, #1a0505 0%, transparent 40%);
-        }
-
-        .form-card {
-            background: var(--glass);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 30px;
-            border-radius: 16px;
-            backdrop-filter: blur(20px);
-        }
-
-        .input-box {
-            background: rgba(0,0,0,0.3);
+        .back-btn {
+            pointer-events: auto;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
             padding: 12px;
-            width: 100%;
-            color: white;
-            outline: none;
-            margin-top: 6px;
-            font-size: 13px;
+            border-radius: 50%;
+            transition: all 0.3s;
         }
 
-        .input-box:focus { border-color: var(--accent); }
-
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.2s;
+        .back-btn:hover {
+            background: var(--zenith-red);
+            transform: scale(1.1);
         }
 
-        .btn-secondary {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 11px;
-        }
-
-        table { width: 100%; text-align: left; border-collapse: separate; border-spacing: 0 8px; }
-        th { padding: 15px; color: #666; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; }
-        td { padding: 15px; background: rgba(255,255,255,0.02); font-size: 13px; }
-        td:first-child { border-radius: 8px 0 0 8px; }
-        td:last-child { border-radius: 0 8px 8px 0; }
-
-        #js-output {
-            background: #000;
-            padding: 20px;
-            border-radius: 8px;
-            font-size: 12px;
-            max-height: 400px;
-            overflow: auto;
-            border: 1px dashed #333;
-            color: #00ffaa;
-        }
-
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.9);
+        #loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             z-index: 100;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid var(--zenith-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
-        .file-label {
-            display: block;
-            background: rgba(255,255,255,0.05);
-            border: 1px dashed rgba(255,255,255,0.2);
-            border-radius: 8px;
-            padding: 10px;
-            text-align: center;
-            font-size: 11px;
-            color: #aaa;
-            cursor: pointer;
-        }
+        @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <aside>
-        <div class="heading-font text-xl mb-8 tracking-tighter text-white">ZENITH</div>
+    <div class="player-wrapper" id="player-container">
+        <div id="loader"></div>
         
-        <div class="admin-profile">
-            <div class="profile-avatar">Z</div>
-            <div>
-                <div class="text-[12px] font-bold tracking-wide">ARCHITECT</div>
-                <div class="text-[9px] text-neutral-500 uppercase tracking-widest text-red-500 font-bold">Root Access</div>
-            </div>
+        <div class="ambient-glow">
+            <div class="glow-red"></div>
+            <div class="glow-blue"></div>
         </div>
 
-        <nav>
-            <div class="nav-item active" onclick="switchTab('releases')">
-                <span class="w-1.5 h-1.5 rounded-full bg-current"></span> Release Forge
-            </div>
-            <div class="nav-item" onclick="switchTab('edit')">
-                <span class="w-1.5 h-1.5 rounded-full bg-current"></span> Registry Edit
-            </div>
-            <div class="nav-item" onclick="switchTab('viewers')">
-                <span class="w-1.5 h-1.5 rounded-full bg-current"></span> Viewer Registry
-            </div>
-            <div class="nav-item" onclick="switchTab('database')">
-                <span class="w-1.5 h-1.5 rounded-full bg-current"></span> System Database
-            </div>
-        </nav>
-        
-        <div class="mt-auto">
-            <button onclick="location.href='index.html'" class="text-[10px] text-neutral-600 hover:text-white tracking-widest uppercase transition-colors">← TERMINATE SESSION</button>
+        <!-- The Iframe Player -->
+        <div class="iframe-container">
+            <iframe id="zenith-iframe" 
+                    src="" 
+                    allow="autoplay; fullscreen" 
+                    allowfullscreen>
+            </iframe>
         </div>
-    </aside>
 
-    <main>
-        <!-- Tab: Release Forge -->
-        <div id="releases-tab">
-            <h1 class="text-3xl font-bold mb-2">Release Forge</h1>
-            <p class="text-neutral-500 mb-10">Inject new cinematic containers into the global stream.</p>
-
-            <div class="grid grid-cols-2 gap-10">
-                <div class="form-card">
-                    <h2 class="text-lg font-bold mb-6 flex items-center gap-2">Production Metadata</h2>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Project Title</label>
-                            <input type="text" id="m-title" class="input-box" placeholder="e.g. NEON SOUL">
-                        </div>
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Genre Tags</label>
-                            <input type="text" id="m-genre" class="input-box" placeholder="e.g. Cyberpunk / Noir">
-                        </div>
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Narrative Summary</label>
-                            <textarea id="m-plot" class="input-box h-32" placeholder="Input storyline data..."></textarea>
-                        </div>
+        <!-- UI Overlay (Minimalist for Iframe) -->
+        <div class="ui-overlay" id="ui-overlay">
+            <div class="flex justify-between items-start">
+                <div class="flex items-center gap-6">
+                    <button onclick="window.history.back()" class="back-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    </button>
+                    <div>
+                        <h1 id="video-title" class="heading-font text-2xl font-bold tracking-tighter uppercase text-white">Initializing...</h1>
+                        <p id="video-genre" class="text-[10px] text-red-500 tracking-[0.4em] font-bold mt-1 uppercase"></p>
                     </div>
                 </div>
-
-                <div class="form-card">
-                    <h2 class="text-lg font-bold mb-6 flex items-center gap-2">Asset Configuration</h2>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Video Link / Drive URL</label>
-                            <input type="text" id="m-video-url" class="input-box" placeholder="Paste full video or Drive link here">
-                            <p class="text-[9px] text-neutral-600 mt-1 uppercase tracking-tighter">Authorized links are saved permanently in local registry.</p>
-                        </div>
-                        
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Landscape Capture (Base64)</label>
-                            <label for="land-up" class="file-label mt-2" id="land-status">Click to encode image</label>
-                            <input type="file" id="land-up" class="hidden" accept="image/*" onchange="handleFileUpload(this, 'm-land', 'land-status')">
-                            <input type="hidden" id="m-land">
-                        </div>
-
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Portrait Capture (Base64)</label>
-                            <label for="port-up" class="file-label mt-2" id="port-status">Click to encode image</label>
-                            <input type="file" id="port-up" class="hidden" accept="image/*" onchange="handleFileUpload(this, 'm-port', 'port-status')">
-                            <input type="hidden" id="m-port">
-                        </div>
-
-                        <div class="pt-4">
-                            <button onclick="addMovie()" class="btn-primary w-full uppercase tracking-widest text-xs shadow-lg shadow-red-500/20">Authorize Publication</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tab: Registry Edit -->
-        <div id="edit-tab" class="hidden">
-            <h1 class="text-3xl font-bold mb-2">Registry Edit</h1>
-            <p class="text-neutral-500 mb-10">Lifetime archive of all cinematic publications on this device.</p>
-
-            <div class="form-card">
-                <table id="movie-registry-table">
-                    <thead>
-                        <tr>
-                            <th>TITLE</th>
-                            <th>GENRE</th>
-                            <th>SOURCE LINK</th>
-                            <th>ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody id="registry-list">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Tab: Viewers -->
-        <div id="viewers-tab" class="hidden">
-            <h1 class="text-3xl font-bold mb-2">Viewer Registry</h1>
-            <p class="text-neutral-500 mb-10">Active user credentials and session logs.</p>
-            <div class="form-card">
-                <table id="viewer-table">
-                    <thead>
-                        <tr>
-                            <th>IDENTIFIER</th>
-                            <th>ACCESS KEY</th>
-                            <th>STATUS</th>
-                        </tr>
-                    </thead>
-                    <tbody id="viewer-list"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Tab: System Database -->
-        <div id="database-tab" class="hidden">
-            <div class="flex justify-between items-center mb-10">
-                <div>
-                    <h1 class="text-3xl font-bold mb-2">System Database</h1>
-                    <p class="text-neutral-500">Review and export the lifetime production manifest.</p>
-                </div>
-                <button onclick="downloadJS()" class="btn-primary bg-blue-600 hover:bg-blue-500 flex items-center gap-2">
-                    EXPORT MOVIES.JS
-                </button>
-            </div>
-
-            <div class="form-card">
-                <pre id="js-output"></pre>
-            </div>
-        </div>
-    </main>
-
-    <!-- Edit Modal -->
-    <div id="edit-modal" class="modal">
-        <div class="form-card w-full max-w-xl">
-            <h2 class="text-xl font-bold mb-6 heading-font">Edit Publication</h2>
-            <div class="space-y-4">
-                <input type="hidden" id="edit-id">
-                <input type="text" id="edit-title" class="input-box" placeholder="Title">
-                <input type="text" id="edit-genre" class="input-box" placeholder="Genre">
-                <textarea id="edit-plot" class="input-box h-24" placeholder="Plot"></textarea>
-                <input type="text" id="edit-video-url" class="input-box" placeholder="Source URL">
-                
-                <div class="flex gap-4 pt-4">
-                    <button onclick="saveEdit()" class="btn-primary flex-1">UPDATE RECORD</button>
-                    <button onclick="closeModal()" class="btn-secondary">CANCEL</button>
+                <div class="text-right">
+                    <div class="heading-font text-[9px] text-neutral-500 tracking-widest">ZENITH SECURE STREAM</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Lifetime Data Management using LocalStorage
-        let movies = JSON.parse(localStorage.getItem('zenith_lifetime_movies') || '[]');
+        const urlParams = new URLSearchParams(window.location.search);
+        const movieId = urlParams.get('id');
+        const iframe = document.getElementById('zenith-iframe');
+        const loader = document.getElementById('loader');
 
-        function saveToLifetime() {
-            localStorage.setItem('zenith_lifetime_movies', JSON.stringify(movies));
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('main > div').forEach(div => div.classList.add('hidden'));
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            document.getElementById(tabId + '-tab').classList.remove('hidden');
-            event.currentTarget.classList.add('active');
-
-            if(tabId === 'edit') renderRegistry();
-            if(tabId === 'viewers') renderViewers();
-            if(tabId === 'database') renderDatabase();
-        }
-
-        function formatDriveUrl(inputUrl) {
-            const driveIdRegex = /(?:id=|\/d\/|folders\/)([a-zA-Z0-9_-]{25,})/;
-            const match = inputUrl.match(driveIdRegex);
-            if (match && match[1]) {
-                return `https://docs.google.com/uc?export=download&id=${match[1]}`;
-            }
-            return inputUrl;
-        }
-
-        function handleFileUpload(input, targetId, statusId) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                document.getElementById(statusId).innerText = "Processing...";
-                reader.onload = (e) => {
-                    document.getElementById(targetId).value = e.target.result;
-                    document.getElementById(statusId).innerText = "Encoded: " + file.name;
-                    document.getElementById(statusId).style.borderColor = "#ff2d2d";
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function addMovie() {
-            const rawUrl = document.getElementById('m-video-url').value.trim();
-            if(!rawUrl || !document.getElementById('m-title').value) return alert("Missing Critical Data");
-
-            const movie = {
-                id: "ZEN-" + Date.now(), // Permanent Unique ID
-                title: document.getElementById('m-title').value,
-                genre: document.getElementById('m-genre').value,
-                plot: document.getElementById('m-plot').value,
-                videoFile: formatDriveUrl(rawUrl),
-                posterLandscape: document.getElementById('m-land').value,
-                posterPortrait: document.getElementById('m-port').value,
-                isFeatured: true,
-                timestamp: new Date().toISOString()
-            };
-
-            movies.push(movie);
-            saveToLifetime(); // Save permanently
-            alert("RECORD AUTHORIZED PERMANENTLY");
-            
-            ['m-title', 'm-genre', 'm-plot', 'm-video-url', 'm-land', 'm-port'].forEach(id => document.getElementById(id).value = '');
-            ['land-status', 'port-status'].forEach(id => document.getElementById(id).innerText = "Click to encode image");
-        }
-
-        function renderRegistry() {
-            const list = document.getElementById('registry-list');
-            list.innerHTML = movies.map(m => `
-                <tr>
-                    <td class="font-bold">${m.title}</td>
-                    <td class="text-neutral-500">${m.genre}</td>
-                    <td class="mono-font text-[10px] text-blue-400 truncate max-w-xs">${m.videoFile}</td>
-                    <td class="flex gap-2">
-                        <button onclick="openEditModal('${m.id}')" class="btn-secondary hover:bg-white hover:text-black">EDIT</button>
-                        <button onclick="deleteMovie('${m.id}')" class="btn-secondary text-red-500 border-red-500/20 hover:bg-red-500 hover:text-white">DELETE</button>
-                    </td>
-                </tr>
-            `).join('');
-            if(movies.length === 0) list.innerHTML = '<tr><td colspan="4" class="text-center py-10 text-neutral-600">No active publications in registry.</td></tr>';
-        }
-
-        function openEditModal(id) {
-            const movie = movies.find(m => m.id === id);
-            document.getElementById('edit-id').value = movie.id;
-            document.getElementById('edit-title').value = movie.title;
-            document.getElementById('edit-genre').value = movie.genre;
-            document.getElementById('edit-plot').value = movie.plot;
-            document.getElementById('edit-video-url').value = movie.videoFile;
-            document.getElementById('edit-modal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('edit-modal').style.display = 'none';
-        }
-
-        function saveEdit() {
-            const id = document.getElementById('edit-id').value;
-            const index = movies.findIndex(m => m.id === id);
-            const rawUrl = document.getElementById('edit-video-url').value;
-
-            movies[index] = {
-                ...movies[index],
-                title: document.getElementById('edit-title').value,
-                genre: document.getElementById('edit-genre').value,
-                plot: document.getElementById('edit-plot').value,
-                videoFile: formatDriveUrl(rawUrl)
-            };
-
-            saveToLifetime(); // Update permanent storage
-            closeModal();
-            renderRegistry();
-        }
-
-        function deleteMovie(id) {
-            if(confirm("Confirm deletion from lifetime registry?")) {
-                movies = movies.filter(m => m.id !== id);
-                saveToLifetime();
-                renderRegistry();
-            }
-        }
-
-        function renderViewers() {
-            const users = JSON.parse(localStorage.getItem('zenith_users') || '[]');
-            const list = document.getElementById('viewer-list');
-            list.innerHTML = users.map(u => `
-                <tr>
-                    <td class="mono-font">${u.username}</td>
-                    <td class="text-neutral-600">••••••••</td>
-                    <td><span class="text-[9px] bg-green-500/10 text-green-500 px-2 py-1 rounded border border-green-500/20 font-bold">AUTHORIZED</span></td>
-                </tr>
-            `).join('');
-        }
-
-        function renderDatabase() {
-            const code = `const movieData = ${JSON.stringify(movies, null, 4)};\n\nif (typeof module !== 'undefined') { module.exports = movieData; }`;
-            document.getElementById('js-output').textContent = code;
-        }
-
-        function downloadJS() {
-            if(movies.length === 0) return alert("System Queue Empty");
-            const code = document.getElementById('js-output').textContent;
-            const blob = new Blob([code], { type: 'text/javascript' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'movies.js';
-            a.click();
-        }
-
-        // Initialize state
         window.onload = () => {
-            renderRegistry();
+            const movie = movieData.find(m => m.id === movieId);
+            
+            if (movie) {
+                document.getElementById('video-title').innerText = movie.title;
+                document.getElementById('video-genre').innerText = movie.genre;
+                
+                // Set the iframe source
+                iframe.src = movie.videoFile;
+                
+                // Hide loader after a bit (iframes don't have a reliable 'load' for drive previews)
+                setTimeout(() => {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }, 2000);
+            } else {
+                document.getElementById('video-title').innerText = "ASSET NOT FOUND";
+                loader.style.display = 'none';
+            }
         };
+
+        // UI Auto-hide
+        let idleTimer;
+        const overlay = document.getElementById('ui-overlay');
+        document.addEventListener('mousemove', () => {
+            overlay.style.opacity = '1';
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(() => {
+                overlay.style.opacity = '0';
+            }, 3000);
+        });
     </script>
 </body>
 </html>
