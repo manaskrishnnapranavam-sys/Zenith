@@ -35,12 +35,12 @@
             position: fixed;
             inset: 0;
             background: #000;
-            z-index: 1000;
+            z-index: 2000; /* Highest priority */
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            transition: opacity 1s cubic-bezier(0.7, 0, 0.3, 1);
+            transition: opacity 0.8s ease-out;
         }
 
         .splash-bg-animate {
@@ -63,7 +63,7 @@
             font-size: 3.5rem;
             z-index: 10;
             text-shadow: 0 0 40px rgba(255, 0, 0, 0.6);
-            animation: logo-stay 4s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+            animation: logo-stay 3.5s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         @keyframes logo-stay {
@@ -77,13 +77,14 @@
         #login-gate {
             position: fixed;
             inset: 0;
-            z-index: 900;
+            z-index: 1500; /* High priority, just under splash */
             background: rgba(0,0,0,0.85);
             backdrop-filter: blur(15px);
-            display: none; /* Controlled by JS */
+            display: none;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            opacity: 0;
             transition: opacity 0.5s ease;
         }
 
@@ -96,53 +97,12 @@
             text-align: center;
             position: relative;
             box-shadow: 0 0 50px rgba(255,0,0,0.1);
+            transform: scale(0.95);
+            transition: transform 0.5s ease;
         }
-
-        /* --- STYLIZED NAV BUTTONS --- */
-        .portal-btn-blue {
-            font-size: 10px;
-            letter-spacing: 0.1em;
-            padding: 10px 20px;
-            border-radius: 4px;
-            background: var(--zenith-blue);
-            color: white;
-            box-shadow: 0 0 20px rgba(0, 132, 255, 0.4);
-            transition: all 0.3s;
-            font-weight: 800;
-            text-transform: uppercase;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .portal-btn-blue:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 0 30px rgba(0, 132, 255, 0.6);
-            background: white;
-            color: var(--zenith-blue);
-        }
-
-        .portal-btn-red {
-            font-size: 10px;
-            letter-spacing: 0.1em;
-            padding: 10px 20px;
-            border-radius: 4px;
-            background: var(--accent);
-            color: white;
-            box-shadow: 0 0 20px rgba(255, 45, 45, 0.4);
-            transition: all 0.3s;
-            font-weight: 800;
-            text-transform: uppercase;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .portal-btn-red:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 0 30px rgba(255, 45, 45, 0.6);
-            background: white;
-            color: var(--accent);
-        }
-
-        #navbar {
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
-            backdrop-filter: blur(5px);
-        }
+        
+        #login-gate.visible { opacity: 1; }
+        #login-gate.visible .gate-card { transform: scale(1); }
 
         /* --- SLIDING HERO (BILLBOARD) --- */
         .hero-slider {
@@ -224,22 +184,64 @@
             position: relative;
             display: inline-block;
             overflow: hidden;
+            padding-right: 20px;
         }
 
         .catalog-header::after {
             content: "";
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, transparent, var(--accent), transparent);
-            height: 2px;
-            animation: scan 3s infinite linear;
+            top: 0; left: 0; width: 3px; height: 100%;
+            background: var(--accent);
+            box-shadow: 0 0 15px var(--accent);
         }
 
-        @keyframes scan {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(300%); }
+        /* --- STYLIZED NAV BUTTONS --- */
+        .portal-btn-blue {
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            padding: 10px 20px;
+            border-radius: 4px;
+            background: var(--zenith-blue);
+            color: white;
+            box-shadow: 0 0 20px rgba(0, 132, 255, 0.4);
+            transition: all 0.3s;
+            font-weight: 800;
+            text-transform: uppercase;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .portal-btn-blue:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 132, 255, 0.6);
+            background: white;
+            color: var(--zenith-blue);
         }
 
+        .portal-btn-red {
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            padding: 10px 20px;
+            border-radius: 4px;
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 45, 45, 0.4);
+            transition: all 0.3s;
+            font-weight: 800;
+            text-transform: uppercase;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .portal-btn-red:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(255, 45, 45, 0.6);
+            background: white;
+            color: var(--accent);
+        }
+
+        #navbar {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+            backdrop-filter: blur(5px);
+        }
+
+        /* Modal styling */
         #details-modal {
             position: fixed;
             inset: 0;
@@ -265,11 +267,14 @@
     <div id="login-gate">
         <div class="gate-card">
             <button onclick="closeGate()" class="absolute top-4 right-4 text-neutral-500 hover:text-white transition-colors" title="Dismiss">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
-            <div class="mono-font text-red-500 text-[10px] tracking-[0.3em] mb-4 uppercase">Identity_Check_V.04</div>
-            <h2 class="heading-font text-xl mb-6">RESTRICTED ACCESS</h2>
-            <p class="text-neutral-400 text-sm mb-8 leading-relaxed">System history and personalized archives are currently locked. Connect to your identity for the full Zenith experience.</p>
+            <div class="mono-font text-red-500 text-[10px] tracking-[0.3em] mb-4 uppercase flex items-center justify-center gap-2">
+                <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                Secure Uplink Request
+            </div>
+            <h2 class="heading-font text-xl mb-6">IDENTIFICATION REQUIRED</h2>
+            <p class="text-neutral-400 text-sm mb-8 leading-relaxed">System archives are optimized for authorized personnel. Log in to access your personal vault and watch history.</p>
             <div class="flex flex-col gap-3">
                 <button onclick="location.href='normal_uslgn.html'" class="bg-red-600 hover:bg-red-700 text-white py-4 font-bold tracking-widest text-xs uppercase transition-all shadow-lg shadow-red-900/20">Authorize Identity</button>
                 <button onclick="closeGate()" class="border border-white/10 hover:bg-white/5 text-neutral-400 py-4 font-bold tracking-widest text-xs uppercase transition-all">Proceed as Guest</button>
@@ -297,12 +302,12 @@
 
         <main class="relative -mt-20 z-10 pb-20">
             <div class="px-[5%] mb-12 flex justify-between items-end">
-                <div class="catalog-header">
-                    <div class="text-[10px] text-red-500 mono-font font-bold mb-1 tracking-widest">SYSTEM_STATUS: ONLINE</div>
-                    <h2 class="heading-font text-3xl font-bold tracking-tighter uppercase">Archive_Core // V.01</h2>
+                <div class="catalog-header pl-6">
+                    <div class="text-[9px] text-neutral-500 mono-font font-bold mb-1 tracking-[0.2em] uppercase">System Repository</div>
+                    <h2 class="heading-font text-3xl font-bold tracking-tighter uppercase">Primary_Database // Live</h2>
                 </div>
                 <div class="flex flex-col items-end">
-                    <span id="movie-count" class="mono-font text-[10px] text-neutral-500 tracking-[0.2em] uppercase">Checking Vault Integrity...</span>
+                    <span id="movie-count" class="mono-font text-[10px] text-neutral-500 tracking-[0.2em] uppercase">Indexing...</span>
                     <div class="h-[1px] w-32 bg-red-600 mt-2"></div>
                 </div>
             </div>
@@ -331,29 +336,37 @@
         window.addEventListener('load', () => {
             renderContent(); 
             
-            // Splash timeline
+            // Wait for splash animation (3.5s) then transition
             setTimeout(() => {
-                document.getElementById('splash-screen').style.opacity = '0';
-                document.getElementById('main-app').style.opacity = '1';
+                const splash = document.getElementById('splash-screen');
+                const main = document.getElementById('main-app');
+                const gate = document.getElementById('login-gate');
+                
+                splash.style.opacity = '0';
+                main.style.opacity = '1';
                 document.body.classList.remove('overflow-hidden');
                 
+                // Hide splash completely after fade out
                 setTimeout(() => {
-                    document.getElementById('splash-screen').style.display = 'none';
-                    // Show login gate IF no session exists
-                    const session = localStorage.getItem('zenith_session_user');
-                    if(!session) {
-                        const gate = document.getElementById('login-gate');
+                    splash.style.display = 'none';
+                    
+                    // Check if user is already logged in
+                    const isLoggedIn = localStorage.getItem('zenith_session_user');
+                    if (!isLoggedIn) {
+                        // If public guest, show login gate
                         gate.style.display = 'flex';
-                        gate.style.opacity = '0';
-                        setTimeout(() => gate.style.opacity = '1', 10);
+                        // Small delay to allow display:flex to render before opacity transition
+                        requestAnimationFrame(() => {
+                            gate.classList.add('visible');
+                        });
                     }
-                }, 1000);
-            }, 4000);
+                }, 800); 
+            }, 3500);
         });
 
         function closeGate() {
             const gate = document.getElementById('login-gate');
-            gate.style.opacity = '0';
+            gate.classList.remove('visible');
             setTimeout(() => gate.style.display = 'none', 500);
         }
 
@@ -367,7 +380,7 @@
                 return;
             }
 
-            countLabel.innerText = `DATA_SYNC: ${movieData.length} RECORDS_FOUND`;
+            countLabel.innerText = `SYNC_COMPLETE: ${movieData.length} ASSETS`;
 
             // Hero Slider
             const featured = movieData.filter(m => m.isFeatured);
@@ -380,6 +393,7 @@
                         </div>
                         <h1 class="text-7xl font-bold mb-6 tracking-tighter uppercase leading-[0.9]">${movie.title}</h1>
                         <p class="text-neutral-300 text-lg mb-10 max-w-lg leading-relaxed">${movie.plot}</p>
+                        <!-- ADDED origin=public -->
                         <button class="bg-red-600 text-white px-10 py-4 font-bold text-xs tracking-widest uppercase hover:bg-white hover:text-black transition-all" onclick="redirectToPlayer('${movie.id}')">Initiate Stream</button>
                     </div>
                 </div>
@@ -408,7 +422,11 @@
         }
 
         function closeDetails() { document.getElementById('details-modal').style.display = 'none'; }
-        function redirectToPlayer(id) { window.location.href = `video_player.html?id=${id}`; }
+        
+        // UPDATED: Added origin=public param
+        function redirectToPlayer(id) { 
+            window.location.href = `video_player.html?id=${id}&origin=public`; 
+        }
     </script>
 </body>
 </html>
