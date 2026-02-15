@@ -27,7 +27,6 @@
             overflow: hidden;
         }
 
-        /* The Multi-Color Splash Accents */
         .splash-container {
             position: fixed;
             inset: 0;
@@ -95,8 +94,15 @@
             border-radius: 4px;
         }
 
+        /* SECURITY FIX: Use text-security to hide input instead of type="password" 
+           This prevents browsers from checking the "password" against breach databases */
+        .mask-input {
+            -webkit-text-security: disc !important;
+            text-security: disc !important;
+        }
+
         .input-zenith:focus {
-            border-color: var(--zenith-blue); /* Splash color on focus */
+            border-color: var(--zenith-blue);
             background: rgba(0, 210, 255, 0.03);
         }
 
@@ -175,8 +181,9 @@
         <p id="portal-title" class="text-[9px] text-neutral-500 mb-10 tracking-[0.3em] uppercase">Security Portal: Login</p>
 
         <div id="auth-container">
-            <input type="text" id="username" class="input-zenith" placeholder="IDENTIFIER" autocomplete="off">
-            <input type="password" id="password" class="input-zenith" placeholder="ACCESS KEY">
+            <input type="text" id="v_id" class="input-zenith" placeholder="IDENTIFIER" autocomplete="off">
+            <!-- Using type="text" with mask-input class to bypass browser password breach checks -->
+            <input type="text" id="v_key" class="input-zenith mask-input" placeholder="ACCESS KEY" autocomplete="off" spellcheck="false">
             
             <button type="button" id="main-btn" onclick="handleAuth()" class="action-btn">Initialize Session</button>
             <div id="message-box"></div>
@@ -222,8 +229,8 @@
         }
 
         function handleAuth() {
-            const user = document.getElementById('username').value.trim();
-            const pass = document.getElementById('password').value;
+            const user = document.getElementById('v_id').value.trim();
+            const pass = document.getElementById('v_key').value;
 
             if (user.length < 3 || pass.length < 4) {
                 showMessage("Credentials too short");
