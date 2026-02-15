@@ -192,7 +192,7 @@
             </div>
         </div>
 
-        <nav>
+        <nav id="sidebar-nav">
             <div class="nav-item active" onclick="switchTab('releases')">
                 <span class="w-1.5 h-1.5 rounded-full bg-current"></span> Release Forge
             </div>
@@ -287,6 +287,27 @@
             </div>
         </div>
 
+        <!-- Tab: Viewer Registry (FIXED) -->
+        <div id="viewers-tab" class="hidden">
+            <h1 class="text-3xl font-bold mb-2 text-red-500">Viewer Registry</h1>
+            <p class="text-neutral-500 mb-10">Manage registered identities and monitor system access.</p>
+            <div class="form-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>IDENTIFIER</th>
+                            <th>ACCESS KEY (HASHED)</th>
+                            <th>ACTIVITY</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="viewer-list">
+                        <!-- Populated via script -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- Tab: System Database -->
         <div id="database-tab" class="hidden">
             <div class="flex justify-between items-center mb-10">
@@ -294,7 +315,13 @@
                     <h1 class="text-3xl font-bold mb-2">System Database</h1>
                     <p class="text-neutral-500">Consolidated JSON manifest for movies.js.</p>
                 </div>
-                <button onclick="downloadJS()" class="btn-primary bg-blue-600 hover:bg-blue-500">EXPORT MOVIES.JS</button>
+                <div class="flex gap-4">
+                    <div class="px-6 py-3 bg-white/5 border border-white/10 rounded-lg text-center">
+                        <div class="text-[9px] uppercase text-neutral-500">Total Users</div>
+                        <div id="user-stat-count" class="text-xl font-bold">0</div>
+                    </div>
+                    <button onclick="downloadJS()" class="btn-primary bg-blue-600 hover:bg-blue-500">EXPORT MOVIES.JS</button>
+                </div>
             </div>
             <div class="form-card">
                 <pre id="js-output"></pre>
@@ -330,51 +357,70 @@
             document.querySelectorAll('main > div').forEach(div => div.classList.add('hidden'));
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.getElementById(tabId + '-tab').classList.remove('hidden');
-            event.currentTarget.classList.add('active');
+            
+            // Find the clicked nav item and mark it active
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                if(item.innerText.toLowerCase().includes(tabId.replace('-', ' '))) {
+                    item.classList.add('active');
+                }
+            });
 
             if(tabId === 'edit') renderRegistry();
+            if(tabId === 'viewers') renderViewers();
             if(tabId === 'database') renderDatabase();
         }
 
-        // --- SURGICAL URL PARSER ---
-        // This function extracts ONLY the ID and ignores everything else that causes 404s
+        // --- VIEWER REGISTRY LOGIC ---
+        function renderViewers() {
+            const users = JSON.parse(localStorage.getItem('zenith_users') || '[]');
+            const list = document.getElementById('viewer-list');
+            
+            if (users.length === 0) {
+                list.innerHTML = `<tr><td colspan="4" class="text-center py-10 text-neutral-600 italic">No registered viewers found in the database.</td></tr>`;
+                return;
+            }
+
+            list.innerHTML = users.map(user => `
+                <tr class="hover:bg-white/5 transition-all">
+                    <td class="font-bold text-white">${user.username}</td>
+                    <td class="mono-font text-neutral-500">${"*".repeat(user.password.length)}</td>
+                    <td class="text-[11px] text-neutral-400">
+                        ${user.history ? user.history.length : 0} Items Watched
+                    </td>
+                    <td>
+                        <button onclick="deleteViewer('${user.username}')" class="text-red-500 hover:text-red-400 text-[10px] font-bold uppercase tracking-widest">Wipe Access</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteViewer(username) {
+            if(!confirm(`Are you sure you want to permanently delete the identity: ${username}?`)) return;
+            
+            let users = JSON.parse(localStorage.getItem('zenith_users') || '[]');
+            users = users.filter(u => u.username !== username);
+            localStorage.setItem('zenith_users', JSON.stringify(users));
+            renderViewers();
+        }
+
+        // --- URL PARSER ---
         function convertToPreviewUrl(inputUrl) {
             let id = "";
-            
-            // Pattern 1: /file/d/ID/view...
             const matchFile = inputUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
             if (matchFile && matchFile[1]) id = matchFile[1];
-
-            // Pattern 2: id=ID
             if (!id) {
                 const matchIdParam = inputUrl.match(/id=([a-zA-Z0-9_-]+)/);
                 if (matchIdParam && matchIdParam[1]) id = matchIdParam[1];
             }
-
-            // Pattern 3: /d/ID
-            if (!id) {
-                const matchShort = inputUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
-                if (matchShort && matchShort[1]) id = matchShort[1];
-            }
-
-            // If we found an ID, return the clean preview link
-            if (id) {
-                return `https://drive.google.com/file/d/${id}/preview`;
-            }
-
-            // If it's just a raw ID string (33 chars approx)
-            if (inputUrl.length > 25 && !inputUrl.includes('/')) {
-                return `https://drive.google.com/file/d/${inputUrl}/preview`;
-            }
-
-            return inputUrl; // Return original if we couldn't figure it out
+            if (id) return `https://drive.google.com/file/d/${id}/preview`;
+            return inputUrl;
         }
 
         function previewLinkFormat() {
             const raw = document.getElementById('m-video-url').value;
             const converted = convertToPreviewUrl(raw);
             const status = document.getElementById('url-status');
-            
             if (converted.includes('/preview')) {
                 status.innerText = "✓ Valid Format Detected: " + converted;
                 status.style.color = "#00ff00";
@@ -397,19 +443,15 @@
         }
 
         function addMovie() {
-            const rawUrl = document.getElementById('m-video-url').value.trim();
             const title = document.getElementById('m-title').value.trim();
-            
-            if(!rawUrl || !title) return alert("Critical fields missing.");
-
-            const finalUrl = convertToPreviewUrl(rawUrl);
+            if(!title) return alert("Title required.");
 
             const movie = {
                 id: "ZEN-" + Date.now(),
                 title: title,
                 genre: document.getElementById('m-genre').value,
                 plot: document.getElementById('m-plot').value,
-                videoFile: finalUrl,
+                videoFile: convertToPreviewUrl(document.getElementById('m-video-url').value),
                 posterLandscape: document.getElementById('m-land').value,
                 posterPortrait: document.getElementById('m-port').value,
                 isFeatured: true,
@@ -419,10 +461,7 @@
             movies.push(movie);
             saveToLifetime();
             alert("RECORD AUTHORIZED");
-            
-            ['m-title', 'm-genre', 'm-plot', 'm-video-url', 'm-land', 'm-port'].forEach(id => document.getElementById(id).value = '');
-            ['land-status', 'port-status'].forEach(id => document.getElementById(id).innerText = "Click to encode image");
-            document.getElementById('url-status').innerText = "Waiting for input...";
+            switchTab('edit');
         }
 
         function renderRegistry() {
@@ -455,7 +494,6 @@
         function saveEdit() {
             const id = document.getElementById('edit-id').value;
             const index = movies.findIndex(m => m.id === id);
-            
             movies[index] = {
                 ...movies[index],
                 title: document.getElementById('edit-title').value,
@@ -477,6 +515,8 @@
         }
 
         function renderDatabase() {
+            const users = JSON.parse(localStorage.getItem('zenith_users') || '[]');
+            document.getElementById('user-stat-count').innerText = users.length;
             const code = `const movieData = ${JSON.stringify(movies, null, 4)};\n\nif (typeof module !== 'undefined') { module.exports = movieData; }`;
             document.getElementById('js-output').textContent = code;
         }
