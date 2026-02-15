@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Syncopate:wght@700&display=swap" rel="stylesheet">
     <script src="movies.js"></script>
     <style>
-        :root { --accent: #ff2d2d; --bg: #050505; }
+        :root { --accent: #ff2d2d; --bg: #050505; --glass: rgba(15, 15, 15, 0.85); }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
         
         .viewport { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; background: #000; }
@@ -19,6 +19,77 @@
         .hide-ui .hud { opacity: 0; }
         .hide-ui { cursor: none; }
 
+        /* End Session Modal */
+        #exit-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(20px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #exit-modal.visible { display: flex; opacity: 1; }
+
+        .modal-card {
+            background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 90%;
+            max-width: 500px;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        .rating-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .rating-btn:hover { background: white; color: black; transform: scale(1.1); }
+        .rating-btn.active-like { background: #00ff88; color: black; border-color: #00ff88; }
+        .rating-btn.active-dislike { background: #ff4444; color: black; border-color: #ff4444; }
+
+        .up-next-thumb {
+            width: 100%;
+            height: 120px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 8px;
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-manual-end {
+            background: rgba(255, 45, 45, 0.1);
+            border: 1px solid rgba(255, 45, 45, 0.3);
+            color: #ff2d2d;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+        .btn-manual-end:hover {
+            background: #ff2d2d;
+            color: white;
+            box-shadow: 0 0 15px rgba(255, 45, 45, 0.4);
+        }
+
         #save-status { position: fixed; bottom: 30px; left: 40px; font-size: 9px; color: #444; text-transform: uppercase; letter-spacing: 3px; font-weight: bold; z-index: 10; }
     </style>
 </head>
@@ -26,14 +97,20 @@
 
     <div class="viewport" id="stage">
         <div class="hud" id="hud">
-            <div class="flex items-center gap-8">
-                <!-- Smart Exit Button -->
-                <button onclick="smartExit()" class="interactive w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                </button>
-                <div>
-                    <h1 id="v-title" class="text-3xl font-bold uppercase tracking-tighter">---</h1>
-                    <span id="sync-label" class="text-[9px] text-red-500 font-bold uppercase tracking-[0.4em]">Vault Sync Active</span>
+            <div class="flex items-center justify-between w-full">
+                <div class="flex items-center gap-8">
+                    <!-- Standard Exit Trigger -->
+                    <button onclick="confirmExit()" class="interactive w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    </button>
+                    <div>
+                        <div class="flex items-center gap-4 mb-1">
+                            <h1 id="v-title" class="text-3xl font-bold uppercase tracking-tighter">---</h1>
+                            <!-- New Manual End Button -->
+                            <button onclick="confirmExit()" class="btn-manual-end interactive">End Stream</button>
+                        </div>
+                        <span id="sync-label" class="text-[9px] text-red-500 font-bold uppercase tracking-[0.4em]">Vault Sync Active</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -43,13 +120,44 @@
         <div id="save-status">Initializing Data Sync...</div>
     </div>
 
+    <!-- End Stream Modal -->
+    <div id="exit-modal">
+        <div class="modal-card">
+            <h2 class="text-[10px] tracking-[0.4em] text-neutral-500 font-bold uppercase mb-4">Stream Termination</h2>
+            <h3 class="text-2xl font-bold mb-8 tracking-tight">END THIS SESSION?</h3>
+            
+            <p class="text-xs text-neutral-400 mb-4 uppercase tracking-widest">Rate your experience</p>
+            <div class="flex justify-center gap-6 mb-10">
+                <button onclick="setRating('dislike')" id="rate-down" class="rating-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+                </button>
+                <button onclick="setRating('like')" id="rate-up" class="rating-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+                </button>
+            </div>
+
+            <div id="up-next-section" class="mb-10 text-left">
+                <p class="text-[9px] font-bold text-red-500 tracking-widest uppercase mb-2">Up Next</p>
+                <div id="next-thumb" class="up-next-thumb">
+                    <div class="absolute inset-0 bg-black/40 flex items-end p-4">
+                        <span id="next-title" class="text-xs font-bold uppercase tracking-tight text-white">---</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="closeModal()" class="py-4 border border-white/10 text-xs font-bold tracking-widest uppercase hover:bg-white/5 transition-all">Resume</button>
+                <button onclick="finalExit()" class="py-4 bg-red-600 text-xs font-bold tracking-widest uppercase hover:bg-red-700 transition-all">Confirm End</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const params = new URLSearchParams(window.location.search);
         const movieId = params.get('id');
-        const originPage = params.get('origin'); 
         let playhead = 0;
+        let rating = null;
 
-        // Function to ensure Google Drive links are in "Preview" mode
         function cleanDriveUrl(url) {
             if (!url) return "";
             if (url.includes('drive.google.com')) {
@@ -66,19 +174,30 @@
         }
 
         window.onload = () => {
-            const movie = movieData.find(m => m.id === movieId);
-            if (!movie) return smartExit();
+            const localMovies = JSON.parse(localStorage.getItem('zenith_lifetime_movies') || '[]');
+            const activeData = localMovies.length > 0 ? localMovies : movieData;
+            
+            const movie = activeData.find(m => m.id === movieId);
+            if (!movie) return finalExit();
 
             document.getElementById('v-title').innerText = movie.title;
-            
-            // Apply URL cleaning logic
-            const embedUrl = cleanDriveUrl(movie.videoFile);
-            document.getElementById('cinema-frame').src = embedUrl;
+            document.getElementById('cinema-frame').src = cleanDriveUrl(movie.videoFile);
 
-            // Only show "Vault Sync" if user is logged in
+            // Prepare "Up Next" Logic
+            const currentIndex = activeData.findIndex(m => m.id === movieId);
+            const nextMovie = activeData[currentIndex + 1] || activeData[0];
+            
+            // Only show up next if it's not the same movie
+            if (nextMovie && nextMovie.id !== movieId) {
+                document.getElementById('next-title').innerText = nextMovie.title;
+                document.getElementById('next-thumb').style.backgroundImage = `url('${nextMovie.posterLandscape}')`;
+            } else {
+                document.getElementById('up-next-section').style.display = 'none';
+            }
+
             const hasUser = localStorage.getItem('zenith_session_user');
             if (!hasUser) {
-                document.getElementById('sync-label').innerText = "Guest Mode Active";
+                document.getElementById('sync-label').innerText = "Guest Mode";
                 document.getElementById('sync-label').classList.replace('text-red-500', 'text-neutral-500');
                 document.getElementById('save-status').style.display = 'none';
             }
@@ -86,38 +205,46 @@
             setInterval(() => {
                 playhead += 1;
                 if (hasUser) updateVault(movieId, playhead);
-            }, 5000); // Sync every 5 seconds to save resources
+            }, 5000);
         };
 
         function updateVault(id, time) {
             const hist = JSON.parse(localStorage.getItem('zenith_history') || '{}');
             hist[id] = time;
             localStorage.setItem('zenith_history', JSON.stringify(hist));
-            
-            const status = document.getElementById('save-status');
-            status.innerText = "Vault Synchronized";
-            setTimeout(() => { status.innerText = "Monitoring Session"; }, 800);
+            document.getElementById('save-status').innerText = "Vault Synchronized";
+            setTimeout(() => { document.getElementById('save-status').innerText = "Monitoring Session"; }, 800);
         }
 
-        function smartExit() {
+        function setRating(val) {
+            rating = val;
+            document.getElementById('rate-up').className = 'rating-btn' + (val === 'like' ? ' active-like' : '');
+            document.getElementById('rate-down').className = 'rating-btn' + (val === 'dislike' ? ' active-dislike' : '');
+        }
+
+        function confirmExit() {
+            document.getElementById('exit-modal').classList.add('visible');
+            document.body.classList.remove('hide-ui');
+        }
+
+        function closeModal() {
+            document.getElementById('exit-modal').classList.remove('visible');
+        }
+
+        function finalExit() {
             const hasUser = localStorage.getItem('zenith_session_user');
-            
-            // If the user is logged in, always go to the portal
-            if (hasUser) {
-                window.location.href = 'norm_viewerpage.html';
-                return;
-            }
-            
-            // If not logged in, go to the public home page
-            window.location.href = 'index.html';
+            window.location.href = hasUser ? 'norm_viewerpage.html' : 'index.html';
         }
 
-        // HUD Visibility Logic
         let idle;
         document.addEventListener('mousemove', () => {
             document.body.classList.remove('hide-ui');
             clearTimeout(idle);
-            idle = setTimeout(() => document.body.classList.add('hide-ui'), 3000);
+            idle = setTimeout(() => {
+                if(!document.getElementById('exit-modal').classList.contains('visible')) {
+                    document.body.classList.add('hide-ui');
+                }
+            }, 3000);
         });
     </script>
 </body>
