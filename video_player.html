@@ -8,402 +8,111 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Syncopate:wght@700&display=swap" rel="stylesheet">
     <script src="movies.js"></script>
     <style>
-        :root {
-            --zenith-red: #ff2d2d;
-            --zenith-blue: #00d2ff;
-            --bg-black: #050505;
-        }
-
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-black);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            overflow: hidden;
-        }
-
-        /* --- AMBIENT LIGHTING SYSTEM --- */
-        .ambient-layer {
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .light-source {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.4;
-            animation: pulse-light 10s infinite alternate;
-        }
-
-        .source-red {
-            top: -20%;
-            left: -10%;
-            width: 60vw;
-            height: 60vw;
-            background: radial-gradient(circle, var(--zenith-red), transparent 60%);
-        }
-
-        .source-blue {
-            bottom: -20%;
-            right: -10%;
-            width: 50vw;
-            height: 50vw;
-            background: radial-gradient(circle, var(--zenith-blue), transparent 60%);
-            animation-delay: 2s;
-        }
-
-        @keyframes pulse-light {
-            0% { transform: scale(1); opacity: 0.3; }
-            100% { transform: scale(1.1); opacity: 0.5; }
-        }
-
-        /* --- PLAYER FRAME --- */
-        .viewport-container {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            transition: padding 0.5s ease;
-        }
-
-        .viewport-container.cinema-mode {
-            padding: 0;
-        }
-
-        .glass-frame {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            max-width: 1600px;
-            max-height: 90vh;
-            background: #000;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-            transition: all 0.5s ease;
-        }
-
-        .viewport-container.cinema-mode .glass-frame {
-            max-width: 100%;
-            max-height: 100%;
-            border-radius: 0;
-            border: none;
-        }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            opacity: 0;
-            animation: fade-in 1.5s forwards 0.5s;
-        }
-
-        @keyframes fade-in { to { opacity: 1; } }
-
-        /* --- UI OVERLAYS --- */
-        .hud-overlay {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 20;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 40px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.9) 100%);
-            transition: opacity 0.3s ease;
-        }
-
+        :root { --accent: #ff2d2d; --bg: #050505; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
+        
+        .viewport { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; background: #000; }
+        iframe { width: 100%; height: 100%; border: none; z-index: 1; }
+        
+        .hud { position: absolute; top: 0; left: 0; width: 100%; padding: 40px; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); pointer-events: none; z-index: 10; transition: opacity 0.5s; }
         .interactive { pointer-events: auto; }
-        .heading-font { font-family: 'Syncopate', sans-serif; }
-
-        .nav-btn {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.3s;
-            backdrop-filter: blur(10px);
-        }
-
-        .nav-btn:hover {
-            background: var(--zenith-red);
-            border-color: var(--zenith-red);
-            transform: scale(1.1);
-        }
-
-        /* --- END SCREEN --- */
-        #end-screen {
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(30px);
-            z-index: 100;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            animation: zoom-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes zoom-in { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-
-        .rating-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 40px;
-            border-radius: 24px;
-            text-align: center;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .rating-btn {
-            width: 70px; height: 70px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.3s;
-        }
-
-        .rating-btn:hover {
-            background: white;
-            color: black;
-            transform: translateY(-5px);
-        }
-
-        .next-preview {
-            margin-top: 40px;
-            width: 100%;
-            max-width: 400px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            gap: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-        }
-
-        .countdown-overlay {
-            position: absolute;
-            bottom: 0; left: 0; height: 3px;
-            background: var(--zenith-blue);
-            width: 100%;
-            transform-origin: left;
-            animation: drain 10s linear forwards;
-        }
-
-        @keyframes drain { from { transform: scaleX(1); } to { transform: scaleX(0); } }
-
-        .hide-ui .hud-overlay { opacity: 0; }
+        .hide-ui .hud { opacity: 0; }
         .hide-ui { cursor: none; }
 
-        /* Loader */
-        #loader {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 50;
-            display: flex; flex-direction: column;
-            align-items: center; gap: 15px;
-        }
-
-        .spinner {
-            width: 50px; height: 50px;
-            border: 2px solid rgba(255,255,255,0.1);
-            border-top: 2px solid var(--zenith-red);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
+        #save-status { position: fixed; bottom: 30px; left: 40px; font-size: 9px; color: #444; text-transform: uppercase; letter-spacing: 3px; font-weight: bold; z-index: 10; }
     </style>
 </head>
 <body>
 
-    <div class="ambient-layer">
-        <div class="light-source source-red"></div>
-        <div class="light-source source-blue"></div>
-    </div>
-
-    <div class="viewport-container" id="main-container">
-        
-        <div id="loader">
-            <div class="spinner"></div>
-            <div class="text-[10px] tracking-[0.3em] text-neutral-500 animate-pulse">SECURE LINK ESTABLISHED</div>
-        </div>
-
-        <div class="glass-frame">
-            <iframe id="zenith-iframe" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
-        </div>
-
-        <!-- END SCREEN -->
-        <div id="end-screen">
-            <div class="rating-card">
-                <button onclick="smartBack()" class="absolute top-8 right-8 text-neutral-500 hover:text-white transition-colors">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    <div class="viewport" id="stage">
+        <div class="hud" id="hud">
+            <div class="flex items-center gap-8">
+                <!-- Smart Exit Button -->
+                <button onclick="smartExit()" class="interactive w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                 </button>
-
-                <h2 class="heading-font text-2xl font-bold mb-2 uppercase tracking-tight">EXPERIENCE CONCLUDED</h2>
-                <p class="text-neutral-500 text-xs mb-8 tracking-widest">FEEDBACK HELPS MAP THE VOID</p>
-                
-                <div class="flex justify-center gap-6 mb-10">
-                    <button class="rating-btn group" onclick="submitRating('loved')">
-                        <svg class="w-8 h-8 group-hover:text-red-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                    </button>
-                    <button class="rating-btn group" onclick="submitRating('okay')">
-                        <svg class="w-8 h-8 group-hover:text-blue-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-                    </button>
-                </div>
-
-                <div class="text-[10px] tracking-[0.4em] text-neutral-600 uppercase mb-4">Transmission Sequential</div>
-                
-                <div class="next-preview cursor-pointer group" onclick="playNext()">
-                    <img id="next-poster" src="" class="w-20 h-28 object-cover rounded-lg shadow-2xl bg-neutral-900">
-                    <div class="text-left">
-                        <div id="next-title" class="heading-font text-lg font-bold group-hover:text-blue-400 transition-colors">---</div>
-                        <div class="text-[10px] text-neutral-500 uppercase tracking-widest mt-1">INITIATING IN <span id="timer-sec">10</span>s</div>
-                    </div>
-                    <div class="countdown-overlay" id="drain-bar"></div>
-                </div>
-
-                <div class="flex gap-4 mt-10 justify-center">
-                    <button onclick="playNext()" class="px-10 py-3 bg-white text-black text-[10px] font-bold uppercase tracking-widest hover:bg-blue-500 hover:text-white transition-all">Play Now</button>
-                    <button onclick="smartBack()" class="px-10 py-3 border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all">Exit Archive</button>
+                <div>
+                    <h1 id="v-title" class="text-3xl font-bold uppercase tracking-tighter">---</h1>
+                    <span id="sync-label" class="text-[9px] text-red-500 font-bold uppercase tracking-[0.4em]">Vault Sync Active</span>
                 </div>
             </div>
         </div>
 
-        <!-- HUD Overlay -->
-        <div class="hud-overlay" id="hud">
-            <div class="flex justify-between items-start">
-                <div class="back-btn-wrapper interactive flex items-center gap-6">
-                    <!-- SMART BACK TRIGGER -->
-                    <button onclick="smartBack()" class="nav-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                    </button>
-                    <div>
-                        <h1 id="video-title" class="heading-font text-3xl font-bold tracking-tighter text-white uppercase">---</h1>
-                        <span id="video-genre" class="text-[9px] text-red-500 tracking-[0.3em] font-bold uppercase">---</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-between items-end">
-                <div class="hidden md:block">
-                    <div class="text-[9px] text-neutral-500 tracking-[0.2em] mb-1">ZENITH CORE SYSTEM</div>
-                    <div class="text-[10px] text-neutral-400 font-bold" id="clock">00:00:00</div>
-                </div>
-                <div class="interactive flex gap-4">
-                    <button class="sys-btn bg-white/5 border border-white/10 px-6 py-2 rounded text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all" onclick="toggleCinemaMode()">Cinema Mode</button>
-                    <button class="sys-btn bg-red-600/20 border border-red-600/30 px-6 py-2 rounded text-[10px] uppercase tracking-widest hover:bg-red-600 transition-all" onclick="triggerEndScreen()">Manual Finish</button>
-                </div>
-            </div>
-        </div>
+        <iframe id="cinema-frame" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+        
+        <div id="save-status">Initializing Data Sync...</div>
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const movieId = urlParams.get('id');
-        const iframe = document.getElementById('zenith-iframe');
-        const loader = document.getElementById('loader');
-        let nextMovieId = null;
-        let isEnded = false;
+        const params = new URLSearchParams(window.location.search);
+        const movieId = params.get('id');
+        const originPage = params.get('origin'); 
+        let playhead = 0;
 
-        // SMART BACK LOGIC
-        function smartBack() {
-            const loggedInUser = localStorage.getItem('zenith_session_user');
-            
-            if (loggedInUser) {
-                // If user is logged in, take them to their Vault Dashboard
-                window.location.href = 'norm_viewerpage.html';
-            } else {
-                // If public viewer (no session), take them back to the Home Landing page
-                window.location.href = 'index.html';
+        // Function to ensure Google Drive links are in "Preview" mode
+        function cleanDriveUrl(url) {
+            if (!url) return "";
+            if (url.includes('drive.google.com')) {
+                let id = "";
+                const matchFile = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                if (matchFile && matchFile[1]) id = matchFile[1];
+                if (!id) {
+                    const matchIdParam = url.match(/id=([a-zA-Z0-9_-]+)/);
+                    if (matchIdParam && matchIdParam[1]) id = matchIdParam[1];
+                }
+                if (id) return `https://drive.google.com/file/d/${id}/preview`;
             }
+            return url;
         }
-
-        // Clock logic
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
-        }, 1000);
 
         window.onload = () => {
-            if (typeof movieData === 'undefined') return;
-
             const movie = movieData.find(m => m.id === movieId);
-            const currentIndex = movieData.findIndex(m => m.id === movieId);
-            const nextMovie = movieData[(currentIndex + 1) % movieData.length];
-            
-            nextMovieId = nextMovie.id;
-            document.getElementById('next-title').innerText = nextMovie.title;
-            document.getElementById('next-poster').src = nextMovie.posterPortrait;
+            if (!movie) return smartExit();
 
-            if (movie) {
-                document.getElementById('video-title').innerText = movie.title;
-                document.getElementById('video-genre').innerText = movie.genre;
-                iframe.src = movie.videoFile;
-                
-                setTimeout(() => {
-                    loader.style.opacity = '0';
-                    setTimeout(() => loader.style.display = 'none', 500);
-                }, 2000);
+            document.getElementById('v-title').innerText = movie.title;
+            
+            // Apply URL cleaning logic
+            const embedUrl = cleanDriveUrl(movie.videoFile);
+            document.getElementById('cinema-frame').src = embedUrl;
+
+            // Only show "Vault Sync" if user is logged in
+            const hasUser = localStorage.getItem('zenith_session_user');
+            if (!hasUser) {
+                document.getElementById('sync-label').innerText = "Guest Mode Active";
+                document.getElementById('sync-label').classList.replace('text-red-500', 'text-neutral-500');
+                document.getElementById('save-status').style.display = 'none';
             }
+
+            setInterval(() => {
+                playhead += 1;
+                if (hasUser) updateVault(movieId, playhead);
+            }, 5000); // Sync every 5 seconds to save resources
         };
 
-        function triggerEndScreen() {
-            if (isEnded) return;
-            isEnded = true;
-
-            document.getElementById('hud').style.display = 'none';
-            const endScreen = document.getElementById('end-screen');
-            endScreen.style.display = 'flex';
+        function updateVault(id, time) {
+            const hist = JSON.parse(localStorage.getItem('zenith_history') || '{}');
+            hist[id] = time;
+            localStorage.setItem('zenith_history', JSON.stringify(hist));
             
-            let timeLeft = 10;
-            const timerEl = document.getElementById('timer-sec');
-            
-            const countdown = setInterval(() => {
-                timeLeft--;
-                timerEl.innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(countdown);
-                    playNext();
-                }
-            }, 1000);
+            const status = document.getElementById('save-status');
+            status.innerText = "Vault Synchronized";
+            setTimeout(() => { status.innerText = "Monitoring Session"; }, 800);
         }
 
-        function submitRating(val) {
-            const card = document.querySelector('.rating-card');
-            card.style.borderColor = val === 'loved' ? '#ff2d2d' : '#00d2ff';
-            setTimeout(playNext, 800);
-        }
-
-        function playNext() {
-            if (nextMovieId) {
-                window.location.href = `video_player.html?id=${nextMovieId}`;
+        function smartExit() {
+            const hasUser = localStorage.getItem('zenith_session_user');
+            
+            // If the user is logged in, always go to the portal
+            if (hasUser) {
+                window.location.href = 'norm_viewerpage.html';
+                return;
             }
+            
+            // If not logged in, go to the public home page
+            window.location.href = 'index.html';
         }
 
-        function toggleCinemaMode() {
-            document.getElementById('main-container').classList.toggle('cinema-mode');
-        }
-
+        // HUD Visibility Logic
         let idle;
         document.addEventListener('mousemove', () => {
             document.body.classList.remove('hide-ui');
