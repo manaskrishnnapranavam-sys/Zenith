@@ -11,27 +11,33 @@
         body { background-color: var(--bg); color: white; font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
         .heading-font { font-family: 'Syncopate', sans-serif; }
         .mono-font { font-family: 'Fira Code', monospace; }
+        
         aside { width: 280px; background: var(--sidebar); border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; padding: 30px; flex-shrink: 0; }
         .admin-profile { padding: 20px; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 30px; display: flex; align-items: center; gap: 12px; }
         .profile-avatar { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(45deg, var(--accent), #4a00e0); display: flex; align-items: center; justify-content: center; font-weight: bold; font-family: 'Syncopate'; font-size: 18px; box-shadow: 0 0 15px rgba(255, 45, 45, 0.3); }
+        
         .nav-item { padding: 12px 16px; border-radius: 8px; color: #888; cursor: pointer; transition: all 0.3s; margin-bottom: 8px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .nav-item.active { background: rgba(255, 45, 45, 0.1); color: var(--accent); }
+        .nav-item:hover:not(.active) { color: white; background: rgba(255,255,255,0.03); }
+        
+        .btn-terminate { color: #ff2d2d; border: 1px solid rgba(255, 45, 45, 0.2); margin-top: auto; }
+        .btn-terminate:hover { background: #ff2d2d; color: white; }
+
         main { flex: 1; padding: 50px; overflow-y: auto; background: radial-gradient(circle at top right, #1a0505 0%, transparent 40%); }
         .form-card { background: var(--glass); border: 1px solid rgba(255,255,255,0.05); padding: 30px; border-radius: 16px; backdrop-filter: blur(20px); }
         .input-box { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; width: 100%; color: white; outline: none; margin-top: 6px; font-size: 13px; }
         .input-box:focus { border-color: var(--accent); }
         .btn-primary { background: var(--accent); color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; transition: all 0.2s; }
-        .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 8px 16px; border-radius: 6px; font-size: 11px; }
+        
         table { width: 100%; text-align: left; border-collapse: separate; border-spacing: 0 8px; }
         th { padding: 15px; color: #666; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; }
         td { padding: 15px; background: rgba(255,255,255,0.02); font-size: 13px; }
         td:first-child { border-radius: 8px 0 0 8px; }
         td:last-child { border-radius: 0 8px 8px 0; }
+        
         .badge-red { background: #ff2d2d; color: white; padding: 2px 8px; border-radius: 2px; font-size: 9px; font-weight: bold; text-transform: uppercase; }
         .badge-blue { background: #0084ff; color: white; padding: 2px 8px; border-radius: 2px; font-size: 9px; font-weight: bold; text-transform: uppercase; }
         .file-label { display: block; background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); border-radius: 8px; padding: 10px; text-align: center; font-size: 11px; color: #aaa; cursor: pointer; }
-        .status-box { font-size: 10px; color: #666; margin-top: 5px; font-family: monospace; }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
     </style>
 </head>
 <body>
@@ -45,21 +51,40 @@
                 <div class="text-[9px] text-red-500 uppercase tracking-widest font-bold">Root Access</div>
             </div>
         </div>
-        <nav id="sidebar-nav">
+        
+        <div class="px-2 mb-8 space-y-4">
+            <div>
+                <div class="text-[9px] text-neutral-600 uppercase tracking-[0.2em] mb-1">System Clock</div>
+                <div id="sys-date" class="mono-font text-[10px] text-neutral-400">LOADING_DATE...</div>
+            </div>
+            <div>
+                <div class="text-[9px] text-neutral-600 uppercase tracking-[0.2em] mb-1">Active Identities</div>
+                <div id="sys-users" class="mono-font text-[10px] text-blue-400">SCANNING...</div>
+            </div>
+        </div>
+
+        <nav id="sidebar-nav" class="flex-1">
             <div class="nav-item active" onclick="switchTab('releases')">Release Forge</div>
-            <div class="nav-item" onclick="switchTab('edit')">Registry Edit</div>
-            <div class="nav-item" onclick="switchTab('database')">System Database</div>
+            <div class="nav-item" onclick="switchTab('edit')">Movie Registry</div>
+            <div class="nav-item" onclick="switchTab('users')">User Database</div>
+            <div class="nav-item" onclick="switchTab('database')">JS Export</div>
         </nav>
+
+        <div class="nav-item btn-terminate" onclick="terminateSession()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            Terminate Session
+        </div>
     </aside>
 
     <main>
+        <!-- Tab: Release Forge -->
         <div id="releases-tab">
-            <h1 class="text-3xl font-bold mb-2">Release Forge</h1>
-            <p class="text-neutral-500 mb-10">Configure cinematic assets via Local Storage or External URLs.</p>
+            <h1 class="text-3xl font-bold mb-2 uppercase tracking-tighter">Release Forge</h1>
+            <p class="text-neutral-500 mb-10 text-sm">Configure cinematic assets for the Zenith stream.</p>
             
             <div class="grid grid-cols-2 gap-10">
                 <div class="form-card">
-                    <h2 class="text-lg font-bold mb-6">Metadata</h2>
+                    <h2 class="text-lg font-bold mb-6 uppercase tracking-tight">Metadata</h2>
                     <div class="space-y-4">
                         <input type="text" id="m-title" class="input-box" placeholder="Project Title">
                         <input type="text" id="m-genre" class="input-box" placeholder="Genre">
@@ -69,25 +94,23 @@
                 </div>
 
                 <div class="form-card">
-                    <h2 class="text-lg font-bold mb-6">Assets (Upload OR Link)</h2>
+                    <h2 class="text-lg font-bold mb-6 uppercase tracking-tight">Assets</h2>
                     <div class="space-y-6">
-                        <input type="text" id="m-video-url" class="input-box" placeholder="Google Drive Link">
+                        <input type="text" id="m-video-url" class="input-box" placeholder="Video URL (Google Drive/Direct)">
                         
-                        <!-- Landscape Configuration -->
                         <div class="p-4 bg-white/5 rounded-xl border border-white/5">
                             <label class="text-[10px] uppercase tracking-widest text-neutral-500">Landscape (Billboard)</label>
-                            <input type="text" id="m-land-link" class="input-box mb-2" placeholder="Paste Imgur Link (Optional)" oninput="checkAssetStatus()">
+                            <input type="text" id="m-land-link" class="input-box mb-2" placeholder="Paste Image Link">
                             <input type="file" id="land-up" class="hidden" accept="image/*" onchange="handleFileUpload(this, 'm-land-data', 'land-status')">
-                            <label for="land-up" class="file-label" id="land-status">OR Upload Image File</label>
+                            <label for="land-up" class="file-label" id="land-status">OR Upload Image</label>
                             <input type="hidden" id="m-land-data">
                         </div>
 
-                        <!-- Portrait Configuration -->
                         <div class="p-4 bg-white/5 rounded-xl border border-white/5">
                             <label class="text-[10px] uppercase tracking-widest text-neutral-500">Portrait (Poster)</label>
-                            <input type="text" id="m-port-link" class="input-box mb-2" placeholder="Paste Imgur Link (Optional)" oninput="checkAssetStatus()">
+                            <input type="text" id="m-port-link" class="input-box mb-2" placeholder="Paste Image Link">
                             <input type="file" id="port-up" class="hidden" accept="image/*" onchange="handleFileUpload(this, 'm-port-data', 'port-status')">
-                            <label for="port-up" class="file-label" id="port-status">OR Upload Image File</label>
+                            <label for="port-up" class="file-label" id="port-status">OR Upload Image</label>
                             <input type="hidden" id="m-port-data">
                         </div>
 
@@ -97,20 +120,58 @@
             </div>
         </div>
 
+        <!-- Tab: Movie Registry -->
         <div id="edit-tab" class="hidden">
-             <h1 class="text-3xl font-bold mb-2">Registry Edit</h1>
-             <div class="form-card"><table id="movie-registry-table"><thead><tr><th>TITLE</th><th>PROMO</th><th>SOURCE</th><th>ACTIONS</th></tr></thead><tbody id="registry-list"></tbody></table></div>
+             <h1 class="text-3xl font-bold mb-2 uppercase tracking-tighter">Movie Registry</h1>
+             <p class="text-neutral-500 mb-8 text-sm">Manage live stream assets and visibility.</p>
+             <div class="form-card">
+                <table id="movie-registry-table">
+                    <thead><tr><th>TITLE</th><th>PROMO</th><th>GENRE</th><th>ACTIONS</th></tr></thead>
+                    <tbody id="registry-list"></tbody>
+                </table>
+             </div>
         </div>
 
+        <!-- Tab: User Database -->
+        <div id="users-tab" class="hidden">
+            <h1 class="text-3xl font-bold mb-2 uppercase tracking-tighter">User Database</h1>
+            <p class="text-neutral-500 mb-8 text-sm">Monitor and manage registered viewer identities.</p>
+            <div class="form-card">
+               <table>
+                   <thead><tr><th>IDENTIFIER</th><th>AGE</th><th>BIO / STATUS</th><th>ACTIONS</th></tr></thead>
+                   <tbody id="user-list"></tbody>
+               </table>
+            </div>
+       </div>
+
+        <!-- Tab: JS Export -->
         <div id="database-tab" class="hidden">
-            <h1 class="text-3xl font-bold mb-4">Database Export</h1>
-            <div class="form-card"><pre id="js-output" class="bg-black p-6 rounded-lg text-[11px] text-green-400 overflow-auto max-h-[500px]"></pre></div>
-            <button onclick="downloadJS()" class="btn-primary mt-4">Download movies.js</button>
+            <h1 class="text-3xl font-bold mb-4 uppercase tracking-tighter">System Export</h1>
+            <div class="form-card">
+                <pre id="js-output" class="bg-black p-6 rounded-lg text-[11px] text-green-400 overflow-auto max-h-[500px]"></pre>
+            </div>
+            <button onclick="downloadJS()" class="btn-primary mt-4 uppercase tracking-widest text-xs">Download movies.js</button>
         </div>
     </main>
 
     <script>
         let movies = JSON.parse(localStorage.getItem('zenith_lifetime_movies') || '[]');
+        let users = JSON.parse(localStorage.getItem('zenith_users') || '[]');
+
+        function updateClock() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-US', { 
+                weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' 
+            }).toUpperCase();
+            document.getElementById('sys-date').innerText = dateStr;
+            document.getElementById('sys-users').innerText = `${users.length} REGISTERED`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function terminateSession() {
+            window.location.href = 'index.html';
+        }
 
         function handleFileUpload(input, targetId, statusId) {
             const file = input.files[0];
@@ -118,30 +179,21 @@
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     document.getElementById(targetId).value = e.target.result;
-                    document.getElementById(statusId).innerText = "File Encoded (Ready)";
-                    document.getElementById(statusId).style.borderColor = "#00ff00";
+                    document.getElementById(statusId).innerText = "ENCODED_READY";
+                    document.getElementById(statusId).style.color = "#00ff00";
                 };
                 reader.readAsDataURL(file);
             }
         }
 
-        function checkAssetStatus() {
-            // UI feedback logic can go here
-        }
-
-        function convertToPreviewUrl(url) {
-            if (!url) return "";
-            const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-            return match ? `https://drive.google.com/file/d/${match[1]}/preview` : url;
-        }
-
         function addMovie() {
             const title = document.getElementById('m-title').value.trim();
-            if(!title) return alert("Title required.");
+            if(!title) return alert("Error: Title Required.");
 
-            // Choose Link if provided, otherwise choose Encoded Data
             const landscape = document.getElementById('m-land-link').value || document.getElementById('m-land-data').value;
             const portrait = document.getElementById('m-port-link').value || document.getElementById('m-port-data').value;
+
+            if(!landscape || !portrait) return alert("Error: Assets Required.");
 
             const movie = {
                 id: "ZEN-" + Date.now(),
@@ -149,7 +201,7 @@
                 genre: document.getElementById('m-genre').value || "Action",
                 marketingTag: document.getElementById('m-marketing').value || "ZENITH PRIME",
                 plot: document.getElementById('m-plot').value,
-                videoFile: convertToPreviewUrl(document.getElementById('m-video-url').value),
+                videoFile: document.getElementById('m-video-url').value,
                 posterLandscape: landscape,
                 posterPortrait: portrait,
                 isFeatured: true
@@ -157,36 +209,63 @@
 
             movies.push(movie);
             localStorage.setItem('zenith_lifetime_movies', JSON.stringify(movies));
-            alert("RECORD AUTHORIZED");
+            alert("RECORD_AUTHORIZED.");
             location.reload();
         }
 
         function renderRegistry() {
             const list = document.getElementById('registry-list');
-            list.innerHTML = movies.map(m => `
+            list.innerHTML = movies.length ? movies.map(m => `
                 <tr>
-                    <td class="font-bold">${m.title}</td>
+                    <td class="font-bold uppercase">${m.title}</td>
                     <td><span class="badge-red">${m.marketingTag}</span></td>
-                    <td><span class="text-[9px] uppercase">${m.posterLandscape.startsWith('http') ? 'External Link' : 'Local Storage'}</span></td>
-                    <td><button onclick="deleteMovie('${m.id}')" class="text-red-500 text-xs font-bold">WIPE</button></td>
+                    <td><span class="text-neutral-500">${m.genre}</span></td>
+                    <td><button onclick="deleteMovie('${m.id}')" class="text-red-500 font-bold hover:underline">WIPE</button></td>
                 </tr>
-            `).join('');
+            `).join('') : `<tr><td colspan="4" class="text-center text-neutral-600 py-10">NO_RECORDS</td></tr>`;
+        }
+
+        function renderUsers() {
+            const list = document.getElementById('user-list');
+            users = JSON.parse(localStorage.getItem('zenith_users') || '[]');
+            list.innerHTML = users.length ? users.map(u => `
+                <tr>
+                    <td class="font-bold text-blue-400 uppercase">${u.username}</td>
+                    <td>${u.age || 'N/A'}</td>
+                    <td class="text-neutral-400 italic text-[11px]">${u.bio || 'Active Identity'}</td>
+                    <td><button onclick="deleteUser('${u.username}')" class="text-red-500 font-bold hover:underline">TERMINATE</button></td>
+                </tr>
+            `).join('') : `<tr><td colspan="4" class="text-center text-neutral-600 py-10">NO_IDENTITIES_FOUND</td></tr>`;
+        }
+
+        function deleteMovie(id) {
+            if(confirm("Confirm asset wipe?")) {
+                movies = movies.filter(m => m.id !== id);
+                localStorage.setItem('zenith_lifetime_movies', JSON.stringify(movies));
+                renderRegistry();
+            }
+        }
+
+        function deleteUser(username) {
+            if(confirm(`TERMINATE IDENTITY: ${username}?`)) {
+                users = users.filter(u => u.username !== username);
+                localStorage.setItem('zenith_users', JSON.stringify(users));
+                renderUsers();
+                updateClock();
+            }
         }
 
         function switchTab(tabId) {
             document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(tabId + '-tab').classList.remove('hidden');
-            if(tabId === 'edit') renderRegistry();
-            if(tabId === 'database') {
-                const code = `const movieData = ${JSON.stringify(movies, null, 4)};\n\nif (typeof module !== 'undefined') { module.exports = movieData; }`;
-                document.getElementById('js-output').textContent = code;
-            }
-        }
+            event.currentTarget.classList.add('active');
 
-        function deleteMovie(id) {
-            movies = movies.filter(m => m.id !== id);
-            localStorage.setItem('zenith_lifetime_movies', JSON.stringify(movies));
-            renderRegistry();
+            if(tabId === 'edit') renderRegistry();
+            if(tabId === 'users') renderUsers();
+            if(tabId === 'database') {
+                document.getElementById('js-output').textContent = `const movieData = ${JSON.stringify(movies, null, 4)};`;
+            }
         }
 
         function downloadJS() {
