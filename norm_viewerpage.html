@@ -169,7 +169,8 @@
         <div class="heading-font text-xl font-bold tracking-tighter cursor-pointer" onclick="location.href='index.html'">ZENITH</div>
         <div class="flex items-center gap-6">
             <span id="nav-user-display" class="text-[10px] tracking-widest text-neutral-400">SESSION: <span class="text-white">GUEST</span></span>
-            <button onclick="logout()" class="text-[10px] tracking-widest text-neutral-500 hover:text-red-500 uppercase transition-colors">Terminate Session</button>
+            <!-- RIGOROUS TERMINATE SESSION BUTTON -->
+            <button onclick="logout()" class="text-[10px] tracking-widest text-neutral-500 hover:text-red-500 uppercase transition-colors font-bold">Terminate Session</button>
         </div>
     </nav>
 
@@ -181,7 +182,8 @@
             <div class="sidebar-link" onclick="showSection('history')">Watch History</div>
             <div class="mt-20">
                 <div class="text-[9px] text-neutral-600 tracking-widest mb-4 uppercase">System Control</div>
-                <div class="sidebar-link" onclick="logout()">Exit Portal</div>
+                <!-- SIDEBAR TERMINATE SESSION -->
+                <div class="sidebar-link hover:text-red-500" onclick="logout()">Exit Portal</div>
             </div>
         </aside>
 
@@ -192,7 +194,6 @@
                     <h1 class="text-4xl font-bold tracking-tighter mb-2">VAULT DASHBOARD</h1>
                     <p class="text-neutral-500 text-sm">Welcome back, <span id="home-name" class="text-white font-semibold"></span> Explore the latest encrypted releases.</p>
                 </div>
-                <!-- Changed to portrait layout -->
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" id="vault-grid"></div>
             </div>
 
@@ -260,7 +261,6 @@
 
             <div id="history-section" class="section-content hidden">
                 <h1 class="text-3xl font-bold mb-10 tracking-tighter uppercase">Watch History</h1>
-                <!-- Changed to portrait layout -->
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" id="history-grid"></div>
             </div>
 
@@ -292,7 +292,6 @@
         function loadUserData() {
             const loggedInName = localStorage.getItem('zenith_session_user');
             if (!loggedInName) {
-                // If accessing securely without login, kick to home
                 location.href = 'index.html';
                 return;
             }
@@ -301,7 +300,6 @@
             currentUser = users.find(u => u.username === loggedInName);
 
             if (!currentUser) {
-                // Fallback dummy user if DB is cleared but session remains
                 currentUser = { username: loggedInName, history: [] };
             }
             
@@ -433,7 +431,6 @@
             
             document.getElementById('modal-play-btn').onclick = () => {
                 addToHistory(movie.id);
-                // origin=private ensures player knows to return here
                 window.location.href = `video_player.html?id=${movie.id}&origin=private`; 
             };
             
@@ -458,6 +455,7 @@
             document.getElementById('details-modal').style.display = 'none';
         }
 
+        // RIGOROUS LOGOUT LOGIC
         function logout() {
             localStorage.removeItem('zenith_session_user');
             window.location.href = 'index.html';
