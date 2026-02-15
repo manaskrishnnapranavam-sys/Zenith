@@ -73,7 +73,7 @@
             100% { filter: blur(50px); opacity: 0; transform: scale(1.1); }
         }
 
-        /* --- INVITING LOGIN PROMPT MODAL --- */
+        /* --- LOGIN GATE --- */
         #login-gate {
             position: fixed;
             inset: 0;
@@ -104,13 +104,14 @@
         #login-gate.visible { opacity: 1; }
         #login-gate.visible .gate-card { transform: translateY(0); }
 
-        /* --- HERO SLIDER (REDUCED HEIGHT) --- */
+        /* --- HERO SLIDER (LANDSCAPE OPTIMIZED) --- */
         .hero-slider {
             position: relative;
-            height: 70vh; /* Reduced from 100vh to fit content better */
+            height: 65vh; 
             width: 100%;
             overflow: hidden;
             background: #000;
+            margin-bottom: 80px; /* CREATED GAP HERE */
         }
 
         .slide {
@@ -131,15 +132,15 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, transparent 40%, var(--bg) 100%),
-                        linear-gradient(to right, var(--bg) 0%, transparent 60%);
+            background: linear-gradient(to bottom, transparent 30%, var(--bg) 100%),
+                        linear-gradient(to right, var(--bg) 0%, transparent 70%);
             z-index: 1;
         }
 
         .hero-content {
             position: relative;
             z-index: 10;
-            max-width: 650px; /* Reduced from 800px */
+            max-width: 500px;
             transform: translateX(-40px);
             opacity: 0;
             transition: all 1s ease 0.5s;
@@ -150,30 +151,26 @@
             opacity: 1;
         }
 
-        /* --- SOPHISTICATED NAV --- */
+        /* Plot Truncation */
+        .hero-plot {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.6;
+        }
+
+        /* --- NAV --- */
         #navbar {
             background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        #navbar:has(.nav-trigger:hover) {
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(15px);
-        }
-
-        #navbar:has(.nav-trigger:hover) .nav-element:not(:hover) {
-            filter: blur(8px);
-            opacity: 0.3;
-        }
-
-        .nav-element {
-            transition: all 0.4s ease;
+            transition: all 0.6s ease;
         }
 
         .portal-btn-blue, .portal-btn-red {
             font-size: 10px;
             letter-spacing: 0.25em;
-            padding: 12px 28px;
+            padding: 10px 24px;
             border-radius: 2px;
             color: white;
             font-weight: 800;
@@ -183,45 +180,17 @@
             transition: all 0.4s ease;
         }
 
-        .portal-btn-blue:hover { 
-            background: var(--zenith-blue);
-            border-color: var(--zenith-blue);
-            box-shadow: 0 0 30px rgba(0, 132, 255, 0.4);
-        }
+        .portal-btn-blue:hover { background: var(--zenith-blue); border-color: var(--zenith-blue); }
+        .portal-btn-red:hover { background: var(--accent); border-color: var(--accent); }
 
-        .portal-btn-red:hover { 
-            background: var(--accent);
-            border-color: var(--accent);
-            box-shadow: 0 0 30px rgba(255, 45, 45, 0.4);
-        }
+        .badge-red { background: var(--accent); color: white; padding: 4px 10px; border-radius: 2px; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+        .badge-blue { background: var(--zenith-blue); color: white; padding: 4px 10px; border-radius: 2px; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* --- MARKETING LABELS --- */
-        .badge-red { 
-            background: var(--accent); 
-            color: white; 
-            padding: 4px 12px; 
-            border-radius: 2px; 
-            font-size: 10px; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            letter-spacing: 2px;
-        }
-        .badge-blue { 
-            background: var(--zenith-blue); 
-            color: white; 
-            padding: 4px 12px; 
-            border-radius: 2px; 
-            font-size: 10px; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            letter-spacing: 2px;
-        }
-
-        /* --- PORTRAIT MOVIE GRID (FULL BLEED) --- */
+        /* --- GRID --- */
         #master-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 25px;
+            gap: 30px;
             padding: 0 5% 100px 5%;
         }
 
@@ -231,42 +200,18 @@
             border-radius: 2px;
             overflow: hidden;
             position: relative;
-            transition: all 0.6s cubic-bezier(0.2, 1, 0.2, 1);
+            transition: all 0.5s ease;
             cursor: pointer;
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .movie-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            z-index: 10;
-            border-color: var(--accent);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
+        .movie-card:hover { transform: translateY(-8px); border-color: var(--accent); }
 
-        .movie-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            background: #000;
-            transition: transform 0.8s ease;
-        }
+        .movie-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
+        .movie-card:hover img { transform: scale(1.08); }
 
-        .movie-card:hover img {
-            transform: scale(1.1);
-        }
-
-        .catalog-header {
-            position: relative;
-            display: inline-block;
-            padding-left: 20px;
-        }
-
-        .catalog-header::before {
-            content: "";
-            position: absolute;
-            left: 0; top: 0; width: 4px; height: 100%;
-            background: var(--accent);
-        }
+        .catalog-header { position: relative; padding-left: 20px; }
+        .catalog-header::before { content: ""; position: absolute; left: 0; top: 0; width: 4px; height: 100%; background: var(--accent); }
 
         #details-modal {
             position: fixed;
@@ -285,54 +230,46 @@
     <!-- Splash Screen -->
     <div id="splash-screen">
         <div class="splash-bg-animate"></div>
-        <div class="splash-logo heading-font font-bold text-white text-center uppercase">
-            Zero Point
-        </div>
+        <div class="splash-logo heading-font font-bold text-white text-center uppercase">Zero Point</div>
     </div>
 
-    <!-- Inviting Initialization Gate -->
+    <!-- Login Gate -->
     <div id="login-gate">
         <div class="gate-card">
-            <button onclick="closeGate()" class="absolute top-6 right-6 text-neutral-600 hover:text-white transition-colors">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-            </button>
+            <button onclick="closeGate()" class="absolute top-6 right-6 text-neutral-600 hover:text-white transition-colors">✕</button>
             <div class="mono-font text-white/40 text-[9px] tracking-[0.5em] mb-4 uppercase">Elite Archive Access</div>
             <h2 class="heading-font text-2xl mb-6 tracking-widest text-white">WELCOME BACK</h2>
-            <p class="text-neutral-500 text-[11px] mb-10 leading-relaxed uppercase tracking-widest max-w-[300px] mx-auto">Verify your identity to unlock personalized vaults and track your progression.</p>
+            <p class="text-neutral-500 text-[11px] mb-10 leading-relaxed uppercase tracking-widest max-w-[300px] mx-auto">Verify identity to unlock personalized vaults.</p>
             <div class="flex flex-col gap-3">
                 <button id="gate-main-btn" onclick="handleGateLogin()" class="bg-white text-black hover:bg-red-600 hover:text-white py-4 font-bold tracking-[0.3em] text-[10px] uppercase transition-all duration-300">Authorize Identity</button>
                 <button onclick="closeGate()" class="border border-white/5 hover:bg-white/5 text-neutral-600 hover:text-neutral-300 py-4 font-bold tracking-[0.3em] text-[10px] uppercase transition-all duration-300">Explore as Guest</button>
             </div>
-            <div class="mt-8 text-[9px] text-neutral-700 tracking-widest uppercase mono-font">System Status: Awaiting Input</div>
         </div>
     </div>
 
     <div id="main-app" class="opacity-0 transition-opacity duration-[2000ms]">
-        
         <nav id="navbar" class="fixed top-0 w-full z-50 px-12 py-8 flex justify-between items-center">
-            <div class="nav-element flex items-center">
-                <div class="heading-font text-3xl font-bold text-white tracking-tighter cursor-pointer" onclick="location.reload()">ZENITH</div>
-            </div>
-            
+            <div class="heading-font text-2xl font-bold text-white tracking-tighter cursor-pointer" onclick="location.reload()">ZENITH</div>
             <div class="flex items-center gap-6">
-                <button class="nav-element nav-trigger portal-btn-blue" onclick="location.href='normal_uslgn.html'">VIEWER PORTAL</button>
-                <button class="nav-element nav-trigger portal-btn-red" onclick="location.href='adminlgn.html'">THE ARCHITECT</button>
+                <button class="portal-btn-blue" onclick="location.href='normal_uslgn.html'">VIEWER PORTAL</button>
+                <button class="portal-btn-red" onclick="location.href='adminlgn.html'">THE ARCHITECT</button>
             </div>
         </nav>
 
-        <!-- Reduced Billboard -->
+        <!-- The Billboard -->
         <div id="hero-slider" class="hero-slider">
             <div id="hero-slides-container"></div>
         </div>
 
-        <main class="relative -mt-24 z-10 pb-20">
+        <main class="relative z-10 pb-20">
+            <!-- Header Section -->
             <div class="px-[5%] mb-12 flex justify-between items-end">
                 <div class="catalog-header">
                     <div class="text-[9px] text-red-500 mono-font font-bold mb-1 tracking-[0.4em] uppercase">Archive_System</div>
                     <h2 class="heading-font text-3xl font-bold tracking-tighter uppercase">Primary_Database</h2>
                 </div>
                 <div class="flex flex-col items-end">
-                    <span id="movie-count" class="mono-font text-[9px] text-neutral-600 tracking-[0.3em] uppercase">Calculating...</span>
+                    <span id="movie-count" class="mono-font text-[9px] text-neutral-600 tracking-[0.3em] uppercase">Nodes Active</span>
                     <div class="h-[2px] w-32 bg-red-600 mt-2"></div>
                 </div>
             </div>
@@ -345,7 +282,7 @@
     <div id="details-modal" onclick="closeDetails()">
         <div class="w-full max-w-6xl bg-[#050505] border border-white/5 relative overflow-hidden" onclick="event.stopPropagation()">
             <button class="absolute top-8 right-8 z-50 text-neutral-500 hover:text-white" onclick="closeDetails()">✕</button>
-            <div id="modal-hero" class="h-[500px] bg-cover bg-center relative">
+            <div id="modal-hero" class="h-[450px] bg-cover bg-center relative">
                 <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent"></div>
             </div>
             <div class="p-16 -mt-32 relative z-10">
@@ -353,8 +290,8 @@
                     <span id="modal-marketing" class="badge-red"></span>
                     <span id="modal-genre-box" class="badge-blue"></span>
                 </div>
-                <h1 id="modal-title" class="text-6xl font-bold mb-6 uppercase tracking-tighter leading-none"></h1>
-                <p id="modal-plot" class="text-neutral-400 text-xl leading-relaxed mb-12 max-w-3xl"></p>
+                <h1 id="modal-title" class="text-5xl font-bold mb-6 uppercase tracking-tighter leading-none"></h1>
+                <p id="modal-plot" class="text-neutral-400 text-lg leading-relaxed mb-10 max-w-3xl"></p>
                 <button id="modal-play-btn" class="bg-red-600 text-white px-16 py-5 font-bold hover:bg-white hover:text-black tracking-widest text-xs uppercase transition-all">Initiate_Uplink</button>
             </div>
         </div>
@@ -392,7 +329,7 @@
                 slides[currentSlide].classList.remove('active');
                 currentSlide = (currentSlide + 1) % slides.length;
                 slides[currentSlide].classList.add('active');
-            }, 6000);
+            }, 7000);
         }
 
         function configureGate() {
@@ -405,10 +342,7 @@
             }
         }
 
-        function handleGateLogin() {
-            window.location.href = 'normal_uslgn.html';
-        }
-
+        function handleGateLogin() { window.location.href = 'normal_uslgn.html'; }
         function closeGate() {
             const gate = document.getElementById('login-gate');
             gate.classList.remove('visible');
@@ -425,21 +359,21 @@
 
             if (!activeData.length) return;
 
-            countLabel.innerText = `ACTIVE_NODES: ${activeData.length}`;
+            countLabel.innerText = `NODES: ${activeData.length}`;
 
             const featured = activeData.filter(m => m.isFeatured);
             heroContainer.innerHTML = (featured.length ? featured : activeData).map((movie, index) => `
                 <div class="slide ${index === 0 ? 'active' : ''}" style="background-image: url('${movie.posterLandscape}');">
                     <div class="hero-content">
-                        <div class="flex items-center gap-4 mb-4">
+                        <div class="flex items-center gap-3 mb-4">
                             <span class="badge-red">${movie.marketingTag || 'ORIGINAL'}</span>
                             <span class="badge-blue">${movie.genre}</span>
                         </div>
-                        <h1 class="text-6xl font-bold mb-4 tracking-tighter uppercase leading-[0.9]">${movie.title}</h1>
-                        <p class="text-neutral-300 text-sm mb-8 max-w-xl leading-relaxed">${movie.plot}</p>
+                        <h1 class="text-5xl font-bold mb-4 tracking-tighter uppercase leading-[0.9]">${movie.title}</h1>
+                        <p class="hero-plot text-neutral-300 text-[13px] mb-8 max-w-sm">${movie.plot}</p>
                         <div class="flex gap-4">
-                            <button class="bg-red-600 text-white px-8 py-4 font-bold text-[10px] tracking-[0.2em] uppercase hover:bg-white hover:text-black transition-all" onclick="redirectToPlayer('${movie.id}')">Watch Now</button>
-                            <button class="border border-white/10 bg-black/40 backdrop-blur-md text-white px-8 py-4 font-bold text-[10px] tracking-[0.2em] uppercase hover:bg-white hover:text-black transition-all" onclick="showDetails('${movie.id}')">Info</button>
+                            <button class="bg-red-600 text-white px-8 py-3 font-bold text-[9px] tracking-[0.2em] uppercase hover:bg-white hover:text-black transition-all" onclick="redirectToPlayer('${movie.id}')">Watch Now</button>
+                            <button class="border border-white/10 bg-black/40 backdrop-blur-md text-white px-8 py-3 font-bold text-[9px] tracking-[0.2em] uppercase hover:bg-white hover:text-black transition-all" onclick="showDetails('${movie.id}')">Info</button>
                         </div>
                     </div>
                 </div>
@@ -448,9 +382,9 @@
             grid.innerHTML = activeData.map(movie => `
                 <div class="movie-card" onclick="showDetails('${movie.id}')">
                     <img src="${movie.posterPortrait}" alt="${movie.title}" loading="lazy">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent p-6 flex flex-col justify-end opacity-0 hover:opacity-100 transition-opacity duration-300">
-                        <h4 class="font-bold text-sm uppercase tracking-tighter">${movie.title}</h4>
-                        <div class="text-[9px] text-red-500 font-bold tracking-[0.1em] uppercase mt-1">${movie.genre}</div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent p-6 flex flex-col justify-end opacity-0 hover:opacity-100 transition-opacity">
+                        <h4 class="font-bold text-xs uppercase tracking-tighter">${movie.title}</h4>
+                        <div class="text-[8px] text-red-500 font-bold tracking-[0.1em] uppercase mt-1">${movie.genre}</div>
                     </div>
                 </div>
             `).join('');
