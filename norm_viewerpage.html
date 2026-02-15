@@ -181,7 +181,7 @@
             <div class="sidebar-link" onclick="showSection('history')">Watch History</div>
             <div class="mt-20">
                 <div class="text-[9px] text-neutral-600 tracking-widest mb-4 uppercase">System Control</div>
-                <div class="sidebar-link" onclick="location.href='index.html'">Exit Portal</div>
+                <div class="sidebar-link" onclick="logout()">Exit Portal</div>
             </div>
         </aside>
 
@@ -292,7 +292,8 @@
         function loadUserData() {
             const loggedInName = localStorage.getItem('zenith_session_user');
             if (!loggedInName) {
-                location.href = 'normal_uslgn.html';
+                // If accessing securely without login, kick to home
+                location.href = 'index.html';
                 return;
             }
 
@@ -300,17 +301,11 @@
             currentUser = users.find(u => u.username === loggedInName);
 
             if (!currentUser) {
-                currentUser = { 
-                    username: loggedInName, 
-                    age: '', 
-                    gender: 'Unspecified', 
-                    bio: '',
-                    history: [] 
-                };
+                // Fallback dummy user if DB is cleared but session remains
+                currentUser = { username: loggedInName, history: [] };
             }
             
             if (!currentUser.history) currentUser.history = [];
-
             updateUI();
         }
 
@@ -388,7 +383,6 @@
                 return;
             }
 
-            // Using movie.posterPortrait for the portrait cards
             vaultGrid.innerHTML = movieData.map(movie => `
                 <div class="movie-card group" onclick="showDetails('${movie.id}')">
                     <div class="poster-wrapper">
@@ -415,7 +409,6 @@
                 .map(id => movieData.find(m => m.id === id))
                 .filter(m => m !== undefined);
 
-            // History items also using portrait layout
             historyGrid.innerHTML = historyMovies.map(movie => `
                 <div class="movie-card group" onclick="showDetails('${movie.id}')">
                     <div class="poster-wrapper">
@@ -440,7 +433,8 @@
             
             document.getElementById('modal-play-btn').onclick = () => {
                 addToHistory(movie.id);
-                window.location.href = `video_player.html?id=${movie.id}`; 
+                // origin=private ensures player knows to return here
+                window.location.href = `video_player.html?id=${movie.id}&origin=private`; 
             };
             
             document.getElementById('details-modal').style.display = 'flex';
@@ -464,9 +458,11 @@
             document.getElementById('details-modal').style.display = 'none';
         }
 
+        // FIXED LOGOUT FUNCTION
         function logout() {
             localStorage.removeItem('zenith_session_user');
-            location.href = 'normal_uslgn.html';
+            // Redirect to public landing
+            window.location.href = 'index.html';
         }
     </script>
 </body>
