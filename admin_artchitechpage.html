@@ -23,7 +23,7 @@
         .btn-terminate { color: #ff2d2d; border: 1px solid rgba(255, 45, 45, 0.2); margin-top: auto; }
         .btn-terminate:hover { background: #ff2d2d; color: white; }
 
-        main { flex: 1; padding: 50px; overflow-y: auto; background: radial-gradient(circle at top right, #1a0505 0%, transparent 40%); }
+        main { flex: 1; padding: 50px; overflow-y: auto; background: radial-gradient(circle at top right, #1a0505 0%, transparent 40%); scroll-behavior: smooth; }
         .form-card { background: var(--glass); border: 1px solid rgba(255,255,255,0.05); padding: 30px; border-radius: 16px; backdrop-filter: blur(20px); }
         .input-box { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; width: 100%; color: white; outline: none; margin-top: 6px; font-size: 13px; }
         .input-box:focus { border-color: var(--accent); }
@@ -76,7 +76,7 @@
         </div>
     </aside>
 
-    <main>
+    <main id="main-content">
         <!-- Tab: Release Forge -->
         <div id="releases-tab">
             <h1 class="text-3xl font-bold mb-2 uppercase tracking-tighter">Release Forge</h1>
@@ -86,6 +86,8 @@
                 <div class="form-card">
                     <h2 class="text-lg font-bold mb-6 uppercase tracking-tight">Metadata</h2>
                     <div class="space-y-4">
+                        <!-- Hidden field to track if we are editing an existing movie -->
+                        <input type="hidden" id="m-id">
                         <input type="text" id="m-title" class="input-box" placeholder="Project Title">
                         <input type="text" id="m-genre" class="input-box" placeholder="Genre">
                         <input type="text" id="m-marketing" class="input-box" placeholder="Marketing (NEW RELEASE, etc)">
@@ -114,7 +116,8 @@
                             <input type="hidden" id="m-port-data">
                         </div>
 
-                        <button onclick="addMovie()" class="btn-primary w-full uppercase tracking-widest text-xs">Authorize Publication</button>
+                        <button id="auth-btn" onclick="addMovie()" class="btn-primary w-full uppercase tracking-widest text-xs">Authorize Publication</button>
+                        <button id="cancel-edit-btn" onclick="resetForge()" class="hidden w-full text-[10px] text-neutral-500 uppercase tracking-widest mt-2 hover:text-white">Cancel Edit</button>
                     </div>
                 </div>
             </div>
@@ -187,6 +190,7 @@
         }
 
         function addMovie() {
+            const id = document.getElementById('m-id').value;
             const title = document.getElementById('m-title').value.trim();
             if(!title) return alert("Error: Title Required.");
 
@@ -195,8 +199,8 @@
 
             if(!landscape || !portrait) return alert("Error: Assets Required.");
 
-            const movie = {
-                id: "ZEN-" + Date.now(),
+            const movieData = {
+                id: id || "ZEN-" + Date.now(),
                 title: title,
                 genre: document.getElementById('m-genre').value || "Action",
                 marketingTag: document.getElementById('m-marketing').value || "ZENITH PRIME",
@@ -207,10 +211,73 @@
                 isFeatured: true
             };
 
-            movies.push(movie);
+            if (id) {
+                // Update existing
+                const index = movies.findIndex(m => m.id === id);
+                if (index !== -1) movies[index] = movieData;
+            } else {
+                // Add new
+                movies.push(movieData);
+            }
+
             localStorage.setItem('zenith_lifetime_movies', JSON.stringify(movies));
-            alert("RECORD_AUTHORIZED.");
+            alert(id ? "RECORD_UPDATED." : "RECORD_AUTHORIZED.");
             location.reload();
+        }
+
+        function editMovie(id) {
+            const m = movies.find(movie => movie.id === id);
+            if (!m) return;
+
+            // Switch to Forge tab
+            switchTab('releases');
+
+            // Fill Forge
+            document.getElementById('m-id').value = m.id;
+            document.getElementById('m-title').value = m.title;
+            document.getElementById('m-genre').value = m.genre;
+            document.getElementById('m-marketing').value = m.marketingTag;
+            document.getElementById('m-plot').value = m.plot;
+            document.getElementById('m-video-url').value = m.videoFile;
+
+            // Handle Links (simplified check: if it looks like a URL, put it in link box)
+            if (m.posterLandscape.startsWith('http')) {
+                document.getElementById('m-land-link').value = m.posterLandscape;
+            } else {
+                document.getElementById('m-land-data').value = m.posterLandscape;
+                document.getElementById('land-status').innerText = "ENCODED_READY";
+            }
+
+            if (m.posterPortrait.startsWith('http')) {
+                document.getElementById('m-port-link').value = m.posterPortrait;
+            } else {
+                document.getElementById('m-port-data').value = m.posterPortrait;
+                document.getElementById('port-status').innerText = "ENCODED_READY";
+            }
+
+            // Update UI
+            document.getElementById('auth-btn').innerText = "Update Record";
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+            
+            // Scroll to top
+            document.getElementById('main-content').scrollTop = 0;
+        }
+
+        function resetForge() {
+            document.getElementById('m-id').value = '';
+            document.getElementById('m-title').value = '';
+            document.getElementById('m-genre').value = '';
+            document.getElementById('m-marketing').value = '';
+            document.getElementById('m-plot').value = '';
+            document.getElementById('m-video-url').value = '';
+            document.getElementById('m-land-link').value = '';
+            document.getElementById('m-land-data').value = '';
+            document.getElementById('m-port-link').value = '';
+            document.getElementById('m-port-data').value = '';
+            document.getElementById('land-status').innerText = "OR Upload Image";
+            document.getElementById('port-status').innerText = "OR Upload Image";
+            document.getElementById('auth-btn').innerText = "Authorize Publication";
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
         }
 
         function renderRegistry() {
@@ -220,7 +287,12 @@
                     <td class="font-bold uppercase">${m.title}</td>
                     <td><span class="badge-red">${m.marketingTag}</span></td>
                     <td><span class="text-neutral-500">${m.genre}</span></td>
-                    <td><button onclick="deleteMovie('${m.id}')" class="text-red-500 font-bold hover:underline">WIPE</button></td>
+                    <td>
+                        <div class="flex gap-4">
+                            <button onclick="editMovie('${m.id}')" class="text-blue-400 font-bold hover:underline">EDIT</button>
+                            <button onclick="deleteMovie('${m.id}')" class="text-red-500 font-bold hover:underline">WIPE</button>
+                        </div>
+                    </td>
                 </tr>
             `).join('') : `<tr><td colspan="4" class="text-center text-neutral-600 py-10">NO_RECORDS</td></tr>`;
         }
@@ -259,7 +331,14 @@
             document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(tabId + '-tab').classList.remove('hidden');
-            event.currentTarget.classList.add('active');
+            
+            // Highlight sidebar
+            const items = document.querySelectorAll('.nav-item');
+            items.forEach(item => {
+                if(item.innerText.toLowerCase().includes(tabId === 'releases' ? 'forge' : tabId.replace('edit', 'registry'))) {
+                   item.classList.add('active');
+                }
+            });
 
             if(tabId === 'edit') renderRegistry();
             if(tabId === 'users') renderUsers();
