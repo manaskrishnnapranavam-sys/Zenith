@@ -110,6 +110,7 @@
             height: 85vh;
             width: 100%;
             overflow: hidden;
+            background: #000;
         }
 
         .slide {
@@ -117,8 +118,9 @@
             inset: 0;
             opacity: 0;
             transition: opacity 1.2s ease-in-out;
-            background-size: cover;
-            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center right;
             display: flex;
             align-items: center;
             padding: 0 5%;
@@ -131,7 +133,7 @@
             position: absolute;
             inset: 0;
             background: linear-gradient(to bottom, transparent 30%, var(--bg) 100%),
-                        linear-gradient(to right, rgba(5,5,5,0.8) 0%, transparent 60%);
+                        linear-gradient(to right, var(--bg) 20%, transparent 80%);
             z-index: 1;
         }
 
@@ -201,7 +203,8 @@
         .movie-card img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            background: #000;
         }
 
         .catalog-header {
@@ -219,50 +222,53 @@
             box-shadow: 0 0 15px var(--accent);
         }
 
-        /* --- STYLIZED NAV BUTTONS --- */
-        .portal-btn-blue {
-            font-size: 10px;
-            letter-spacing: 0.1em;
-            padding: 10px 20px;
-            border-radius: 4px;
-            background: var(--zenith-blue);
-            color: white;
-            box-shadow: 0 0 20px rgba(0, 132, 255, 0.4);
-            transition: all 0.3s;
-            font-weight: 800;
-            text-transform: uppercase;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .portal-btn-blue:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 0 30px rgba(0, 132, 255, 0.6);
-            background: white;
-            color: var(--zenith-blue);
-        }
-
-        .portal-btn-red {
-            font-size: 10px;
-            letter-spacing: 0.1em;
-            padding: 10px 20px;
-            border-radius: 4px;
-            background: var(--accent);
-            color: white;
-            box-shadow: 0 0 20px rgba(255, 45, 45, 0.4);
-            transition: all 0.3s;
-            font-weight: 800;
-            text-transform: uppercase;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .portal-btn-red:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 0 30px rgba(255, 45, 45, 0.6);
-            background: white;
-            color: var(--accent);
-        }
-
+        /* --- UPDATED SOPHISTICATED NAV --- */
         #navbar {
             background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
-            backdrop-filter: blur(5px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* When any nav button is hovered, blur the background of the nav */
+        #navbar:has(.nav-trigger:hover) {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(12px);
+        }
+
+        /* Blur everything else inside nav except the one being hovered */
+        #navbar:has(.nav-trigger:hover) .nav-element:not(:hover) {
+            filter: blur(4px);
+            opacity: 0.5;
+        }
+
+        .nav-element {
+            transition: all 0.4s ease;
+        }
+
+        .portal-btn-blue, .portal-btn-red {
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            padding: 12px 24px;
+            border-radius: 2px;
+            color: white;
+            font-weight: 800;
+            text-transform: uppercase;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.03);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portal-btn-blue:hover { 
+            background: var(--zenith-blue);
+            border-color: var(--zenith-blue);
+            box-shadow: 0 0 25px rgba(0, 132, 255, 0.4);
+        }
+
+        .portal-btn-red:hover { 
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 25px rgba(255, 45, 45, 0.4);
         }
 
         #details-modal {
@@ -308,14 +314,14 @@
     <!-- Main App Content -->
     <div id="main-app" class="opacity-0 transition-opacity duration-[1500ms]">
         
-        <nav id="navbar" class="fixed top-0 w-full z-50 px-12 py-5 flex justify-between items-center transition-all duration-500">
-            <div class="flex items-center gap-12">
+        <nav id="navbar" class="fixed top-0 w-full z-50 px-12 py-6 flex justify-between items-center">
+            <div class="nav-element flex items-center gap-12">
                 <div class="heading-font text-2xl font-bold text-white tracking-tighter cursor-pointer" onclick="location.reload()">ZENITH</div>
             </div>
             
             <div class="flex items-center gap-4">
-                <button class="portal-btn-blue" onclick="location.href='normal_uslgn.html'">VIEWER PORTAL</button>
-                <button class="portal-btn-red" onclick="location.href='adminlgn.html'">THE ARCHITECT</button>
+                <button class="nav-element nav-trigger portal-btn-blue" onclick="location.href='normal_uslgn.html'">VIEWER PORTAL</button>
+                <button class="nav-element nav-trigger portal-btn-red" onclick="location.href='adminlgn.html'">THE ARCHITECT</button>
             </div>
         </nav>
 
@@ -343,7 +349,7 @@
     <div id="details-modal" onclick="closeDetails()">
         <div class="w-full max-w-5xl bg-[#080808] border border-white/10 relative overflow-hidden" onclick="event.stopPropagation()">
             <button class="absolute top-6 right-6 z-50 bg-black/50 p-2 hover:bg-red-600 transition-colors" onclick="closeDetails()">✕</button>
-            <div id="modal-hero" class="h-[400px] bg-cover bg-center relative">
+            <div id="modal-hero" class="h-[400px] bg-contain bg-no-repeat bg-center relative bg-black">
                 <div class="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent"></div>
             </div>
             <div class="p-12 -mt-24 relative z-10">
@@ -408,7 +414,6 @@
             const heroContainer = document.getElementById('hero-slides-container');
             const countLabel = document.getElementById('movie-count');
             
-            // Priority: Local Lifetime storage > Static movieData
             const localStore = JSON.parse(localStorage.getItem('zenith_lifetime_movies') || '[]');
             const activeData = localStore.length > 0 ? localStore : (typeof movieData !== 'undefined' ? movieData : []);
 
@@ -419,7 +424,6 @@
 
             countLabel.innerText = `SYNC_COMPLETE: ${activeData.length} ASSETS`;
 
-            // Hero Slider with Dual Labels
             const featured = activeData.filter(m => m.isFeatured);
             heroContainer.innerHTML = (featured.length ? featured : activeData).map((movie, index) => `
                 <div class="slide ${index === 0 ? 'active' : ''}" style="background-image: url('${movie.posterLandscape}');">
@@ -430,12 +434,14 @@
                         </div>
                         <h1 class="text-7xl font-bold mb-6 tracking-tighter uppercase leading-[0.9]">${movie.title}</h1>
                         <p class="text-neutral-300 text-lg mb-10 max-w-lg leading-relaxed line-clamp-3">${movie.plot}</p>
-                        <button class="bg-red-600 text-white px-10 py-4 font-bold text-xs tracking-widest uppercase hover:bg-white hover:text-black transition-all" onclick="redirectToPlayer('${movie.id}')">Initiate Stream</button>
+                        <div class="flex gap-4">
+                            <button class="bg-red-600 text-white px-10 py-4 font-bold text-xs tracking-widest uppercase hover:bg-white hover:text-black transition-all" onclick="redirectToPlayer('${movie.id}')">Initiate Stream</button>
+                            <button class="border border-white/20 bg-white/5 text-white px-10 py-4 font-bold text-xs tracking-widest uppercase hover:bg-white/20 transition-all" onclick="showDetails('${movie.id}')">More Details</button>
+                        </div>
                     </div>
                 </div>
             `).join('');
 
-            // Grid
             grid.innerHTML = activeData.map(movie => `
                 <div class="movie-card" onclick="showDetails('${movie.id}')">
                     <img src="${movie.posterPortrait}" alt="${movie.title}">
