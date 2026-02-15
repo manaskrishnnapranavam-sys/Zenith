@@ -104,21 +104,21 @@
         #login-gate.visible { opacity: 1; }
         #login-gate.visible .gate-card { transform: translateY(0); }
 
-        /* --- HERO SLIDER (LANDSCAPE OPTIMIZED) --- */
+        /* --- HERO SLIDER --- */
         .hero-slider {
             position: relative;
-            height: 65vh; 
+            height: 75vh; 
             width: 100%;
             overflow: hidden;
             background: #000;
-            margin-bottom: 80px; /* CREATED GAP HERE */
+            margin-bottom: 80px;
         }
 
         .slide {
             position: absolute;
             inset: 0;
             opacity: 0;
-            transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 1.2s ease-in-out;
             background-size: cover;
             background-position: center;
             display: flex;
@@ -140,10 +140,10 @@
         .hero-content {
             position: relative;
             z-index: 10;
-            max-width: 500px;
+            max-width: 700px;
             transform: translateX(-40px);
             opacity: 0;
-            transition: all 1s ease 0.5s;
+            transition: all 1s ease 0.3s;
         }
 
         .slide.active .hero-content {
@@ -151,7 +151,6 @@
             opacity: 1;
         }
 
-        /* Plot Truncation */
         .hero-plot {
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -159,12 +158,25 @@
             overflow: hidden;
             text-overflow: ellipsis;
             line-height: 1.6;
+            font-size: 1.1rem;
         }
 
-        /* --- NAV --- */
+        /* --- NAV FOCUS BLUR --- */
         #navbar {
             background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
             transition: all 0.6s ease;
+        }
+
+        .nav-link-group:hover > :not(:hover) {
+            filter: blur(4px);
+            opacity: 0.4;
+        }
+        
+        /* Blur the logo if buttons are hovered */
+        .nav-link-group:hover ~ .zenith-logo,
+        #navbar:has(.nav-link-group:hover) .zenith-logo {
+            filter: blur(4px);
+            opacity: 0.4;
         }
 
         .portal-btn-blue, .portal-btn-red {
@@ -180,11 +192,34 @@
             transition: all 0.4s ease;
         }
 
-        .portal-btn-blue:hover { background: var(--zenith-blue); border-color: var(--zenith-blue); }
-        .portal-btn-red:hover { background: var(--accent); border-color: var(--accent); }
+        .portal-btn-blue:hover { background: var(--zenith-blue); border-color: var(--zenith-blue); filter: none !important; opacity: 1 !important; }
+        .portal-btn-red:hover { background: var(--accent); border-color: var(--accent); filter: none !important; opacity: 1 !important; }
 
         .badge-red { background: var(--accent); color: white; padding: 4px 10px; border-radius: 2px; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
         .badge-blue { background: var(--zenith-blue); color: white; padding: 4px 10px; border-radius: 2px; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* --- ARROWS --- */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 20;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 50%;
+        }
+        .nav-arrow:hover { background: white; color: black; }
+        .arrow-left { left: 30px; }
+        .arrow-right { right: 30px; }
 
         /* --- GRID --- */
         #master-grid {
@@ -207,12 +242,10 @@
 
         .movie-card:hover { transform: translateY(-8px); border-color: var(--accent); }
 
-        .movie-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
-        .movie-card:hover img { transform: scale(1.08); }
-
         .catalog-header { position: relative; padding-left: 20px; }
         .catalog-header::before { content: ""; position: absolute; left: 0; top: 0; width: 4px; height: 100%; background: var(--accent); }
 
+        /* --- COMPACT MODAL --- */
         #details-modal {
             position: fixed;
             inset: 0;
@@ -220,9 +253,37 @@
             display: none;
             align-items: center;
             justify-content: center;
-            background: rgba(0,0,0,0.98);
-            backdrop-filter: blur(20px);
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(25px);
+            padding: 20px;
         }
+
+        .modal-container {
+            width: 100%;
+            max-width: 800px;
+            background: #0a0a0a;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 100px rgba(0,0,0,1);
+        }
+
+        #modal-hero {
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        #modal-hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, #0a0a0a 0%, transparent 100%);
+        }
+
+        /* Blur utility for background content */
+        .blur-bg { filter: blur(12px); pointer-events: none; transition: filter 0.5s ease; }
     </style>
 </head>
 <body class="overflow-hidden">
@@ -249,61 +310,62 @@
 
     <div id="main-app" class="opacity-0 transition-opacity duration-[2000ms]">
         <nav id="navbar" class="fixed top-0 w-full z-50 px-12 py-8 flex justify-between items-center">
-            <div class="heading-font text-2xl font-bold text-white tracking-tighter cursor-pointer" onclick="location.reload()">ZENITH</div>
-            <div class="flex items-center gap-6">
+            <div class="zenith-logo heading-font text-2xl font-bold text-white tracking-tighter cursor-pointer transition-all duration-500" onclick="location.reload()">ZENITH</div>
+            <div class="nav-link-group flex items-center gap-6">
                 <button class="portal-btn-blue" onclick="location.href='normal_uslgn.html'">VIEWER PORTAL</button>
                 <button class="portal-btn-red" onclick="location.href='adminlgn.html'">THE ARCHITECT</button>
             </div>
         </nav>
 
-        <!-- The Billboard -->
-        <div id="hero-slider" class="hero-slider">
-            <div id="hero-slides-container"></div>
-        </div>
-
-        <main class="relative z-10 pb-20">
-            <!-- Header Section -->
-            <div class="px-[5%] mb-12 flex justify-between items-end">
-                <div class="catalog-header">
-                    <div class="text-[9px] text-red-500 mono-font font-bold mb-1 tracking-[0.4em] uppercase">Archive_System</div>
-                    <h2 class="heading-font text-3xl font-bold tracking-tighter uppercase">Primary_Database</h2>
-                </div>
-                <div class="flex flex-col items-end">
-                    <span id="movie-count" class="mono-font text-[9px] text-neutral-600 tracking-[0.3em] uppercase">Nodes Active</span>
-                    <div class="h-[2px] w-32 bg-red-600 mt-2"></div>
-                </div>
+        <div id="content-to-blur">
+            <!-- The Billboard -->
+            <div id="hero-slider" class="hero-slider">
+                <button class="nav-arrow arrow-left" onclick="moveSlide(-1)">❮</button>
+                <button class="nav-arrow arrow-right" onclick="moveSlide(1)">❯</button>
+                <div id="hero-slides-container"></div>
             </div>
-            
-            <div id="master-grid"></div>
-        </main>
+
+            <main class="relative z-10 pb-20">
+                <div class="px-[5%] mb-12 flex justify-between items-end">
+                    <div class="catalog-header">
+                        <div class="text-[9px] text-red-500 mono-font font-bold mb-1 tracking-[0.4em] uppercase">Archive_System</div>
+                        <h2 class="heading-font text-3xl font-bold tracking-tighter uppercase">Primary_Database</h2>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <span id="movie-count" class="mono-font text-[9px] text-neutral-600 tracking-[0.3em] uppercase">Nodes Active</span>
+                        <div class="h-[2px] w-32 bg-red-600 mt-2"></div>
+                    </div>
+                </div>
+                <div id="master-grid"></div>
+            </main>
+        </div>
     </div>
 
-    <!-- Details Modal -->
+    <!-- Compact Details Modal -->
     <div id="details-modal" onclick="closeDetails()">
-        <div class="w-full max-w-6xl bg-[#050505] border border-white/5 relative overflow-hidden" onclick="event.stopPropagation()">
-            <button class="absolute top-8 right-8 z-50 text-neutral-500 hover:text-white" onclick="closeDetails()">✕</button>
-            <div id="modal-hero" class="h-[450px] bg-cover bg-center relative">
-                <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent"></div>
-            </div>
-            <div class="p-16 -mt-32 relative z-10">
-                <div class="flex gap-4 mb-6">
+        <div class="modal-container" onclick="event.stopPropagation()">
+            <button class="absolute top-6 right-6 z-50 text-white/50 hover:text-white text-xl" onclick="closeDetails()">✕</button>
+            <div id="modal-hero"></div>
+            <div class="px-10 py-8 relative">
+                <div class="flex gap-4 mb-4">
                     <span id="modal-marketing" class="badge-red"></span>
                     <span id="modal-genre-box" class="badge-blue"></span>
                 </div>
-                <h1 id="modal-title" class="text-5xl font-bold mb-6 uppercase tracking-tighter leading-none"></h1>
-                <p id="modal-plot" class="text-neutral-400 text-lg leading-relaxed mb-10 max-w-3xl"></p>
-                <button id="modal-play-btn" class="bg-red-600 text-white px-16 py-5 font-bold hover:bg-white hover:text-black tracking-widest text-xs uppercase transition-all">Initiate_Uplink</button>
+                <h1 id="modal-title" class="text-4xl font-bold mb-4 uppercase tracking-tighter leading-none"></h1>
+                <p id="modal-plot" class="text-neutral-400 text-sm leading-relaxed mb-8 max-w-2xl"></p>
+                <button id="modal-play-btn" class="w-full bg-red-600 text-white py-4 font-bold hover:bg-white hover:text-black tracking-widest text-[10px] uppercase transition-all">Initiate_Uplink</button>
             </div>
         </div>
     </div>
 
     <script>
         let currentSlide = 0;
+        let slideInterval;
 
         window.addEventListener('load', () => {
             renderContent(); 
             configureGate();
-            startHeroCycle();
+            resetInterval();
             
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
@@ -322,31 +384,18 @@
             }, 3500);
         });
 
-        function startHeroCycle() {
-            setInterval(() => {
-                const slides = document.querySelectorAll('.slide');
-                if (!slides.length) return;
-                slides[currentSlide].classList.remove('active');
-                currentSlide = (currentSlide + 1) % slides.length;
-                slides[currentSlide].classList.add('active');
-            }, 7000);
+        function resetInterval() {
+            if (slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(() => moveSlide(1), 8000);
         }
 
-        function configureGate() {
-            const isLoggedIn = localStorage.getItem('zenith_session_user');
-            const btn = document.getElementById('gate-main-btn');
-            if (isLoggedIn) {
-                btn.innerText = "OPEN PERSONAL VAULT";
-                btn.onclick = () => location.href = 'norm_viewerpage.html';
-                btn.classList.add('bg-blue-600', 'text-white');
-            }
-        }
-
-        function handleGateLogin() { window.location.href = 'normal_uslgn.html'; }
-        function closeGate() {
-            const gate = document.getElementById('login-gate');
-            gate.classList.remove('visible');
-            setTimeout(() => gate.style.display = 'none', 600);
+        function moveSlide(dir) {
+            const slides = document.querySelectorAll('.slide');
+            if (!slides.length) return;
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + dir + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+            resetInterval();
         }
 
         function renderContent() {
@@ -365,15 +414,15 @@
             heroContainer.innerHTML = (featured.length ? featured : activeData).map((movie, index) => `
                 <div class="slide ${index === 0 ? 'active' : ''}" style="background-image: url('${movie.posterLandscape}');">
                     <div class="hero-content">
-                        <div class="flex items-center gap-3 mb-4">
+                        <div class="flex items-center gap-3 mb-6">
                             <span class="badge-red">${movie.marketingTag || 'ORIGINAL'}</span>
                             <span class="badge-blue">${movie.genre}</span>
                         </div>
-                        <h1 class="text-5xl font-bold mb-4 tracking-tighter uppercase leading-[0.9]">${movie.title}</h1>
-                        <p class="hero-plot text-neutral-300 text-[13px] mb-8 max-w-sm">${movie.plot}</p>
+                        <h1 class="text-7xl font-bold mb-6 tracking-tighter uppercase leading-[0.85]">${movie.title}</h1>
+                        <p class="hero-plot text-neutral-300 mb-10 max-w-xl">${movie.plot}</p>
                         <div class="flex gap-4">
-                            <button class="bg-red-600 text-white px-8 py-3 font-bold text-[9px] tracking-[0.2em] uppercase hover:bg-white hover:text-black transition-all" onclick="redirectToPlayer('${movie.id}')">Watch Now</button>
-                            <button class="border border-white/10 bg-black/40 backdrop-blur-md text-white px-8 py-3 font-bold text-[9px] tracking-[0.2em] uppercase hover:bg-white hover:text-black transition-all" onclick="showDetails('${movie.id}')">Info</button>
+                            <button class="bg-red-600 text-white px-12 py-4 font-bold text-[10px] tracking-[0.2em] uppercase hover:bg-white hover:text-black transition-all" onclick="redirectToPlayer('${movie.id}')">Watch Now</button>
+                            <button class="border border-white/20 bg-black/40 backdrop-blur-md text-white px-12 py-4 font-bold text-[10px] tracking-[0.2em] uppercase hover:bg-white hover:text-black transition-all" onclick="showDetails('${movie.id}')">Info</button>
                         </div>
                     </div>
                 </div>
@@ -381,7 +430,7 @@
 
             grid.innerHTML = activeData.map(movie => `
                 <div class="movie-card" onclick="showDetails('${movie.id}')">
-                    <img src="${movie.posterPortrait}" alt="${movie.title}" loading="lazy">
+                    <img src="${movie.posterPortrait}" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110" alt="${movie.title}">
                     <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent p-6 flex flex-col justify-end opacity-0 hover:opacity-100 transition-opacity">
                         <h4 class="font-bold text-xs uppercase tracking-tighter">${movie.title}</h4>
                         <div class="text-[8px] text-red-500 font-bold tracking-[0.1em] uppercase mt-1">${movie.genre}</div>
@@ -402,10 +451,33 @@
             document.getElementById('modal-genre-box').innerText = movie.genre;
             document.getElementById('modal-plot').innerText = movie.plot;
             document.getElementById('modal-play-btn').onclick = () => redirectToPlayer(movie.id);
+            
+            document.getElementById('content-to-blur').classList.add('blur-bg');
+            document.getElementById('navbar').classList.add('blur-bg');
             document.getElementById('details-modal').style.display = 'flex';
         }
 
-        function closeDetails() { document.getElementById('details-modal').style.display = 'none'; }
+        function closeDetails() { 
+            document.getElementById('content-to-blur').classList.remove('blur-bg');
+            document.getElementById('navbar').classList.remove('blur-bg');
+            document.getElementById('details-modal').style.display = 'none'; 
+        }
+
+        function configureGate() {
+            const isLoggedIn = localStorage.getItem('zenith_session_user');
+            const btn = document.getElementById('gate-main-btn');
+            if (isLoggedIn) {
+                btn.innerText = "OPEN PERSONAL VAULT";
+                btn.onclick = () => location.href = 'norm_viewerpage.html';
+                btn.classList.add('bg-blue-600', 'text-white');
+            }
+        }
+        function handleGateLogin() { window.location.href = 'normal_uslgn.html'; }
+        function closeGate() {
+            const gate = document.getElementById('login-gate');
+            gate.classList.remove('visible');
+            setTimeout(() => gate.style.display = 'none', 600);
+        }
         function redirectToPlayer(id) { window.location.href = `video_player.html?id=${id}&origin=public`; }
     </script>
 </body>
