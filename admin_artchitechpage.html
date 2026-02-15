@@ -7,183 +7,36 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600&family=Syncopate:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #050505;
-            --sidebar: #0a0a0a;
-            --accent: #ff2d2d;
-            --glass: rgba(255, 255, 255, 0.03);
-        }
-
-        body {
-            background-color: var(--bg);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
+        :root { --bg: #050505; --sidebar: #0a0a0a; --accent: #ff2d2d; --glass: rgba(255, 255, 255, 0.03); }
+        body { background-color: var(--bg); color: white; font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
         .heading-font { font-family: 'Syncopate', sans-serif; }
         .mono-font { font-family: 'Fira Code', monospace; }
-
-        aside {
-            width: 280px;
-            background: var(--sidebar);
-            border-right: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            flex-direction: column;
-            padding: 30px;
-            flex-shrink: 0;
-        }
-
-        .admin-profile {
-            padding: 20px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.05);
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .profile-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: linear-gradient(45deg, var(--accent), #4a00e0);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-family: 'Syncopate';
-            font-size: 18px;
-            box-shadow: 0 0 15px rgba(255, 45, 45, 0.3);
-        }
-
-        .nav-item {
-            padding: 12px 16px;
-            border-radius: 8px;
-            color: #888;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .nav-item.active {
-            background: rgba(255, 45, 45, 0.1);
-            color: var(--accent);
-        }
-
-        main {
-            flex: 1;
-            padding: 50px;
-            overflow-y: auto;
-            background: radial-gradient(circle at top right, #1a0505 0%, transparent 40%);
-        }
-
-        .form-card {
-            background: var(--glass);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 30px;
-            border-radius: 16px;
-            backdrop-filter: blur(20px);
-        }
-
-        .input-box {
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            padding: 12px;
-            width: 100%;
-            color: white;
-            outline: none;
-            margin-top: 6px;
-            font-size: 13px;
-        }
-
+        aside { width: 280px; background: var(--sidebar); border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; padding: 30px; flex-shrink: 0; }
+        .admin-profile { padding: 20px; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 30px; display: flex; align-items: center; gap: 12px; }
+        .profile-avatar { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(45deg, var(--accent), #4a00e0); display: flex; align-items: center; justify-content: center; font-weight: bold; font-family: 'Syncopate'; font-size: 18px; box-shadow: 0 0 15px rgba(255, 45, 45, 0.3); }
+        .nav-item { padding: 12px 16px; border-radius: 8px; color: #888; cursor: pointer; transition: all 0.3s; margin-bottom: 8px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-item.active { background: rgba(255, 45, 45, 0.1); color: var(--accent); }
+        main { flex: 1; padding: 50px; overflow-y: auto; background: radial-gradient(circle at top right, #1a0505 0%, transparent 40%); }
+        .form-card { background: var(--glass); border: 1px solid rgba(255,255,255,0.05); padding: 30px; border-radius: 16px; backdrop-filter: blur(20px); }
+        .input-box { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; width: 100%; color: white; outline: none; margin-top: 6px; font-size: 13px; }
         .input-box:focus { border-color: var(--accent); }
-
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn-secondary {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 11px;
-        }
-
+        .btn-primary { background: var(--accent); color: white; padding: 12px 24px; border-radius: 8px; font-weight: 600; transition: all 0.2s; }
+        .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 8px 16px; border-radius: 6px; font-size: 11px; }
         table { width: 100%; text-align: left; border-collapse: separate; border-spacing: 0 8px; }
         th { padding: 15px; color: #666; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; }
         td { padding: 15px; background: rgba(255,255,255,0.02); font-size: 13px; }
         td:first-child { border-radius: 8px 0 0 8px; }
         td:last-child { border-radius: 0 8px 8px 0; }
-
-        #js-output {
-            background: #000;
-            padding: 20px;
-            border-radius: 8px;
-            font-size: 11px;
-            max-height: 400px;
-            overflow: auto;
-            border: 1px dashed #333;
-            color: #00ffaa;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 100;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .file-label {
-            display: block;
-            background: rgba(255,255,255,0.05);
-            border: 1px dashed rgba(255,255,255,0.2);
-            border-radius: 8px;
-            padding: 10px;
-            text-align: center;
-            font-size: 11px;
-            color: #aaa;
-            cursor: pointer;
-        }
-
-        .status-box {
-            font-size: 10px;
-            color: #666;
-            margin-top: 5px;
-            font-family: monospace;
-        }
+        #js-output { background: #000; padding: 20px; border-radius: 8px; font-size: 11px; max-height: 400px; overflow: auto; border: 1px dashed #333; color: #00ffaa; white-space: pre-wrap; word-break: break-all; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .file-label { display: block; background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); border-radius: 8px; padding: 10px; text-align: center; font-size: 11px; color: #aaa; cursor: pointer; }
+        .status-box { font-size: 10px; color: #666; margin-top: 5px; font-family: monospace; }
     </style>
 </head>
 <body>
 
     <aside>
         <div class="heading-font text-xl mb-8 tracking-tighter text-white">ZENITH</div>
-        
         <div class="admin-profile">
             <div class="profile-avatar">Z</div>
             <div>
@@ -191,24 +44,15 @@
                 <div class="text-[9px] text-red-500 uppercase tracking-widest font-bold">Root Access</div>
             </div>
         </div>
-
         <nav id="sidebar-nav">
-            <div class="nav-item active" onclick="switchTab('releases')">
-                <span class="w-1.5 h-1.5 rounded-full bg-current"></span> Release Forge
-            </div>
-            <div class="nav-item" onclick="switchTab('edit')">
-                <span class="w-1.5 h-1.5 rounded-full bg-current"></span> Registry Edit
-            </div>
-            <div class="nav-item" onclick="switchTab('viewers')">
-                <span class="w-1.5 h-1.5 rounded-full bg-current"></span> Viewer Registry
-            </div>
-            <div class="nav-item" onclick="switchTab('database')">
-                <span class="w-1.5 h-1.5 rounded-full bg-current"></span> System Database
-            </div>
+            <div class="nav-item active" onclick="switchTab('releases')"><span class="w-1.5 h-1.5 rounded-full bg-current"></span> Release Forge</div>
+            <div class="nav-item" onclick="switchTab('edit')"><span class="w-1.5 h-1.5 rounded-full bg-current"></span> Registry Edit</div>
+            <div class="nav-item" onclick="switchTab('viewers')"><span class="w-1.5 h-1.5 rounded-full bg-current"></span> Viewer Registry</div>
+            <div class="nav-item" onclick="switchTab('database')"><span class="w-1.5 h-1.5 rounded-full bg-current"></span> System Database</div>
         </nav>
-        
         <div class="mt-auto">
-            <button onclick="location.href='index.html'" class="text-[10px] text-neutral-600 hover:text-white tracking-widest uppercase transition-colors">← TERMINATE SESSION</button>
+            <!-- FIXED LOGOUT -->
+            <button onclick="logout()" class="text-[10px] text-neutral-600 hover:text-white tracking-widest uppercase transition-colors">← TERMINATE SESSION</button>
         </div>
     </aside>
 
@@ -216,53 +60,36 @@
         <!-- Tab: Release Forge -->
         <div id="releases-tab">
             <h1 class="text-3xl font-bold mb-2">Release Forge</h1>
-            <p class="text-neutral-500 mb-10">Inject new cinematic containers. System will auto-format Drive links.</p>
-
+            <p class="text-neutral-500 mb-10">Inject new cinematic containers.</p>
             <div class="grid grid-cols-2 gap-10">
                 <div class="form-card">
                     <h2 class="text-lg font-bold mb-6 flex items-center gap-2">Production Metadata</h2>
                     <div class="space-y-4">
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Project Title</label>
-                            <input type="text" id="m-title" class="input-box" placeholder="e.g. DARK MATTER">
-                        </div>
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Genre Tags</label>
-                            <input type="text" id="m-genre" class="input-box" placeholder="Sci-Fi / Action">
-                        </div>
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Narrative Summary</label>
-                            <textarea id="m-plot" class="input-box h-32" placeholder="Input storyline data..."></textarea>
-                        </div>
+                        <input type="text" id="m-title" class="input-box" placeholder="Project Title">
+                        <input type="text" id="m-genre" class="input-box" placeholder="Genre Tags">
+                        <textarea id="m-plot" class="input-box h-32" placeholder="Narrative Summary"></textarea>
                     </div>
                 </div>
-
                 <div class="form-card">
                     <h2 class="text-lg font-bold mb-6 flex items-center gap-2">Asset Configuration</h2>
                     <div class="space-y-4">
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Google Drive Link</label>
-                            <input type="text" id="m-video-url" class="input-box" placeholder="Paste link here..." oninput="previewLinkFormat()">
-                            <div id="url-status" class="status-box">Waiting for input...</div>
+                        <input type="text" id="m-video-url" class="input-box" placeholder="Google Drive Link" oninput="previewLinkFormat()">
+                        <div id="url-status" class="status-box">Waiting for input...</div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] uppercase tracking-widest text-neutral-500">Landscape</label>
+                                <input type="file" id="land-up" class="hidden" accept="image/*" onchange="handleFileUpload(this, 'm-land', 'land-status')">
+                                <label for="land-up" class="file-label mt-2" id="land-status">Encode</label>
+                                <input type="hidden" id="m-land">
+                            </div>
+                            <div>
+                                <label class="text-[10px] uppercase tracking-widest text-neutral-500">Portrait</label>
+                                <input type="file" id="port-up" class="hidden" accept="image/*" onchange="handleFileUpload(this, 'm-port', 'port-status')">
+                                <label for="port-up" class="file-label mt-2" id="port-status">Encode</label>
+                                <input type="hidden" id="m-port">
+                            </div>
                         </div>
-                        
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Landscape Capture</label>
-                            <label for="land-up" class="file-label mt-2" id="land-status">Click to encode image</label>
-                            <input type="file" id="land-up" class="hidden" accept="image/*" onchange="handleFileUpload(this, 'm-land', 'land-status')">
-                            <input type="hidden" id="m-land">
-                        </div>
-
-                        <div>
-                            <label class="text-[10px] uppercase tracking-widest text-neutral-500">Portrait Capture</label>
-                            <label for="port-up" class="file-label mt-2" id="port-status">Click to encode image</label>
-                            <input type="file" id="port-up" class="hidden" accept="image/*" onchange="handleFileUpload(this, 'm-port', 'port-status')">
-                            <input type="hidden" id="m-port">
-                        </div>
-
-                        <div class="pt-4">
-                            <button onclick="addMovie()" class="btn-primary w-full uppercase tracking-widest text-xs">Authorize Publication</button>
-                        </div>
+                        <div class="pt-4"><button onclick="addMovie()" class="btn-primary w-full uppercase tracking-widest text-xs">Authorize Publication</button></div>
                     </div>
                 </div>
             </div>
@@ -271,61 +98,31 @@
         <!-- Tab: Registry Edit -->
         <div id="edit-tab" class="hidden">
             <h1 class="text-3xl font-bold mb-2">Registry Edit</h1>
-            <p class="text-neutral-500 mb-10">Archives persist in local storage. Edit broken links here.</p>
+            <p class="text-neutral-500 mb-10">Manage active archives.</p>
             <div class="form-card">
-                <table id="movie-registry-table">
-                    <thead>
-                        <tr>
-                            <th>TITLE</th>
-                            <th>GENRE</th>
-                            <th>STATUS</th>
-                            <th>ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody id="registry-list"></tbody>
-                </table>
+                <table id="movie-registry-table"><thead><tr><th>TITLE</th><th>GENRE</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody id="registry-list"></tbody></table>
             </div>
         </div>
 
-        <!-- Tab: Viewer Registry (FIXED) -->
+        <!-- Tab: Viewer Registry -->
         <div id="viewers-tab" class="hidden">
             <h1 class="text-3xl font-bold mb-2 text-red-500">Viewer Registry</h1>
-            <p class="text-neutral-500 mb-10">Manage registered identities and monitor system access.</p>
+            <p class="text-neutral-500 mb-10">Manage registered identities.</p>
             <div class="form-card">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>IDENTIFIER</th>
-                            <th>ACCESS KEY (HASHED)</th>
-                            <th>ACTIVITY</th>
-                            <th>ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody id="viewer-list">
-                        <!-- Populated via script -->
-                    </tbody>
-                </table>
+                <table><thead><tr><th>IDENTIFIER</th><th>ACCESS KEY</th><th>ACTIVITY</th><th>ACTIONS</th></tr></thead><tbody id="viewer-list"></tbody></table>
             </div>
         </div>
 
         <!-- Tab: System Database -->
         <div id="database-tab" class="hidden">
             <div class="flex justify-between items-center mb-10">
-                <div>
-                    <h1 class="text-3xl font-bold mb-2">System Database</h1>
-                    <p class="text-neutral-500">Consolidated JSON manifest for movies.js.</p>
-                </div>
+                <h1 class="text-3xl font-bold mb-2">System Database</h1>
                 <div class="flex gap-4">
-                    <div class="px-6 py-3 bg-white/5 border border-white/10 rounded-lg text-center">
-                        <div class="text-[9px] uppercase text-neutral-500">Total Users</div>
-                        <div id="user-stat-count" class="text-xl font-bold">0</div>
-                    </div>
+                    <div class="px-6 py-3 bg-white/5 border border-white/10 rounded-lg text-center"><div class="text-[9px] uppercase text-neutral-500">Total Users</div><div id="user-stat-count" class="text-xl font-bold">0</div></div>
                     <button onclick="downloadJS()" class="btn-primary bg-blue-600 hover:bg-blue-500">EXPORT MOVIES.JS</button>
                 </div>
             </div>
-            <div class="form-card">
-                <pre id="js-output"></pre>
-            </div>
+            <div class="form-card"><pre id="js-output"></pre></div>
         </div>
     </main>
 
@@ -337,82 +134,54 @@
                 <input type="text" id="edit-title" class="input-box">
                 <input type="text" id="edit-genre" class="input-box">
                 <textarea id="edit-plot" class="input-box h-24"></textarea>
-                <input type="text" id="edit-video-url" class="input-box" placeholder="Paste correct Drive link">
-                <div class="flex gap-4 pt-4">
-                    <button onclick="saveEdit()" class="btn-primary flex-1">UPDATE RECORD</button>
-                    <button onclick="closeModal()" class="btn-secondary">CANCEL</button>
-                </div>
+                <input type="text" id="edit-video-url" class="input-box">
+                <div class="flex gap-4 pt-4"><button onclick="saveEdit()" class="btn-primary flex-1">UPDATE RECORD</button><button onclick="closeModal()" class="btn-secondary">CANCEL</button></div>
             </div>
         </div>
     </div>
 
     <script>
         let movies = JSON.parse(localStorage.getItem('zenith_lifetime_movies') || '[]');
-
-        function saveToLifetime() {
-            localStorage.setItem('zenith_lifetime_movies', JSON.stringify(movies));
-        }
+        function saveToLifetime() { localStorage.setItem('zenith_lifetime_movies', JSON.stringify(movies)); }
 
         function switchTab(tabId) {
             document.querySelectorAll('main > div').forEach(div => div.classList.add('hidden'));
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.getElementById(tabId + '-tab').classList.remove('hidden');
-            
-            // Find the clicked nav item and mark it active
             const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => {
-                if(item.innerText.toLowerCase().includes(tabId.replace('-', ' '))) {
-                    item.classList.add('active');
-                }
-            });
-
+            navItems.forEach(item => { if(item.innerText.toLowerCase().includes(tabId.replace('-', ' '))) item.classList.add('active'); });
             if(tabId === 'edit') renderRegistry();
             if(tabId === 'viewers') renderViewers();
             if(tabId === 'database') renderDatabase();
         }
 
-        // --- VIEWER REGISTRY LOGIC ---
         function renderViewers() {
             const users = JSON.parse(localStorage.getItem('zenith_users') || '[]');
             const list = document.getElementById('viewer-list');
-            
-            if (users.length === 0) {
-                list.innerHTML = `<tr><td colspan="4" class="text-center py-10 text-neutral-600 italic">No registered viewers found in the database.</td></tr>`;
-                return;
-            }
-
+            if (users.length === 0) { list.innerHTML = `<tr><td colspan="4" class="text-center py-10 text-neutral-600 italic">No registered viewers found.</td></tr>`; return; }
             list.innerHTML = users.map(user => `
                 <tr class="hover:bg-white/5 transition-all">
                     <td class="font-bold text-white">${user.username}</td>
-                    <td class="mono-font text-neutral-500">${"*".repeat(user.password.length)}</td>
-                    <td class="text-[11px] text-neutral-400">
-                        ${user.history ? user.history.length : 0} Items Watched
-                    </td>
-                    <td>
-                        <button onclick="deleteViewer('${user.username}')" class="text-red-500 hover:text-red-400 text-[10px] font-bold uppercase tracking-widest">Wipe Access</button>
-                    </td>
+                    <td class="mono-font text-neutral-500">******</td>
+                    <td class="text-[11px] text-neutral-400">${user.history ? user.history.length : 0} Items</td>
+                    <td><button onclick="deleteViewer('${user.username}')" class="text-red-500 hover:text-red-400 text-[10px] font-bold uppercase tracking-widest">Wipe Access</button></td>
                 </tr>
             `).join('');
         }
 
         function deleteViewer(username) {
-            if(!confirm(`Are you sure you want to permanently delete the identity: ${username}?`)) return;
-            
+            if(!confirm(`Delete user: ${username}?`)) return;
             let users = JSON.parse(localStorage.getItem('zenith_users') || '[]');
             users = users.filter(u => u.username !== username);
             localStorage.setItem('zenith_users', JSON.stringify(users));
             renderViewers();
         }
 
-        // --- URL PARSER ---
         function convertToPreviewUrl(inputUrl) {
             let id = "";
             const matchFile = inputUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
             if (matchFile && matchFile[1]) id = matchFile[1];
-            if (!id) {
-                const matchIdParam = inputUrl.match(/id=([a-zA-Z0-9_-]+)/);
-                if (matchIdParam && matchIdParam[1]) id = matchIdParam[1];
-            }
+            if (!id) { const matchIdParam = inputUrl.match(/id=([a-zA-Z0-9_-]+)/); if (matchIdParam && matchIdParam[1]) id = matchIdParam[1]; }
             if (id) return `https://drive.google.com/file/d/${id}/preview`;
             return inputUrl;
         }
@@ -421,13 +190,8 @@
             const raw = document.getElementById('m-video-url').value;
             const converted = convertToPreviewUrl(raw);
             const status = document.getElementById('url-status');
-            if (converted.includes('/preview')) {
-                status.innerText = "✓ Valid Format Detected: " + converted;
-                status.style.color = "#00ff00";
-            } else {
-                status.innerText = "Waiting for valid Drive link...";
-                status.style.color = "#666";
-            }
+            if (converted.includes('/preview')) { status.innerText = "✓ Valid Format"; status.style.color = "#00ff00"; } 
+            else { status.innerText = "Waiting for valid Drive link..."; status.style.color = "#666"; }
         }
 
         function handleFileUpload(input, targetId, statusId) {
@@ -436,7 +200,7 @@
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     document.getElementById(targetId).value = e.target.result;
-                    document.getElementById(statusId).innerText = "Encoded: " + file.name;
+                    document.getElementById(statusId).innerText = "Encoded";
                 };
                 reader.readAsDataURL(file);
             }
@@ -445,7 +209,6 @@
         function addMovie() {
             const title = document.getElementById('m-title').value.trim();
             if(!title) return alert("Title required.");
-
             const movie = {
                 id: "ZEN-" + Date.now(),
                 title: title,
@@ -457,7 +220,6 @@
                 isFeatured: true,
                 timestamp: new Date().toISOString()
             };
-
             movies.push(movie);
             saveToLifetime();
             alert("RECORD AUTHORIZED");
@@ -530,7 +292,15 @@
             a.click();
         }
 
-        window.onload = renderRegistry;
+        // FIXED LOGOUT FUNCTION
+        function logout() {
+            // Clears any admin/user session
+            localStorage.removeItem('zenith_session_user');
+            localStorage.removeItem('zenith_admin_session'); 
+            window.location.href = 'index.html';
+        }
+
+        window.onload = () => switchTab('releases');
     </script>
 </body>
 </html>
