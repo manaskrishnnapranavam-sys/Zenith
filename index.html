@@ -104,10 +104,10 @@
         #login-gate.visible { opacity: 1; }
         #login-gate.visible .gate-card { transform: translateY(0); }
 
-        /* --- HERO SLIDER (LANDSCAPE FULL) --- */
+        /* --- HERO SLIDER (REDUCED HEIGHT) --- */
         .hero-slider {
             position: relative;
-            height: 100vh;
+            height: 70vh; /* Reduced from 100vh to fit content better */
             width: 100%;
             overflow: hidden;
             background: #000;
@@ -139,7 +139,7 @@
         .hero-content {
             position: relative;
             z-index: 10;
-            max-width: 800px;
+            max-width: 650px; /* Reduced from 800px */
             transform: translateX(-40px);
             opacity: 0;
             transition: all 1s ease 0.5s;
@@ -220,8 +220,8 @@
         /* --- PORTRAIT MOVIE GRID (FULL BLEED) --- */
         #master-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 25px;
             padding: 0 5% 100px 5%;
         }
 
@@ -320,24 +320,23 @@
             </div>
         </nav>
 
-        <!-- Landscape Hero Slider -->
+        <!-- Reduced Billboard -->
         <div id="hero-slider" class="hero-slider">
             <div id="hero-slides-container"></div>
         </div>
 
-        <main class="relative -mt-32 z-10 pb-20">
-            <div class="px-[5%] mb-16 flex justify-between items-end">
+        <main class="relative -mt-24 z-10 pb-20">
+            <div class="px-[5%] mb-12 flex justify-between items-end">
                 <div class="catalog-header">
-                    <div class="text-[10px] text-red-500 mono-font font-bold mb-2 tracking-[0.4em] uppercase">Archive_System</div>
-                    <h2 class="heading-font text-4xl font-bold tracking-tighter uppercase">Primary_Database</h2>
+                    <div class="text-[9px] text-red-500 mono-font font-bold mb-1 tracking-[0.4em] uppercase">Archive_System</div>
+                    <h2 class="heading-font text-3xl font-bold tracking-tighter uppercase">Primary_Database</h2>
                 </div>
                 <div class="flex flex-col items-end">
-                    <span id="movie-count" class="mono-font text-[10px] text-neutral-600 tracking-[0.3em] uppercase">Calculating...</span>
-                    <div class="h-[2px] w-48 bg-red-600 mt-3"></div>
+                    <span id="movie-count" class="mono-font text-[9px] text-neutral-600 tracking-[0.3em] uppercase">Calculating...</span>
+                    <div class="h-[2px] w-32 bg-red-600 mt-2"></div>
                 </div>
             </div>
             
-            <!-- Optimized Grid (Full Image Coverage) -->
             <div id="master-grid"></div>
         </main>
     </div>
@@ -432,15 +431,15 @@
             heroContainer.innerHTML = (featured.length ? featured : activeData).map((movie, index) => `
                 <div class="slide ${index === 0 ? 'active' : ''}" style="background-image: url('${movie.posterLandscape}');">
                     <div class="hero-content">
-                        <div class="flex items-center gap-4 mb-8">
+                        <div class="flex items-center gap-4 mb-4">
                             <span class="badge-red">${movie.marketingTag || 'ORIGINAL'}</span>
                             <span class="badge-blue">${movie.genre}</span>
                         </div>
-                        <h1 class="text-8xl font-bold mb-8 tracking-tighter uppercase leading-[0.8]">${movie.title}</h1>
-                        <p class="text-neutral-300 text-xl mb-12 max-w-2xl leading-relaxed">${movie.plot}</p>
-                        <div class="flex gap-6">
-                            <button class="bg-red-600 text-white px-12 py-5 font-bold text-xs tracking-[0.3em] uppercase hover:bg-white hover:text-black transition-all" onclick="redirectToPlayer('${movie.id}')">Watch Now</button>
-                            <button class="border border-white/20 bg-black/40 backdrop-blur-md text-white px-12 py-5 font-bold text-xs tracking-[0.3em] uppercase hover:bg-white hover:text-black transition-all" onclick="showDetails('${movie.id}')">Info</button>
+                        <h1 class="text-6xl font-bold mb-4 tracking-tighter uppercase leading-[0.9]">${movie.title}</h1>
+                        <p class="text-neutral-300 text-sm mb-8 max-w-xl leading-relaxed">${movie.plot}</p>
+                        <div class="flex gap-4">
+                            <button class="bg-red-600 text-white px-8 py-4 font-bold text-[10px] tracking-[0.2em] uppercase hover:bg-white hover:text-black transition-all" onclick="redirectToPlayer('${movie.id}')">Watch Now</button>
+                            <button class="border border-white/10 bg-black/40 backdrop-blur-md text-white px-8 py-4 font-bold text-[10px] tracking-[0.2em] uppercase hover:bg-white hover:text-black transition-all" onclick="showDetails('${movie.id}')">Info</button>
                         </div>
                     </div>
                 </div>
@@ -450,8 +449,8 @@
                 <div class="movie-card" onclick="showDetails('${movie.id}')">
                     <img src="${movie.posterPortrait}" alt="${movie.title}" loading="lazy">
                     <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent p-6 flex flex-col justify-end opacity-0 hover:opacity-100 transition-opacity duration-300">
-                        <h4 class="font-bold text-lg uppercase tracking-tighter">${movie.title}</h4>
-                        <div class="text-[10px] text-red-500 font-bold tracking-[0.2em] uppercase mt-2">${movie.genre}</div>
+                        <h4 class="font-bold text-sm uppercase tracking-tighter">${movie.title}</h4>
+                        <div class="text-[9px] text-red-500 font-bold tracking-[0.1em] uppercase mt-1">${movie.genre}</div>
                     </div>
                 </div>
             `).join('');
