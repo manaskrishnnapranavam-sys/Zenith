@@ -35,7 +35,7 @@
             position: fixed;
             inset: 0;
             background: #000;
-            z-index: 2000; /* Highest priority */
+            z-index: 2000;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -77,9 +77,9 @@
         #login-gate {
             position: fixed;
             inset: 0;
-            z-index: 1500; /* High priority, just under splash */
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(15px);
+            z-index: 1500;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(20px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -96,7 +96,7 @@
             padding: 40px;
             text-align: center;
             position: relative;
-            box-shadow: 0 0 50px rgba(255,0,0,0.1);
+            box-shadow: 0 0 50px rgba(255,0,0,0.15);
             transform: scale(0.95);
             transition: transform 0.5s ease;
         }
@@ -104,7 +104,7 @@
         #login-gate.visible { opacity: 1; }
         #login-gate.visible .gate-card { transform: scale(1); }
 
-        /* --- SLIDING HERO (BILLBOARD) --- */
+        /* --- HERO SLIDER --- */
         .hero-slider {
             position: relative;
             height: 85vh;
@@ -241,7 +241,6 @@
             backdrop-filter: blur(5px);
         }
 
-        /* Modal styling */
         #details-modal {
             position: fixed;
             inset: 0;
@@ -263,7 +262,7 @@
         </div>
     </div>
 
-    <!-- System Initialization Gate (Login Prompt) -->
+    <!-- System Initialization Gate (Login Prompt) - ALWAYS APPEARS -->
     <div id="login-gate">
         <div class="gate-card">
             <button onclick="closeGate()" class="absolute top-4 right-4 text-neutral-500 hover:text-white transition-colors" title="Dismiss">
@@ -276,7 +275,9 @@
             <h2 class="heading-font text-xl mb-6">IDENTIFICATION REQUIRED</h2>
             <p class="text-neutral-400 text-sm mb-8 leading-relaxed">System archives are optimized for authorized personnel. Log in to access your personal vault and watch history.</p>
             <div class="flex flex-col gap-3">
-                <button onclick="location.href='normal_uslgn.html'" class="bg-red-600 hover:bg-red-700 text-white py-4 font-bold tracking-widest text-xs uppercase transition-all shadow-lg shadow-red-900/20">Authorize Identity</button>
+                <!-- Primary Action (Smart Switch) -->
+                <button id="gate-main-btn" onclick="handleGateLogin()" class="bg-red-600 hover:bg-red-700 text-white py-4 font-bold tracking-widest text-xs uppercase transition-all shadow-lg shadow-red-900/20">Authorize Identity</button>
+                <!-- Guest Action -->
                 <button onclick="closeGate()" class="border border-white/10 hover:bg-white/5 text-neutral-400 py-4 font-bold tracking-widest text-xs uppercase transition-all">Proceed as Guest</button>
             </div>
         </div>
@@ -335,8 +336,9 @@
     <script>
         window.addEventListener('load', () => {
             renderContent(); 
+            configureGate();
             
-            // Wait for splash animation (3.5s) then transition
+            // Splash timeline
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 const main = document.getElementById('main-app');
@@ -346,23 +348,31 @@
                 main.style.opacity = '1';
                 document.body.classList.remove('overflow-hidden');
                 
-                // Hide splash completely after fade out
                 setTimeout(() => {
                     splash.style.display = 'none';
-                    
-                    // Check if user is already logged in
-                    const isLoggedIn = localStorage.getItem('zenith_session_user');
-                    if (!isLoggedIn) {
-                        // If public guest, show login gate
-                        gate.style.display = 'flex';
-                        // Small delay to allow display:flex to render before opacity transition
-                        requestAnimationFrame(() => {
-                            gate.classList.add('visible');
-                        });
-                    }
+                    // Show login gate for EVERYONE (Public & Logged In)
+                    gate.style.display = 'flex';
+                    requestAnimationFrame(() => {
+                        gate.classList.add('visible');
+                    });
                 }, 800); 
             }, 3500);
         });
+
+        function configureGate() {
+            const isLoggedIn = localStorage.getItem('zenith_session_user');
+            const btn = document.getElementById('gate-main-btn');
+            
+            if (isLoggedIn) {
+                btn.innerText = "ENTER VAULT";
+                btn.onclick = () => location.href = 'norm_viewerpage.html';
+                btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                btn.classList.remove('bg-red-600', 'hover:bg-red-700');
+            } else {
+                btn.innerText = "AUTHORIZE IDENTITY";
+                btn.onclick = () => location.href = 'normal_uslgn.html';
+            }
+        }
 
         function closeGate() {
             const gate = document.getElementById('login-gate');
@@ -393,7 +403,6 @@
                         </div>
                         <h1 class="text-7xl font-bold mb-6 tracking-tighter uppercase leading-[0.9]">${movie.title}</h1>
                         <p class="text-neutral-300 text-lg mb-10 max-w-lg leading-relaxed">${movie.plot}</p>
-                        <!-- ADDED origin=public -->
                         <button class="bg-red-600 text-white px-10 py-4 font-bold text-xs tracking-widest uppercase hover:bg-white hover:text-black transition-all" onclick="redirectToPlayer('${movie.id}')">Initiate Stream</button>
                     </div>
                 </div>
@@ -423,7 +432,6 @@
 
         function closeDetails() { document.getElementById('details-modal').style.display = 'none'; }
         
-        // UPDATED: Added origin=public param
         function redirectToPlayer(id) { 
             window.location.href = `video_player.html?id=${id}&origin=public`; 
         }
