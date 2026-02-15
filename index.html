@@ -149,6 +149,30 @@
             opacity: 1;
         }
 
+        /* --- MARKETING LABELS --- */
+        .badge-red { 
+            background: var(--accent); 
+            color: white; 
+            padding: 3px 10px; 
+            border-radius: 2px; 
+            font-size: 10px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(255, 45, 45, 0.3);
+        }
+        .badge-blue { 
+            background: var(--zenith-blue); 
+            color: white; 
+            padding: 3px 10px; 
+            border-radius: 2px; 
+            font-size: 10px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0, 132, 255, 0.3);
+        }
+
         /* --- PORTRAIT MOVIE GRID --- */
         #master-grid {
             display: grid;
@@ -262,7 +286,7 @@
         </div>
     </div>
 
-    <!-- System Initialization Gate (Login Prompt) - ALWAYS APPEARS -->
+    <!-- System Initialization Gate -->
     <div id="login-gate">
         <div class="gate-card">
             <button onclick="closeGate()" class="absolute top-4 right-4 text-neutral-500 hover:text-white transition-colors" title="Dismiss">
@@ -275,9 +299,7 @@
             <h2 class="heading-font text-xl mb-6">IDENTIFICATION REQUIRED</h2>
             <p class="text-neutral-400 text-sm mb-8 leading-relaxed">System archives are optimized for authorized personnel. Log in to access your personal vault and watch history.</p>
             <div class="flex flex-col gap-3">
-                <!-- Primary Action (Smart Switch) -->
                 <button id="gate-main-btn" onclick="handleGateLogin()" class="bg-red-600 hover:bg-red-700 text-white py-4 font-bold tracking-widest text-xs uppercase transition-all shadow-lg shadow-red-900/20">Authorize Identity</button>
-                <!-- Guest Action -->
                 <button onclick="closeGate()" class="border border-white/10 hover:bg-white/5 text-neutral-400 py-4 font-bold tracking-widest text-xs uppercase transition-all">Proceed as Guest</button>
             </div>
         </div>
@@ -325,8 +347,11 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent"></div>
             </div>
             <div class="p-12 -mt-24 relative z-10">
-                <h1 id="modal-title" class="text-5xl font-bold mb-2 uppercase tracking-tighter"></h1>
-                <p id="modal-genre" class="text-red-500 font-bold tracking-widest text-xs mb-8 uppercase"></p>
+                <div class="flex gap-2 mb-4">
+                    <span id="modal-marketing" class="badge-red"></span>
+                    <span id="modal-genre-box" class="badge-blue"></span>
+                </div>
+                <h1 id="modal-title" class="text-5xl font-bold mb-4 uppercase tracking-tighter"></h1>
                 <p id="modal-plot" class="text-neutral-400 text-lg leading-relaxed mb-8 max-w-2xl"></p>
                 <button id="modal-play-btn" class="bg-white text-black px-12 py-4 font-bold hover:bg-red-600 hover:text-white transition-all">STREAM_CONTENT</button>
             </div>
@@ -338,7 +363,6 @@
             renderContent(); 
             configureGate();
             
-            // Splash timeline
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
                 const main = document.getElementById('main-app');
@@ -350,7 +374,6 @@
                 
                 setTimeout(() => {
                     splash.style.display = 'none';
-                    // Show login gate for EVERYONE (Public & Logged In)
                     gate.style.display = 'flex';
                     requestAnimationFrame(() => {
                         gate.classList.add('visible');
@@ -385,31 +408,35 @@
             const heroContainer = document.getElementById('hero-slides-container');
             const countLabel = document.getElementById('movie-count');
             
-            if (typeof movieData === 'undefined' || !movieData.length) {
+            // Priority: Local Lifetime storage > Static movieData
+            const localStore = JSON.parse(localStorage.getItem('zenith_lifetime_movies') || '[]');
+            const activeData = localStore.length > 0 ? localStore : (typeof movieData !== 'undefined' ? movieData : []);
+
+            if (!activeData.length) {
                 grid.innerHTML = `<div class="col-span-full py-20 text-center text-neutral-600 italic">SYSTEM_ERROR: ARCHIVE_EMPTY</div>`;
                 return;
             }
 
-            countLabel.innerText = `SYNC_COMPLETE: ${movieData.length} ASSETS`;
+            countLabel.innerText = `SYNC_COMPLETE: ${activeData.length} ASSETS`;
 
-            // Hero Slider
-            const featured = movieData.filter(m => m.isFeatured);
-            heroContainer.innerHTML = (featured.length ? featured : movieData).map((movie, index) => `
+            // Hero Slider with Dual Labels
+            const featured = activeData.filter(m => m.isFeatured);
+            heroContainer.innerHTML = (featured.length ? featured : activeData).map((movie, index) => `
                 <div class="slide ${index === 0 ? 'active' : ''}" style="background-image: url('${movie.posterLandscape}');">
                     <div class="hero-content">
-                        <div class="flex items-center gap-3 mb-4">
-                            <span class="w-8 h-[1px] bg-red-600"></span>
-                            <span class="text-red-500 font-bold text-[10px] tracking-[0.4em] uppercase">Zenith Prime</span>
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="badge-red">${movie.marketingTag || 'ZENITH PRIME'}</span>
+                            <span class="badge-blue">${movie.genre}</span>
                         </div>
                         <h1 class="text-7xl font-bold mb-6 tracking-tighter uppercase leading-[0.9]">${movie.title}</h1>
-                        <p class="text-neutral-300 text-lg mb-10 max-w-lg leading-relaxed">${movie.plot}</p>
+                        <p class="text-neutral-300 text-lg mb-10 max-w-lg leading-relaxed line-clamp-3">${movie.plot}</p>
                         <button class="bg-red-600 text-white px-10 py-4 font-bold text-xs tracking-widest uppercase hover:bg-white hover:text-black transition-all" onclick="redirectToPlayer('${movie.id}')">Initiate Stream</button>
                     </div>
                 </div>
             `).join('');
 
             // Grid
-            grid.innerHTML = movieData.map(movie => `
+            grid.innerHTML = activeData.map(movie => `
                 <div class="movie-card" onclick="showDetails('${movie.id}')">
                     <img src="${movie.posterPortrait}" alt="${movie.title}">
                     <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent p-4 flex flex-col justify-end opacity-0 hover:opacity-100 transition-opacity">
@@ -421,10 +448,14 @@
         }
 
         function showDetails(id) {
-            const movie = movieData.find(m => m.id === id);
+            const localStore = JSON.parse(localStorage.getItem('zenith_lifetime_movies') || '[]');
+            const activeData = localStore.length > 0 ? localStore : (typeof movieData !== 'undefined' ? movieData : []);
+            const movie = activeData.find(m => m.id === id);
+            
             document.getElementById('modal-hero').style.backgroundImage = `url('${movie.posterLandscape}')`;
             document.getElementById('modal-title').innerText = movie.title;
-            document.getElementById('modal-genre').innerText = movie.genre;
+            document.getElementById('modal-marketing').innerText = movie.marketingTag || 'ZENITH PRIME';
+            document.getElementById('modal-genre-box').innerText = movie.genre;
             document.getElementById('modal-plot').innerText = movie.plot;
             document.getElementById('modal-play-btn').onclick = () => redirectToPlayer(movie.id);
             document.getElementById('details-modal').style.display = 'flex';
