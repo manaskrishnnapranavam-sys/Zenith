@@ -73,41 +73,41 @@
             100% { filter: blur(50px); opacity: 0; transform: scale(1.1); }
         }
 
-        /* --- LOGIN PROMPT MODAL --- */
+        /* --- INVITING LOGIN PROMPT MODAL --- */
         #login-gate {
             position: fixed;
             inset: 0;
             z-index: 1500;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(20px);
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(30px);
             display: none;
             align-items: center;
             justify-content: center;
             padding: 20px;
             opacity: 0;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         .gate-card {
             background: #0a0a0a;
-            border: 1px solid rgba(255,255,255,0.1);
-            max-width: 450px;
+            border: 1px solid rgba(255,255,255,0.08);
+            max-width: 480px;
             width: 100%;
-            padding: 40px;
+            padding: 50px;
             text-align: center;
             position: relative;
-            box-shadow: 0 0 50px rgba(255,0,0,0.15);
-            transform: scale(0.95);
-            transition: transform 0.5s ease;
+            box-shadow: 0 0 80px rgba(255,0,0,0.1);
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
         
         #login-gate.visible { opacity: 1; }
-        #login-gate.visible .gate-card { transform: scale(1); }
+        #login-gate.visible .gate-card { transform: translateY(0); }
 
-        /* --- HERO SLIDER --- */
+        /* --- HERO SLIDER (LANDSCAPE FULL) --- */
         .hero-slider {
             position: relative;
-            height: 85vh;
+            height: 100vh;
             width: 100%;
             overflow: hidden;
             background: #000;
@@ -117,13 +117,12 @@
             position: absolute;
             inset: 0;
             opacity: 0;
-            transition: opacity 1.2s ease-in-out;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center right;
+            transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background-size: cover;
+            background-position: center;
             display: flex;
             align-items: center;
-            padding: 0 5%;
+            padding: 0 10%;
         }
 
         .slide.active { opacity: 1; z-index: 5; }
@@ -132,112 +131,39 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, transparent 30%, var(--bg) 100%),
-                        linear-gradient(to right, var(--bg) 20%, transparent 80%);
+            background: linear-gradient(to bottom, transparent 40%, var(--bg) 100%),
+                        linear-gradient(to right, var(--bg) 0%, transparent 60%);
             z-index: 1;
         }
 
         .hero-content {
             position: relative;
             z-index: 10;
-            max-width: 700px;
-            transform: translateY(20px);
+            max-width: 800px;
+            transform: translateX(-40px);
             opacity: 0;
-            transition: all 0.8s ease 0.4s;
+            transition: all 1s ease 0.5s;
         }
 
         .slide.active .hero-content {
-            transform: translateY(0);
+            transform: translateX(0);
             opacity: 1;
         }
 
-        /* --- MARKETING LABELS --- */
-        .badge-red { 
-            background: var(--accent); 
-            color: white; 
-            padding: 3px 10px; 
-            border-radius: 2px; 
-            font-size: 10px; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(255, 45, 45, 0.3);
-        }
-        .badge-blue { 
-            background: var(--zenith-blue); 
-            color: white; 
-            padding: 3px 10px; 
-            border-radius: 2px; 
-            font-size: 10px; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(0, 132, 255, 0.3);
-        }
-
-        /* --- PORTRAIT MOVIE GRID --- */
-        #master-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-            padding: 0 5% 100px 5%;
-        }
-
-        .movie-card {
-            aspect-ratio: 2/3;
-            background: #111;
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-            cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .movie-card:hover {
-            transform: scale(1.05);
-            z-index: 10;
-            border-color: var(--accent);
-        }
-
-        .movie-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: #000;
-        }
-
-        .catalog-header {
-            position: relative;
-            display: inline-block;
-            overflow: hidden;
-            padding-right: 20px;
-        }
-
-        .catalog-header::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 3px; height: 100%;
-            background: var(--accent);
-            box-shadow: 0 0 15px var(--accent);
-        }
-
-        /* --- UPDATED SOPHISTICATED NAV --- */
+        /* --- SOPHISTICATED NAV --- */
         #navbar {
             background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* When any nav button is hovered, blur the background of the nav */
         #navbar:has(.nav-trigger:hover) {
             background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(15px);
         }
 
-        /* Blur everything else inside nav except the one being hovered */
         #navbar:has(.nav-trigger:hover) .nav-element:not(:hover) {
-            filter: blur(4px);
-            opacity: 0.5;
+            filter: blur(8px);
+            opacity: 0.3;
         }
 
         .nav-element {
@@ -246,8 +172,8 @@
 
         .portal-btn-blue, .portal-btn-red {
             font-size: 10px;
-            letter-spacing: 0.2em;
-            padding: 12px 24px;
+            letter-spacing: 0.25em;
+            padding: 12px 28px;
             border-radius: 2px;
             color: white;
             font-weight: 800;
@@ -255,20 +181,91 @@
             border: 1px solid rgba(255,255,255,0.1);
             background: rgba(255,255,255,0.03);
             transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
         }
 
         .portal-btn-blue:hover { 
             background: var(--zenith-blue);
             border-color: var(--zenith-blue);
-            box-shadow: 0 0 25px rgba(0, 132, 255, 0.4);
+            box-shadow: 0 0 30px rgba(0, 132, 255, 0.4);
         }
 
         .portal-btn-red:hover { 
             background: var(--accent);
             border-color: var(--accent);
-            box-shadow: 0 0 25px rgba(255, 45, 45, 0.4);
+            box-shadow: 0 0 30px rgba(255, 45, 45, 0.4);
+        }
+
+        /* --- MARKETING LABELS --- */
+        .badge-red { 
+            background: var(--accent); 
+            color: white; 
+            padding: 4px 12px; 
+            border-radius: 2px; 
+            font-size: 10px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+        }
+        .badge-blue { 
+            background: var(--zenith-blue); 
+            color: white; 
+            padding: 4px 12px; 
+            border-radius: 2px; 
+            font-size: 10px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+        }
+
+        /* --- PORTRAIT MOVIE GRID (FULL BLEED) --- */
+        #master-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 30px;
+            padding: 0 5% 100px 5%;
+        }
+
+        .movie-card {
+            aspect-ratio: 2/3;
+            background: #111;
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.6s cubic-bezier(0.2, 1, 0.2, 1);
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            z-index: 10;
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #000;
+            transition: transform 0.8s ease;
+        }
+
+        .movie-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .catalog-header {
+            position: relative;
+            display: inline-block;
+            padding-left: 20px;
+        }
+
+        .catalog-header::before {
+            content: "";
+            position: absolute;
+            left: 0; top: 0; width: 4px; height: 100%;
+            background: var(--accent);
         }
 
         #details-modal {
@@ -278,7 +275,8 @@
             display: none;
             align-items: center;
             justify-content: center;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0,0,0,0.98);
+            backdrop-filter: blur(20px);
         }
     </style>
 </head>
@@ -287,87 +285,89 @@
     <!-- Splash Screen -->
     <div id="splash-screen">
         <div class="splash-bg-animate"></div>
-        <div class="splash-logo heading-font font-bold text-white text-center">
-            ZERO POINT
+        <div class="splash-logo heading-font font-bold text-white text-center uppercase">
+            Zero Point
         </div>
     </div>
 
-    <!-- System Initialization Gate -->
+    <!-- Inviting Initialization Gate -->
     <div id="login-gate">
         <div class="gate-card">
-            <button onclick="closeGate()" class="absolute top-4 right-4 text-neutral-500 hover:text-white transition-colors" title="Dismiss">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <button onclick="closeGate()" class="absolute top-6 right-6 text-neutral-600 hover:text-white transition-colors">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
-            <div class="mono-font text-red-500 text-[10px] tracking-[0.3em] mb-4 uppercase flex items-center justify-center gap-2">
-                <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                Secure Uplink Request
-            </div>
-            <h2 class="heading-font text-xl mb-6">IDENTIFICATION REQUIRED</h2>
-            <p class="text-neutral-400 text-sm mb-8 leading-relaxed">System archives are optimized for authorized personnel. Log in to access your personal vault and watch history.</p>
+            <div class="mono-font text-white/40 text-[9px] tracking-[0.5em] mb-4 uppercase">Elite Archive Access</div>
+            <h2 class="heading-font text-2xl mb-6 tracking-widest text-white">WELCOME BACK</h2>
+            <p class="text-neutral-500 text-[11px] mb-10 leading-relaxed uppercase tracking-widest max-w-[300px] mx-auto">Verify your identity to unlock personalized vaults and track your progression.</p>
             <div class="flex flex-col gap-3">
-                <button id="gate-main-btn" onclick="handleGateLogin()" class="bg-red-600 hover:bg-red-700 text-white py-4 font-bold tracking-widest text-xs uppercase transition-all shadow-lg shadow-red-900/20">Authorize Identity</button>
-                <button onclick="closeGate()" class="border border-white/10 hover:bg-white/5 text-neutral-400 py-4 font-bold tracking-widest text-xs uppercase transition-all">Proceed as Guest</button>
+                <button id="gate-main-btn" onclick="handleGateLogin()" class="bg-white text-black hover:bg-red-600 hover:text-white py-4 font-bold tracking-[0.3em] text-[10px] uppercase transition-all duration-300">Authorize Identity</button>
+                <button onclick="closeGate()" class="border border-white/5 hover:bg-white/5 text-neutral-600 hover:text-neutral-300 py-4 font-bold tracking-[0.3em] text-[10px] uppercase transition-all duration-300">Explore as Guest</button>
             </div>
+            <div class="mt-8 text-[9px] text-neutral-700 tracking-widest uppercase mono-font">System Status: Awaiting Input</div>
         </div>
     </div>
 
-    <!-- Main App Content -->
-    <div id="main-app" class="opacity-0 transition-opacity duration-[1500ms]">
+    <div id="main-app" class="opacity-0 transition-opacity duration-[2000ms]">
         
-        <nav id="navbar" class="fixed top-0 w-full z-50 px-12 py-6 flex justify-between items-center">
-            <div class="nav-element flex items-center gap-12">
-                <div class="heading-font text-2xl font-bold text-white tracking-tighter cursor-pointer" onclick="location.reload()">ZENITH</div>
+        <nav id="navbar" class="fixed top-0 w-full z-50 px-12 py-8 flex justify-between items-center">
+            <div class="nav-element flex items-center">
+                <div class="heading-font text-3xl font-bold text-white tracking-tighter cursor-pointer" onclick="location.reload()">ZENITH</div>
             </div>
             
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-6">
                 <button class="nav-element nav-trigger portal-btn-blue" onclick="location.href='normal_uslgn.html'">VIEWER PORTAL</button>
                 <button class="nav-element nav-trigger portal-btn-red" onclick="location.href='adminlgn.html'">THE ARCHITECT</button>
             </div>
         </nav>
 
+        <!-- Landscape Hero Slider -->
         <div id="hero-slider" class="hero-slider">
             <div id="hero-slides-container"></div>
         </div>
 
-        <main class="relative -mt-20 z-10 pb-20">
-            <div class="px-[5%] mb-12 flex justify-between items-end">
-                <div class="catalog-header pl-6">
-                    <div class="text-[9px] text-neutral-500 mono-font font-bold mb-1 tracking-[0.2em] uppercase">System Repository</div>
-                    <h2 class="heading-font text-3xl font-bold tracking-tighter uppercase">Primary_Database // Live</h2>
+        <main class="relative -mt-32 z-10 pb-20">
+            <div class="px-[5%] mb-16 flex justify-between items-end">
+                <div class="catalog-header">
+                    <div class="text-[10px] text-red-500 mono-font font-bold mb-2 tracking-[0.4em] uppercase">Archive_System</div>
+                    <h2 class="heading-font text-4xl font-bold tracking-tighter uppercase">Primary_Database</h2>
                 </div>
                 <div class="flex flex-col items-end">
-                    <span id="movie-count" class="mono-font text-[10px] text-neutral-500 tracking-[0.2em] uppercase">Indexing...</span>
-                    <div class="h-[1px] w-32 bg-red-600 mt-2"></div>
+                    <span id="movie-count" class="mono-font text-[10px] text-neutral-600 tracking-[0.3em] uppercase">Calculating...</span>
+                    <div class="h-[2px] w-48 bg-red-600 mt-3"></div>
                 </div>
             </div>
             
+            <!-- Optimized Grid (Full Image Coverage) -->
             <div id="master-grid"></div>
         </main>
     </div>
 
     <!-- Details Modal -->
     <div id="details-modal" onclick="closeDetails()">
-        <div class="w-full max-w-5xl bg-[#080808] border border-white/10 relative overflow-hidden" onclick="event.stopPropagation()">
-            <button class="absolute top-6 right-6 z-50 bg-black/50 p-2 hover:bg-red-600 transition-colors" onclick="closeDetails()">✕</button>
-            <div id="modal-hero" class="h-[400px] bg-contain bg-no-repeat bg-center relative bg-black">
-                <div class="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent"></div>
+        <div class="w-full max-w-6xl bg-[#050505] border border-white/5 relative overflow-hidden" onclick="event.stopPropagation()">
+            <button class="absolute top-8 right-8 z-50 text-neutral-500 hover:text-white" onclick="closeDetails()">✕</button>
+            <div id="modal-hero" class="h-[500px] bg-cover bg-center relative">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent"></div>
             </div>
-            <div class="p-12 -mt-24 relative z-10">
-                <div class="flex gap-2 mb-4">
+            <div class="p-16 -mt-32 relative z-10">
+                <div class="flex gap-4 mb-6">
                     <span id="modal-marketing" class="badge-red"></span>
                     <span id="modal-genre-box" class="badge-blue"></span>
                 </div>
-                <h1 id="modal-title" class="text-5xl font-bold mb-4 uppercase tracking-tighter"></h1>
-                <p id="modal-plot" class="text-neutral-400 text-lg leading-relaxed mb-8 max-w-2xl"></p>
-                <button id="modal-play-btn" class="bg-white text-black px-12 py-4 font-bold hover:bg-red-600 hover:text-white transition-all">STREAM_CONTENT</button>
+                <h1 id="modal-title" class="text-6xl font-bold mb-6 uppercase tracking-tighter leading-none"></h1>
+                <p id="modal-plot" class="text-neutral-400 text-xl leading-relaxed mb-12 max-w-3xl"></p>
+                <button id="modal-play-btn" class="bg-red-600 text-white px-16 py-5 font-bold hover:bg-white hover:text-black tracking-widest text-xs uppercase transition-all">Initiate_Uplink</button>
             </div>
         </div>
     </div>
 
     <script>
+        let currentSlide = 0;
+
         window.addEventListener('load', () => {
             renderContent(); 
             configureGate();
+            startHeroCycle();
             
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
@@ -381,32 +381,39 @@
                 setTimeout(() => {
                     splash.style.display = 'none';
                     gate.style.display = 'flex';
-                    requestAnimationFrame(() => {
-                        gate.classList.add('visible');
-                    });
+                    requestAnimationFrame(() => gate.classList.add('visible'));
                 }, 800); 
             }, 3500);
         });
 
+        function startHeroCycle() {
+            setInterval(() => {
+                const slides = document.querySelectorAll('.slide');
+                if (!slides.length) return;
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, 6000);
+        }
+
         function configureGate() {
             const isLoggedIn = localStorage.getItem('zenith_session_user');
             const btn = document.getElementById('gate-main-btn');
-            
             if (isLoggedIn) {
-                btn.innerText = "ENTER VAULT";
+                btn.innerText = "OPEN PERSONAL VAULT";
                 btn.onclick = () => location.href = 'norm_viewerpage.html';
-                btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-                btn.classList.remove('bg-red-600', 'hover:bg-red-700');
-            } else {
-                btn.innerText = "AUTHORIZE IDENTITY";
-                btn.onclick = () => location.href = 'normal_uslgn.html';
+                btn.classList.add('bg-blue-600', 'text-white');
             }
+        }
+
+        function handleGateLogin() {
+            window.location.href = 'normal_uslgn.html';
         }
 
         function closeGate() {
             const gate = document.getElementById('login-gate');
             gate.classList.remove('visible');
-            setTimeout(() => gate.style.display = 'none', 500);
+            setTimeout(() => gate.style.display = 'none', 600);
         }
 
         function renderContent() {
@@ -417,26 +424,23 @@
             const localStore = JSON.parse(localStorage.getItem('zenith_lifetime_movies') || '[]');
             const activeData = localStore.length > 0 ? localStore : (typeof movieData !== 'undefined' ? movieData : []);
 
-            if (!activeData.length) {
-                grid.innerHTML = `<div class="col-span-full py-20 text-center text-neutral-600 italic">SYSTEM_ERROR: ARCHIVE_EMPTY</div>`;
-                return;
-            }
+            if (!activeData.length) return;
 
-            countLabel.innerText = `SYNC_COMPLETE: ${activeData.length} ASSETS`;
+            countLabel.innerText = `ACTIVE_NODES: ${activeData.length}`;
 
             const featured = activeData.filter(m => m.isFeatured);
             heroContainer.innerHTML = (featured.length ? featured : activeData).map((movie, index) => `
                 <div class="slide ${index === 0 ? 'active' : ''}" style="background-image: url('${movie.posterLandscape}');">
                     <div class="hero-content">
-                        <div class="flex items-center gap-3 mb-6">
-                            <span class="badge-red">${movie.marketingTag || 'ZENITH PRIME'}</span>
+                        <div class="flex items-center gap-4 mb-8">
+                            <span class="badge-red">${movie.marketingTag || 'ORIGINAL'}</span>
                             <span class="badge-blue">${movie.genre}</span>
                         </div>
-                        <h1 class="text-7xl font-bold mb-6 tracking-tighter uppercase leading-[0.9]">${movie.title}</h1>
-                        <p class="text-neutral-300 text-lg mb-10 max-w-lg leading-relaxed line-clamp-3">${movie.plot}</p>
-                        <div class="flex gap-4">
-                            <button class="bg-red-600 text-white px-10 py-4 font-bold text-xs tracking-widest uppercase hover:bg-white hover:text-black transition-all" onclick="redirectToPlayer('${movie.id}')">Initiate Stream</button>
-                            <button class="border border-white/20 bg-white/5 text-white px-10 py-4 font-bold text-xs tracking-widest uppercase hover:bg-white/20 transition-all" onclick="showDetails('${movie.id}')">More Details</button>
+                        <h1 class="text-8xl font-bold mb-8 tracking-tighter uppercase leading-[0.8]">${movie.title}</h1>
+                        <p class="text-neutral-300 text-xl mb-12 max-w-2xl leading-relaxed">${movie.plot}</p>
+                        <div class="flex gap-6">
+                            <button class="bg-red-600 text-white px-12 py-5 font-bold text-xs tracking-[0.3em] uppercase hover:bg-white hover:text-black transition-all" onclick="redirectToPlayer('${movie.id}')">Watch Now</button>
+                            <button class="border border-white/20 bg-black/40 backdrop-blur-md text-white px-12 py-5 font-bold text-xs tracking-[0.3em] uppercase hover:bg-white hover:text-black transition-all" onclick="showDetails('${movie.id}')">Info</button>
                         </div>
                     </div>
                 </div>
@@ -444,23 +448,24 @@
 
             grid.innerHTML = activeData.map(movie => `
                 <div class="movie-card" onclick="showDetails('${movie.id}')">
-                    <img src="${movie.posterPortrait}" alt="${movie.title}">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent p-4 flex flex-col justify-end opacity-0 hover:opacity-100 transition-opacity">
-                        <h4 class="font-bold text-sm uppercase tracking-tighter">${movie.title}</h4>
-                        <div class="text-[8px] text-red-500 font-bold tracking-widest uppercase mt-1">${movie.genre}</div>
+                    <img src="${movie.posterPortrait}" alt="${movie.title}" loading="lazy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent p-6 flex flex-col justify-end opacity-0 hover:opacity-100 transition-opacity duration-300">
+                        <h4 class="font-bold text-lg uppercase tracking-tighter">${movie.title}</h4>
+                        <div class="text-[10px] text-red-500 font-bold tracking-[0.2em] uppercase mt-2">${movie.genre}</div>
                     </div>
                 </div>
             `).join('');
         }
 
         function showDetails(id) {
-            const localStore = JSON.parse(localStorage.getItem('zenith_lifetime_movies') || '[]');
-            const activeData = localStore.length > 0 ? localStore : (typeof movieData !== 'undefined' ? movieData : []);
+            const activeData = JSON.parse(localStorage.getItem('zenith_lifetime_movies') || '[]').length 
+                ? JSON.parse(localStorage.getItem('zenith_lifetime_movies')) 
+                : movieData;
             const movie = activeData.find(m => m.id === id);
             
             document.getElementById('modal-hero').style.backgroundImage = `url('${movie.posterLandscape}')`;
             document.getElementById('modal-title').innerText = movie.title;
-            document.getElementById('modal-marketing').innerText = movie.marketingTag || 'ZENITH PRIME';
+            document.getElementById('modal-marketing').innerText = movie.marketingTag || 'ORIGINAL';
             document.getElementById('modal-genre-box').innerText = movie.genre;
             document.getElementById('modal-plot').innerText = movie.plot;
             document.getElementById('modal-play-btn').onclick = () => redirectToPlayer(movie.id);
@@ -468,10 +473,7 @@
         }
 
         function closeDetails() { document.getElementById('details-modal').style.display = 'none'; }
-        
-        function redirectToPlayer(id) { 
-            window.location.href = `video_player.html?id=${id}&origin=public`; 
-        }
+        function redirectToPlayer(id) { window.location.href = `video_player.html?id=${id}&origin=public`; }
     </script>
 </body>
 </html>
